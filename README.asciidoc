@@ -1,0 +1,406 @@
+= SCM Version Plugin
+:latestRevision: 1.0.0
+:toc:
+:sectnums:
+
+== Summary
+This plugin provides project configuration and tasks for version handling based on the used SCM of the project.
+The information of the used SCM is identified by special directories in the project directory ('`.git`', '`.svn`').
+The following types of SCM are supported:
+
+* git
+* svn
+* file (limited functionality)
+
+For the calculation of the project version branches and tags are used. The basic functionality is for Git and Subversion equal.
+A file-based project does not support the calculation of the version based on previous versions. It is also possible to
+identify the changes between the current working copy and the previous version. This functionality can also used on a
+CI server during the creation of a new tag. In this case the changes between two versions are written to a file.
+
+== Version Information from the SCM
+This plugin add the possibility to calculate version information of a project from the used SCM structure. It initialize a
+project property `useSCMVersionConfig`. The value of this property is `true`, if the plugin was applied and can be used
+by the own build logic and other plugins.
+
+=== Subversion
+This implementation depends on SVNKit 1.8, therefore it is necessary to have an installed SVN client 1.8 for
+the access to the stored Subversion credentials. For a correct calculation of the version, the access to the SVN
+repository must be available
+
+[[svn_offlineaccess]]
+[CAUTION]
+========
+. This plugin assumes the standard Subversion structure:
+
+  <project>
+   |
+   +- <code structure of the trunk>
+   |
+   +- branches
+   |  |
+   |  +- <branch name>
+   |      |
+   |      +- <code structure of the branch>
+   |
+   +- tags
+      |
+      +- <tag name>
+          |
+          +- <code structure of the tag>
+
+. SVN version calculation is not working without network access.
+========
+
+=== Configuration without remote access
+If there is no access to a remote repository, it is possible to specify a version string as project property `offlineVersion` (see <<svn_offlineaccess, Subversion>>)
+
+[source]
+----
+gradlew -PofflineVersion=9.9.0.0-LOCAL publish
+----
+This will add the version '9.9.0.0-LOCAL' to your project. It is possible to add this property also to the
+gradle.properties file in the Gradle user home.
+
+WARNING: Note, this version will be published to the specified repository and can be used by other processes!
+
+=== Git
+The version can be calculated from the local clone without access to the remote repository.
+The plugin assumes, that the default branch is called '`master`'.
+
+=== Version Calculation
+The plugin detects tags and branches with version information on special prefixes. These prefixes are configured based on the configuration '`prefixes`'.
+For parsing, calculation and sort a library for an extended version object is used. It supports three and four digits. Furthermore a special pattern is supported.
+
+[source]
+----
+<prefix>_<version>[-<featurebranch name>][-<build extension>]
+----
+
+Therefore branch names must follow the following patterns. All examples use the default configuration.
+
+==== Feature branch
+[source]
+----
+<feature branch prefix>_<version>-<featurebranch name>
+----
+The default feature branch prefix is 'FB'. The version is the original version of the master / trunk.
+
+.Example
+----
+FB_1.0.0-JIRA-4711
+FB_1.0.0-FeatureBranchName
+----
+
+==== Stabilization branch
+[source]
+----
+<stabilization branch prefix>_<version>
+----
+The default stabilization branch prefix is 'SB'. The version is the base version for this branch. In the most cases,
+it is the major version of the trunk/master, before the branch was created.
+
+.Example
+----
+SB_1        Stabilization branch for version 1.0.0 to 1.X.X
+SB_1.0      Stabilization branch for version 1.0.0 to 1.0.X
+----
+
+==== Release tag
+[source]
+----
+<release prefix>_<version>[-<featurebranch name>][-<build extension>]
+----
+The default release prefix is 'RELEASE'. The version is the base version for this branch. In the most cases,
+it is the major version of the trunk/master, before the branch was created.
+
+.Example
+----
+RELEASE_1.1.0                   Release tag for version 1.1.0
+RELEASE_1.1.0-dev.1             Tag of a development milestone release for version 1.1.0
+RELEASE_1.1.0-rc.1              Tag of a release candidate for version 1.1.0
+RELEASE_1.0.0-JIRA-4711-dev.1   Tag of a development milestone release of a feature branch version 1.0.0-JIRA-4711
+----
+
+==== Version calculation on Git
+* Default Branch (master) +
+The plugin is looking for a tag on the branch. If there is no tag the default value is used and extended with SNAPSHOT.
+
+* Branch / Feature Branch +
+The plugin is looking for a tag on the branch. If there is no valid tag on the branch, the version is taken from the name of the branch.
+The version will be always extended with SNAPSHOT on the CI server.
+
+* Tags +
+With out local changes the plugin tries to calculate the name from the tag name.
+
+==== Version calculation on Subversion
+* Trunk +
+The plugin is looking for a tag witch matches to specified criteria. In the most cases the version is calculated from
+branches and will be extended with SNAPSHOT. This behavior can be configured.
+
+* Branch / Feature Branch +
+The plugin is looking for a tag witch matches to branch name. If there is no valid tag on the branch, the version is taken
+from the name of the branch.  The version will be always extended with SNAPSHOT on the CI server.
+
+* Tags +
+With out local changes the plugin tries to calculate the name from the tag name.
+
+== Usage
+To use the Gradle scm version plugin provided by Intershop, include the following in your build script of your *root* project:
+
+[source,groovy]
+[subs=+attributes]
+.build.gradle
+----
+apply plugin: 'com.intershop.gradle.scmversion'
+
+scm {
+    prefixes {
+        //default is 'SB'
+        stabilizationPrefix = 'SBP'
+
+        //default is 'FB'
+        featurePrefix = 'FBP'
+
+        //default is Release
+        tagPrefix = 'RBP'
+    }
+
+    version {
+        type = 'threeDigits'
+        initialVersion = '1.0.0'
+    }
+
+    changelog {
+        previousVersion = '1.0.0'
+        changeLogFile = new File(project.buildDir, 'changelog/changelogset.asciidoc')
+        filterProject = true
+    }
+}
+
+version = scm.version.version
+
+buildscript {
+    dependencies {
+        classpath group: 'com.intershop.gradle.scm', name: 'scmversion-gradle-plugin', version: '{latestRevision}'
+    }
+}
+----
+
+== Tasks
+The Intershop SCM Version plugin adds the following tasks to the project:
+
+[cols="20%,15%,65%", width="95%", options="header"]
+|===
+|Task name  |Type             |Description
+
+|showVersion|ShowVersion      |This task shows the current version of the working copy.
+|tag        |CreateTag        |This task creates a tag based on the current working copy. +
+It makes changes to the SCM.
+|branch     |CreateBranch     |This task creates a branch based on the current working copy. +
+It makes changes to the SCM.
+For creating a feature branch it is necessary to specify a short name for the feature in a project property `*feature*`.
+|toVersion  |ToVersion        |This task moves the working copy to a target version.
+This version must be specified in a project property `*targetVersion*`. It is also possible to specify the short name of a
+feature in a property `*feature*`. + It changes the working copy.
+|release    |PrepareRelease   |This task creates a tag, if necessary, and move the the working copy to the version. +
+It changes the working copy.
+|createChangelog |CreateChangeLog   | This task creates a change log with all changes between the +
+latest commit of the current working copy and the tag of the previous version. It is possible to specify an other 'previous' version. +
+The tag for this version must exists.
+|===
+
+All task are part the package `'com.intershop.gradle.scm.task'`
+
+== Project extension 'scm'
+
+This plugin adds an extension *`scm`* to the root project. This extension contains all plugin configurations.
+
+=== Methods
+[cols="20%,15%,65%", width="95%", options="header"]
+|===
+|Method | Values | Description
+|*prefixes*(configure)             |<<prefixconfig,PrefixConfig>> | This is the extension object for the configuration of branch prefixes.
+|*user*(configure)                 |<<scmuser,ScmUser>>           | This extension is used for the SCM user authentication.
+_This extension can be configured over environment variables and project properties._
+|*key*(configure)                  |<<scmkey,ScmKey>>             | This is also used for the SCM user authentication.
+_This extension can be configured over environment variables and project properties._
+|*version*(configure)              |<<scmversion,ScmVersion>>     | This extension contains settings for version calculation and read properties for the current version and previous version.
+|*changelog*(configure)            |<<scmchangelog,ScmChangelog>> | This extension contains settings for change log configuration.
+|===
+
+==== [[prefixconfig]]Prefix configuration 'prefixes' (`PrefixConfig`)
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*stabilizationPrefix*    |`String` |`SB`       | Prefix for stabilization branches.
+|*featurePrefix*          |`String` |`FB`       | Prefix for feature branches.
+|*tagPrefix*              |`String` |`RELEASE`  | Prefix for release tags.
+|*prefixSeperator*        |`String` |`_`        | Separator between prefix and version.
+|===
+
+==== Authentication
+===== User object 'user' (`ScmUser`)[[scmuser]]
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*name*       |`String` |'' | Username or token
+_This can be overwritten by the system or environment variable `SCM_USERNAME` or project property `scmUserName`._
+|*password*   |`String` |'' | Password
+_This can be overwritten by the system or environment variable `SCM_PASSWORD` or project property `scmUserPasswd`._
+|===
+
+===== SSH Key object 'key' (`ScmKey`) (only for Git)[[scmkey]]
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*file*       |`File`   |`null` | Private key for SCM authentication
+_This can be overwritten by the system or environment variable `SCM_KEYFILE` or project property `scmKeyFile`._
+The plugin uses per default for ssh access <user_home>/.ssh/id_rsa or <user_home>/.ssh/id_dsa without passphrase.
+|*passphrase* |`String` |''   | passphrase for private key
+_This can be overwritten by the system or environment variable `SCM_KEYPASSPHRASE` or project property `scmKeyPassphrase`._
+|===
+
+==== Version object 'version' (`ScmVersion`)[[scmversion]]
+[cols="20%,15%,15%,15%,35%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Values | Description
+
+|*type*                 |`String`    |`threeDigits` | `fourDigits` +
+ `threeDigits` | The number of used digits.
+|*dryRun*               |`boolean`   |`false`      | `false` +
+`true` |Tasks will run without changes on the working copy or SCM. +
+_This can be overwritten by the system or environment variable `DRYRUN` or project property `dryRun`._
+|*runOnCI*              |`boolean`   |`false` | `false` +
+`true` | This configuration must be true, if the project is used on a CI server. +
+_This can be overwritten by the system or environment variable `RUNONCI` or project property `runOnCI`._
+|*increment*            |`String`    |`null`  | `MAJOR` +
+`MINOR` +
+`PATCH` +
+ `HOTFIX` | If this property is set, the configured position is used for the increment of the version. +
+ _This can be overwritten by the system or environment variable `INCREMENT` or project property `increment`._
+|*initialVersion*       |`String`     |`'1.0.0.0'` +
+ `'1.0.0'` | | The inital version if the calculation from SCM is not possible.
+|*branchType*    |`String`     |`tag`  | `branch` +
+`tag` | Which branch is primarily used for the version calculation.
+|*patternDigits*        |`int`        |`2` | | These digits of the version number will be used for the filter of the version calculation from branches.
+|*defaultMetadata* |`String`     |''  | | This is used for releases of feature branches.
+|*useBuildExtension*|`boolean`   |`false`|`false` +
+`true` |Build extension will be removed for SNAPSHOT extensions if this property is false
+|*disableSCM*             |`boolean`   |`false`|`false` +
+`true` |If this property is true, the initial version is always used and the SCM usage is disabled.
+The environment variable 'SCMVERSIONEXT' or the project variable 'scmVersionExt' will be used on the CI
+server for special extensions. If this value is +
+'SNAPSHOT' - 'SNAPSHOT' will be added to the version +
+'RELEASE' - intial version is used without any extension. +
+If no value is specified a time stamp will be added. +
+On the local developer machine 'LOCAL' will be added to the version.
+
+|*version* | `String`    | *initialVersion* | *read only* | Returns the version of the working copy.
+|*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment variable `SCMVERSIONEXT` or the project variable `scmVersionExt` is used for the return value.
+|*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
+|*previousVersionTag* | `VersionTag` | null | *read only* | Returns an object with the previous version and the associated release tag.
+|===
+
+==== Changelog object 'changeLog' (`ScmChangeLog`)[[scmchangelog]]
+
+===== Properties
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*previousVersion*        |`String`|*version.previousVersion* | Any version with tag for change log calculation. +
+It is possible to override the value with an +
+enviroment variable `PREV_VERSION`
+|*changelogFile*        |`File`  |`<buildDir>/changelog/ +
+changelog.asciidoc`| The change log will be written in this file.
+|*filterProject*        |`boolean`| false | filter changed files for projects (first folder in changed files must be identical to last folder of project svn url)
+|===
+
+== Example Configurations
+=== Simple configuration
+[source,groovy,subs="attributes"]
+----
+apply plugin: 'com.intershop.gradle.scmversion'
+
+scm {
+    version {
+        type = 'threeDigits'
+        initialVersion = '1.0.0'
+    }
+}
+
+version = scm.version.version
+
+buildscript {
+    dependencies {
+        classpath group: 'com.intershop.gradle.scm', name: 'scmversion-gradle-plugin', version: '{latestRevision}'
+    }
+}
+----
+
+=== gradle.properties with authentication configuration
+This configuration works for Subversion and Git (http(s)://...). It is necessary to specify username and
+password for this kind of repositories.
+[source,properties]
+----
+scmUserName = username
+scmUserPasswd = password
+----
+
+This configuration works for GitLab / GitHub (ssh://...) with a private key and if necessary with a passphrase.
+There is no default value for the key.
+[source,properties]
+----
+# without passphrase
+scmKeyFile = /user/home/.ssh/id_rsa
+----
+[source,properties]
+----
+# with passphrase
+scmKeyFile = /user/home/.ssh/id_rsa
+scmKeyPassphrase = passphrase
+----
+
+To use ssh keys you have to switch your repository from https to ssh with the following command:
+
+[source,shell]
+----
+git remote set-url origin git@gitlab.coporate.com:yourname/yourrepo.git
+----
+
+=== Test
+The integration tests using a test repositories. Therefore it is necessary to specify project properties for the test execution.
+
+.Table Subversion test configuration
+|===
+|Test Property |Description | Value
+
+|*svntest*        | Root URL of the test project        |
+|*svntestuser*    | User name of Subversion test user   | Must be specified with project property *`svntestuser`*
+|*svntestuserpwd* | Password for Subversion test user   | Must be specified with project property *`svntestuserpwd`*
+|===
+
+.Table Git test configuration
+|===
+|Test Property |Description | Value
+
+|*gittest*        | URL of the test project      |
+|*gittestuser*    | User name of Git test user   | Must be specified with project property *`gittestuser`*
+|*gittestuserpwd* | Password for Git test user   | Must be specified with project property *`gittestuserpwd`*
+|===
+
+== License
+
+Copyright 2014-2016 Intershop Communications.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+
+

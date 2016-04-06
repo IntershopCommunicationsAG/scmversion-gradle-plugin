@@ -1,0 +1,141 @@
+plugins {
+    // project plugins
+    id 'java-gradle-plugin'
+    id 'groovy'
+    // test coverage
+    id 'jacoco'
+
+    // ide plugin
+    id 'idea'
+
+    // intershop test plugin
+    id 'com.intershop.gradle.test' version '1.0.0'
+
+    // publish plugin
+    id 'maven-publish'
+
+    // plugin for publishing to Gradle Portal
+    id "com.gradle.plugin-publish" version "0.9.4"
+}
+
+// release configuration
+group 'com.intershop.gradle.scm'
+description 'Gradle SCM version plugin - SCM based version handling for Gradle'
+version = '1.0.0'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+// set correct project status
+if (project.version.endsWith('-SNAPSHOT')) {
+    status = 'snapshot'
+}
+
+// test configuration
+test {
+    if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD')) {
+        systemProperty 'svnurl', System.getenv('SVNURL')
+        systemProperty 'svnuser', System.getenv('SVNUSER')
+        systemProperty 'svnpasswd', System.getenv('SVNPASSWD')
+    }
+    if(System.getenv('GITUSER') && System.getenv('GITPASSWD')) {
+        systemProperty 'giturl', System.getenv('GITURL')
+        systemProperty 'gituser', System.getenv('GITUSER')
+        systemProperty 'gitpasswd', System.getenv('GITPASSWD')
+    }
+
+    //Change directory for gradle tests
+    systemProperty 'org.gradle.native.dir', '.gradle'
+    //Set supported Gradle version
+    systemProperty 'intershop.gradle.versions', '2.10,2.11'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+task groovydocJar(type: Jar) {
+    dependsOn groovydoc
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+
+// additional sources artifact
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        intershopMvn(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+
+            artifact groovydocJar {
+                classifier "javadoc"
+            }
+
+            pom.withXml {
+                def Node root = asNode();
+                root.appendNode('name', project.name)
+                root.appendNode('description', project.description)
+                root.appendNode('url', "https:/gitlab.intershop.de/IntershopGradlePlugins/${project.name}")
+
+                def scm = root.appendNode( 'scm' )
+                scm.appendNode( 'url', "https://gitlab.intershop.de/IntershopGradlePlugins/${project.name}")
+                scm.appendNode( 'connection', "scm:git:https://gitlab.intershop.de/IntershopGradlePlugins/${project.name}.git")
+
+                def org = root.appendNode( 'organization' )
+                org.appendNode( 'name', 'Intershop Communications' )
+                org.appendNode( 'url', 'http://intershop.com' )
+
+                def license = root.appendNode( 'licenses' ).appendNode( 'license' );
+                license.appendNode( 'name', 'Apache License, Version 2.0' )
+                license.appendNode( 'url', 'http://www.apache.org/licenses/LICENSE-2.0' )
+                license.appendNode( 'distribution', 'repo' )
+            }
+        }
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    description = project.description
+    tags = ['intershop', 'gradle', 'plugin', 'test']
+
+    plugins {
+        gradleTestPlugin {
+            id = 'com.intershop.gradle.scmversion'
+            displayName = 'Gradle SCM Version Plugin'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.intershop.gradle.version:extended-version:1.0.0'
+
+    //svn
+    // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
+    compile('org.tmatesoft.svnkit:svnkit:1.8.12') {
+        exclude group: 'net.java.dev.jna'
+    }
+    runtime 'net.java.dev.jna:jna:3.2.7'
+
+    //jgit
+    compile 'org.eclipse.jgit:org.eclipse.jgit:4.2.0.201601211800-r'
+
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude group: 'org.codehaus.groovy'
+    }
+}
+
+repositories {
+    jcenter()
+}
