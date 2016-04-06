@@ -372,24 +372,24 @@ git remote set-url origin git@gitlab.coporate.com:yourname/yourrepo.git
 ----
 
 === Test
-The integration tests using a test repositories. Therefore it is necessary to specify project properties for the test execution.
+The integration tests using test repositories. Therefore it is necessary to specify project properties for the test execution.
 
 .Table Subversion test configuration
 |===
 |Test Property |Description | Value
 
-|*svntest*        | Root URL of the test project        |
-|*svntestuser*    | User name of Subversion test user   | Must be specified with project property *`svntestuser`*
-|*svntestuserpwd* | Password for Subversion test user   | Must be specified with project property *`svntestuserpwd`*
+|*svnurl*    | Root URL of the test project        | Must be specified with environment variable *`SVNURL`*
+|*svnuser*   | User name of Subversion test user   | Must be specified with environment variable *`SVNUSER`*
+|*svnpasswd* | Password for Subversion test user   | Must be specified with environment variable *`SVNPASSWD`*
 |===
 
 .Table Git test configuration
 |===
 |Test Property |Description | Value
 
-|*gittest*        | URL of the test project      |
-|*gittestuser*    | User name of Git test user   | Must be specified with project property *`gittestuser`*
-|*gittestuserpwd* | Password for Git test user   | Must be specified with project property *`gittestuserpwd`*
+|*giturl*    | URL of the test project      | Must be specified with environment variable *`GITURL`*
+|*gituser*   | User name of Git test user   | Must be specified with environment variable *`GITUSER`*
+|*gitpasswd* | Password for Git test user   | Must be specified with environment variable *`GITPASSWD`*
 |===
 
 == License
