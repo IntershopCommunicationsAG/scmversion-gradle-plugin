@@ -126,7 +126,7 @@ trait ScmVersionService {
             Version version = getPreVersion()
 
             if (versionObject.isChanged() && versionExt.runOnCI) {
-                if (versionExt.useAlwaysBuildExtension) {
+                if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with SNAPSHOT', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
                 } else {
@@ -137,7 +137,7 @@ trait ScmVersionService {
                 log.info('Version {} will be used without extension (No changes detected!).', version)
                 return version
             } else {
-                if (versionExt.useAlwaysBuildExtension) {
+                if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with LOCAL', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.LOCAL}"
                 } else {
@@ -234,7 +234,7 @@ trait ScmVersionService {
      */
     public Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
-        Set<Version> versions = versionExt.useAlwaysBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
+        Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
         return previousVersion
     }

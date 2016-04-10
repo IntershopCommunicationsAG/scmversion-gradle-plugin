@@ -150,7 +150,9 @@ To use the Gradle scm version plugin provided by Intershop, include the followin
 [subs=+attributes]
 .build.gradle
 ----
-apply plugin: 'com.intershop.gradle.scmversion'
+plugins {
+    id 'com.intershop.gradle.scmversion' version '{latestRevision}'
+}
 
 scm {
     prefixes {
@@ -178,11 +180,6 @@ scm {
 
 version = scm.version.version
 
-buildscript {
-    dependencies {
-        classpath group: 'com.intershop.gradle.scm', name: 'scmversion-gradle-plugin', version: '{latestRevision}'
-    }
-}
 ----
 
 == Tasks
@@ -322,7 +319,9 @@ changelog.asciidoc`| The change log will be written in this file.
 === Simple configuration
 [source,groovy,subs="attributes"]
 ----
-apply plugin: 'com.intershop.gradle.scmversion'
+plugins {
+    id 'com.intershop.gradle.scmversion' version '{latestRevision}'
+}
 
 scm {
     version {
@@ -333,11 +332,6 @@ scm {
 
 version = scm.version.version
 
-buildscript {
-    dependencies {
-        classpath group: 'com.intershop.gradle.scm', name: 'scmversion-gradle-plugin', version: '{latestRevision}'
-    }
-}
 ----
 
 === gradle.properties with authentication configuration
@@ -370,7 +364,44 @@ To use ssh keys you have to switch your repository from https to ssh with the fo
 git remote set-url origin git@gitlab.coporate.com:yourname/yourrepo.git
 ----
 
-=== Test
+=== Simple configuration withou SCM
+This configuration can be used when a different version control system is used in the project or an other version schema is set in project.
+With this configuration a lot of features are no longer available.
+
+[source,groovy,subs="attributes"]
+----
+
+plugins {
+    id 'com.intershop.gradle.scmversion' version '{latestRevision}'
+}
+
+scm {
+    version {
+        disableSCM = true
+        initialVersion = '1.0.0'
+    }
+}
+
+version = scm.version.version
+
+----
+
+On CI server you must configure for the
+
+.snapshot build:
+[source,properties]
+----
+./gradlew publish -PrunOnCI=true -PscmVersionExt=SNAPSHOT
+----
+.release build:
+[source,properties]
+----
+./gradlew publish -PrunOnCI=true -PscmVersionExt=RELEASE
+----
+
+After a release it is necessary to change the version manually.
+
+== Test
 The integration tests using test repositories. Therefore it is necessary to specify project properties for the test execution.
 
 .Table Subversion test configuration

@@ -133,7 +133,7 @@ class VersionExtension extends AbstractExtension {
      * Build extension will be removed for
      * SNAPSHOT extensions if this property is false
      */
-    boolean useAlwaysBuildExtension = false
+    boolean useBuildExtension = false
 
     /**
      * If this property is true, the initial

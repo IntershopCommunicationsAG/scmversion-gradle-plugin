@@ -46,6 +46,6 @@ class ShowVersion extends DefaultTask {
 
         StyledTextOutput output = services.get(StyledTextOutputFactory).create(ShowVersion)
         output.withStyle(Header).println('')
-        output.withStyle(Header).println("Test Project version: ${version}")
+        output.withStyle(Header).println("Project version: ${version}")
     }
 }

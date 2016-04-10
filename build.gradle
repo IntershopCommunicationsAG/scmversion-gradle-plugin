@@ -15,7 +15,7 @@ plugins {
     id 'maven-publish'
 
     // plugin for publishing to Gradle Portal
-    id "com.gradle.plugin-publish" version "0.9.4"
+    id 'com.gradle.plugin-publish' version '0.9.4'
 }
 
 // release configuration
@@ -33,15 +33,27 @@ if (project.version.endsWith('-SNAPSHOT')) {
 
 // test configuration
 test {
-    if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD')) {
+    if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD') && System.getenv('SVNURL')) {
         systemProperty 'svnurl', System.getenv('SVNURL')
         systemProperty 'svnuser', System.getenv('SVNUSER')
         systemProperty 'svnpasswd', System.getenv('SVNPASSWD')
     }
-    if(System.getenv('GITUSER') && System.getenv('GITPASSWD')) {
+    if(System.getenv('GITUSER') && System.getenv('GITPASSWD') && System.getenv('GITURL')) {
         systemProperty 'giturl', System.getenv('GITURL')
         systemProperty 'gituser', System.getenv('GITUSER')
         systemProperty 'gitpasswd', System.getenv('GITPASSWD')
+    }
+
+    if(System.getProperty('SVNUSER') && System.getProperty('SVNPASSWD') && System.getProperty('SVNURL')) {
+        systemProperty 'svnurl', System.getProperty('SVNURL')
+        systemProperty 'svnuser', System.getProperty('SVNUSER')
+        systemProperty 'svnpasswd', System.getProperty('SVNPASSWD')
+    }
+
+    if(System.getProperty('GITUSER') && System.getProperty('GITPASSWD') && System.getProperty('GITURL')) {
+        systemProperty 'giturl', System.getProperty('GITURL')
+        systemProperty 'gituser', System.getProperty('GITUSER')
+        systemProperty 'gitpasswd', System.getProperty('GITPASSWD')
     }
 
     //Change directory for gradle tests

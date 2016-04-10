@@ -429,6 +429,291 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         gradleVersion << supportedGradleVersions
     }
 
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task on CI server with useBuildExtension - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CIRELEASE'
+            }
+            version {
+                useBuildExtension = 'true'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-dev.2-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task on CI server without useBuildExtension - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CIRELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task and previous version on svn - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/tags/CLRELEASE_2.0.0")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CLRELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        println "***previuous version is \${scm.version.previousVersion}***"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0')
+        result.output.contains('***previuous version is 1.5.0***')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    def 'test showVersion task with disableSCM - #gradleVersion'(gradleVersion) {
+        given:
+        this.file('test.properties')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version{
+                disableSCM = true
+                initialVersion = '2.0.0'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-LOCAL')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    def 'test showVersion task on CI server with disableSCM (prerelease)- #gradleVersion'(gradleVersion) {
+        given:
+        this.file('test.properties')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version{
+                disableSCM = true
+                initialVersion = '2.0.0'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d','-PrunOnCI=true', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-20')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    def 'test showVersion task on CI server with disableSCM (release)- #gradleVersion'(gradleVersion) {
+        given:
+        this.file('test.properties')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version{
+                disableSCM = true
+                initialVersion = '2.0.0'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d','-PrunOnCI=true', "-PscmVersionExt=RELEASE", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0')
+        ! result.output.contains('Project version: 2.0.0-')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    def 'test showVersion task on CI server with disableSCM (snapshot)- #gradleVersion'(gradleVersion) {
+        given:
+        this.file('test.properties')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version{
+                disableSCM = true
+                initialVersion = '2.0.0'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d','-PrunOnCI=true', "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    def 'test showVersion task on CI server with disableSCM (other version)- #gradleVersion'(gradleVersion) {
+        given:
+        this.file('test.properties')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version{
+                disableSCM = true
+                initialVersion = 'ab.cd.de.00'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: ab.cd.de.00-LOCAL')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
@@ -809,6 +1094,122 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    def 'test showVersion task with git branch with local changes on CI server with useBuildExtension - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+        gitChangeTestFile(testProjectDir)
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CIRELEASE'
+            }
+            version {
+                useBuildExtension = true
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-dev.2-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git branch with local changes on CI server without useBuildExtension - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+        gitChangeTestFile(testProjectDir)
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CIRELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task and previous version on git - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'CLRELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        println "***previuous version is \${scm.version.previousVersion}***"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('***previuous version is 2.0.0***')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
     def 'test showVersion task with git branch with local changes on CI server without user name and password - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'SB_1.1' )
@@ -819,8 +1220,10 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             id 'com.intershop.gradle.scmversion'
         }
 
-        scm.prefixes {
-            tagPrefix = 'SBRELEASE'
+        scm {
+            prefixes {
+                tagPrefix = 'SBRELEASE'
+            }
         }
 
         version = scm.version.version
