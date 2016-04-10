@@ -1,7 +1,6 @@
 = SCM Version Plugin
 :latestRevision: 1.0.0
 :toc:
-:sectnums:
 
 == Summary
 This plugin provides project configuration and tasks for version handling based on the used SCM of the project.

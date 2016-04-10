@@ -13,7 +13,7 @@ install:
 before_script:
   - echo -e "gradle.publish.key=$APIKEY\ngradle.publish.secret=$APISECRET" > gradle.properties
 script:
-  - ./gradlew test -s
+  - ./buildTravis.sh
 notifications:
   webhooks:
     urls:
