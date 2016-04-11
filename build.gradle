@@ -128,13 +128,15 @@ pluginBundle {
             displayName = 'Gradle SCM Version Plugin'
         }
     }
+
+    mavenCoordinates {
+        groupId = project.group
+        artifactId = project.name
+        version = project.version
+    }
 }
 
-mavenCoordinates {
-    groupId = project.group
-    artifactId = project.name
-    version = project.version
-}
+
 
 dependencies {
     compile 'com.intershop.gradle.version:extended-version:1.0.0'
