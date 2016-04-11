@@ -71,11 +71,11 @@ class GitRemoteService {
         log.debug('Configure authentication')
 
         if(localService.remoteUrl) {
-            if (localService.remoteUrl.startsWith('http') && user.name && user.password) {
+            if (localService.remoteUrl.startsWith('http') && user && user.name && user.password) {
                 log.debug('User name {} and password is used.', user.name)
                 credentials = new UsernamePasswordCredentialsProvider(user.name, user.password)
                 remoteConfigAvailable = true
-            } else if (localService.remoteUrl.startsWith('git@') && key.file.exists()) {
+            } else if (localService.remoteUrl.startsWith('git@') && key && key.file.exists()) {
                 log.debug('ssh connector is used with key {}.', key.file.absolutePath)
                 sshConnector = new SshConnector(key)
                 remoteConfigAvailable = true
