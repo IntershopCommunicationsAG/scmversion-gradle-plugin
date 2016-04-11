@@ -21,7 +21,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '1.0.1'
+version = '1.0.2'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
