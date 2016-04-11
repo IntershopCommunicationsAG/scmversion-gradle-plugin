@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 1.0.0
+:latestRevision: 1.0.1
 :toc:
 :sectnums:
 
