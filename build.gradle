@@ -11,11 +11,17 @@ plugins {
     // intershop test plugin
     id 'com.intershop.gradle.test' version '1.0.0'
 
+    // plugin for documentation
+    id 'org.asciidoctor.convert' version '1.5.3'
+
     // publish plugin
     id 'maven-publish'
 
     // plugin for publishing to Gradle Portal
     id 'com.gradle.plugin-publish' version '0.9.4'
+
+    // plugin for publishing to jcenter
+    id 'com.jfrog.bintray' version '1.6'
 }
 
 // release configuration
@@ -62,6 +68,49 @@ test {
     systemProperty 'intershop.gradle.versions', '2.10,2.11'
 }
 
+task copyAsciiDoc {
+    def outputDir = file("$buildDir/tmp/asciidoctorSrc")
+    def inputFiles = fileTree(dir: rootDir, include: '**/*.asciidoc')
+
+    inputs.files inputFiles
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+
+        copy {
+            from inputFiles
+            into outputDir
+        }
+    }
+}
+
+asciidoctorj {
+    noDefaultRepositories = true
+}
+
+asciidoctor {
+    sourceDir "${buildDir}/tmp/asciidoctorSrc"
+    sources {
+        include 'README.asciidoc'
+    }
+
+    backends 'html5', 'docbook'
+    options doctype : 'article',
+            ruby    : 'erubis'
+    attributes  'latestRevision'     : project.version,
+            'toc':'left',
+            'toclevels':'2',
+            'source-highlighter' : 'coderay',
+            'icons': 'font',
+            'setanchors':'true',
+            'idprefix':'asciidoc_',
+            'idseparator':'-',
+            'docinfo1':'true'
+}
+
+asciidoctor.dependsOn copyAsciiDoc
+
 jacocoTestReport {
     reports {
         xml.enabled = true // coveralls plugin depends on xml format report
@@ -93,6 +142,14 @@ publishing {
                 classifier "javadoc"
             }
 
+            artifact(new File(buildDir, 'asciidoc/html5/README.html')) {
+                classifier 'reference'
+            }
+
+            artifact(new File(buildDir, 'asciidoc/docbook/README.xml')) {
+                classifier = 'docbook'
+            }
+
             pom.withXml {
                 def Node root = asNode();
                 root.appendNode('name', project.name)
@@ -116,6 +173,9 @@ publishing {
     }
 }
 
+publish.dependsOn asciidoctor
+bintrayUpload.dependsOn asciidoctor
+
 pluginBundle {
     website = "https://github.com/IntershopCommunicationsAG/${project.name}"
     vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
@@ -125,18 +185,39 @@ pluginBundle {
     plugins {
         gradleTestPlugin {
             id = 'com.intershop.gradle.scmversion'
-            displayName = 'Gradle SCM Version Plugin'
+            displayName = project.description
         }
-    }
-
-    mavenCoordinates {
-        groupId = project.group
-        artifactId = project.name
-        version = project.version
     }
 }
 
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'maven'
+        name = project.name
+        userOrg = 'intershopcommunicationsag'
 
+        licenses = ['Apache-2.0']
+        vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+
+        desc = project.description
+        websiteUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+        issueTrackerUrl = "https://github.com/IntershopCommunicationsAG/${project.name}/issues"
+
+        labels = ['intershop', 'gradle', 'plugin', 'test']
+        publicDownloadNumbers = true
+
+        version {
+            name = project.version
+            desc = "${project.description} ${project.version}"
+            released  = new Date()
+            vcsTag = project.version
+        }
+
+        publications = ['intershopMvn']
+    }
+}
 
 dependencies {
     compile 'com.intershop.gradle.version:extended-version:1.0.0'

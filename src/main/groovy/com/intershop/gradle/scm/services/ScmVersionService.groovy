@@ -148,7 +148,7 @@ trait ScmVersionService {
         } else {
             if(versionExt.runOnCI) {
                 String baseVer = versionExt.initialVersion
-                switch (versionExt.getSCMVersionExt()) {
+                switch (versionExt.getVersionExt()) {
                     case 'SNAPSHOT':
                         return "${baseVer}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
                         break

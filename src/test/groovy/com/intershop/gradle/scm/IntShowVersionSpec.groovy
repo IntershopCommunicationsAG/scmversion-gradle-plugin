@@ -40,6 +40,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -51,6 +53,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.0.0-LOCAL')
+        result.output.contains('branchname: trunk')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -257,6 +260,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -268,6 +273,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.0.1-LOCAL')
+        result.output.contains('branchname: SB_2.0')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -296,6 +302,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -307,6 +315,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.0.0-fb-123-LOCAL')
+        result.output.contains('branchname: FB_1.0.0-fb-123')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -374,6 +383,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -385,6 +396,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.1.0-LOCAL')
+        result.output.contains('branchname: SBRELEASE_1.1.0')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -526,6 +538,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         println "***previuous version is \${scm.version.previousVersion}***"
 
+        println "branchname: \${scm.version.branchName}"
         """.stripIndent()
 
         when:
@@ -538,6 +551,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.0.0')
         result.output.contains('***previuous version is 1.5.0***')
+        result.output.contains('branchname: CLRELEASE_2.0.0')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -732,6 +746,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
         """.stripIndent()
 
         when:
@@ -743,6 +758,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.1.0-LOCAL')
+        result.output.contains('branchname: master')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -868,6 +884,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -879,6 +897,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('branchname: SB_1.1')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -1006,6 +1025,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
+        println "branchname: \${scm.version.branchName}"
+
         """.stripIndent()
 
         when:
@@ -1017,6 +1038,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.0.0')
+        result.output.contains('branchname: SBRELEASE_2.0.0')
 
         where:
         gradleVersion << supportedGradleVersions
