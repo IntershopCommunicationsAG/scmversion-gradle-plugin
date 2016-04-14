@@ -64,11 +64,13 @@ class VersionExtension extends AbstractExtension {
     // the remote repository
     private final String offlineVersion
 
-    // calculate version
+    // version service
     private ScmVersionService versionService
 
-    // calculate version
+    // cached strings
     private String internalVersion
+    private String internalPreviousVersion
+    private String internalBranchName
 
     /**
      * <p>Digits of the version number</p>
@@ -220,7 +222,7 @@ class VersionExtension extends AbstractExtension {
      * Returns an extension if disableSCM is true
      * @return Value of SCMVERSIONEXT_ENV or SCMVERSIONEXT_PRJ
      */
-    String getSCMVersionExt() {
+    String getVersionExt() {
         String scmext = getVariable(SCMVERSIONEXT_ENV, SCMVERSIONEXT_PRJ, '')
         return scmext.toUpperCase()
     }
@@ -266,7 +268,22 @@ class VersionExtension extends AbstractExtension {
      * @return information with Version and Tag information
      */
     public String getPreviousVersion() {
-        this.getVersionService().getPreviousVersion()
+        if(! internalPreviousVersion) {
+            internalPreviousVersion = this.getVersionService().getPreviousVersion().toString()
+        }
+        return internalPreviousVersion
+    }
+
+    /**
+     * Returns the branch name
+     * @return short branch name
+     */
+    public String getBranchName() {
+        if(! internalBranchName) {
+            String bname = this.getVersionService().getLocalService().branchName
+            internalBranchName = bname.lastIndexOf('/') + 1 < bname.length() ? bname.substring(bname.lastIndexOf('/') + 1) : bname
+        }
+        return internalBranchName
     }
 
     /**

@@ -77,6 +77,7 @@ class SvnVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '2.0.0'
+        versionConfig.getBranchName() == 'trunk'
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -93,6 +94,7 @@ class SvnVersionServiceSpec extends AbstractScmSpec {
         then:
         ! client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.1.0'
+        versionConfig.getBranchName() == 'SB_1.1'
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -109,6 +111,7 @@ class SvnVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '2.0.0'
+        versionConfig.getBranchName() == 'SB_2.0'
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -125,6 +128,7 @@ class SvnVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.0.0-fb-123'
+        versionConfig.getBranchName() == 'FB_1.0.0-fb-123'
     }
 
     @Requires({ System.properties['svnurl'] &&

@@ -73,6 +73,7 @@ For parsing, calculation and sorting a library for an extended version object is
 ----
 
 Therefore branch names must comply with the following patterns. All examples use the default configuration.
+Depending on a special environment configuration (RUNONCI) the build extension is empty or SNAPSHOT, if this setting is true, otherwise it is LOCAL.
 
 ==== Feature Branch
 [source]
@@ -288,6 +289,7 @@ If no value is specified a time stamp will be added. +
 On a local developer machine `'LOCAL'` will be added to the version.
 
 |*version* | `String`    | *initialVersion* | *read only* | Returns the version of the working copy
+|*branchName* | `String` | '' | *read only* | Returns the branch name only (String after last /)
 |*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment variable `SCMVERSIONEXT` or the project variable `scmVersionExt` is used for the return value.
 |*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
 |*previousVersionTag* | `VersionTag` | `null` | *read only* | Returns an object with the previous version and the associated release tag.

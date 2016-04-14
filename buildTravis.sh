@@ -7,7 +7,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
         ./gradlew test build -s
     else
         echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH'] and without Tag'
-        ./gradlew test build publishPlugins -s
+        ./gradlew test build :bintrayUpload :publishPlugins -s
     fi
 else
     if [ "$TRAVIS_TAG" == "" ]; then
@@ -15,6 +15,6 @@ else
         ./gradlew test build -s
     else
         echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH'] and without Tag'
-        ./gradlew test build publishPlugins -s
+        ./gradlew test build :bintrayUpload :publishPlugins -s
     fi
 fi

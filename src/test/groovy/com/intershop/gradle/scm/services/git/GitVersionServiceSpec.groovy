@@ -58,6 +58,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '2.0.0'
+        versionConfig.getBranchName() == 'master'
     }
 
     @Requires({ System.properties['giturl'] &&
@@ -74,6 +75,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.1.0'
+        versionConfig.getBranchName() == 'SB_1.1'
     }
 
     @Requires({ System.properties['giturl'] &&
@@ -90,6 +92,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         ! client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '2.0.0'
+        versionConfig.getBranchName() == 'SBRELEASE_2.0.0'
     }
 
     @Requires({ System.properties['giturl'] &&
@@ -107,6 +110,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '2.0.0'
+        versionConfig.getBranchName() == 'SBRELEASE_2.0.0'
     }
 
     @Requires({ System.properties['giturl'] &&
@@ -123,6 +127,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.1.0'
+        versionConfig.getBranchName() == 'SB_1.1'
     }
 
     @Requires({ System.properties['giturl'] &&
@@ -139,6 +144,7 @@ class GitVersionServiceSpec extends AbstractScmSpec {
         then:
         client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.1.0-test'
+        versionConfig.getBranchName() == 'FB_1.1.0-test'
     }
 
     @Requires({ System.properties['giturl'] &&
