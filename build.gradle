@@ -174,21 +174,6 @@ publishing {
 }
 
 publish.dependsOn asciidoctor
-bintrayUpload.dependsOn asciidoctor
-
-pluginBundle {
-    website = "https://github.com/IntershopCommunicationsAG/${project.name}"
-    vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
-    description = project.description
-    tags = ['intershop', 'gradle', 'plugin', 'test']
-
-    plugins {
-        gradleTestPlugin {
-            id = 'com.intershop.gradle.scmversion'
-            displayName = project.description
-        }
-    }
-}
 
 bintray {
     user = System.getenv('BINTRAY_USER')
@@ -216,6 +201,22 @@ bintray {
         }
 
         publications = ['intershopMvn']
+    }
+}
+
+bintrayUpload.dependsOn asciidoctor
+
+pluginBundle {
+    website = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
+    description = project.description
+    tags = ['intershop', 'gradle', 'plugin', 'test']
+
+    plugins {
+        gradleTestPlugin {
+            id = 'com.intershop.gradle.scmversion'
+            displayName = project.description
+        }
     }
 }
 
