@@ -198,7 +198,7 @@ class VersionExtension extends AbstractExtension {
 
         // init offline version
         if(project.hasProperty('offlineVersion')) {
-            offlineVersion = project.getExtensions().getExtraProperties().get('offlineVersion')
+            offlineVersion = project.property('offlineVersion')
         }
     }
 
