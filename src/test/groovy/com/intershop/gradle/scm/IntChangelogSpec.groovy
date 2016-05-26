@@ -63,6 +63,39 @@ class IntChangelogSpec extends AbstractTaskSpec {
     @Requires({ System.properties['svnurl'] &&
             System.properties['svnuser'] &&
             System.properties['svnpasswd'] })
+    def 'test create changelog for svn without previous version - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/tags/SBRELEASE_1.1.0")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes.tagPrefix = 'SBRELEASE'
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('changelog', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+        File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
+
+        then:
+        result.task(":changelog").outcome == SUCCESS
+        f.exists()
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
     def 'test create changelog for svn with special target version - #gradleVersion'(gradleVersion) {
         given:
         svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
@@ -220,7 +253,40 @@ class IntChangelogSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('changelog', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnuserpwd']}")
+                .withArguments('changelog', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+        File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
+
+        then:
+        result.task(":changelog").outcome == SUCCESS
+        f.exists()
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test create changelog for git without previous version - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes.tagPrefix = 'OLRELEASE'
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('changelog', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')

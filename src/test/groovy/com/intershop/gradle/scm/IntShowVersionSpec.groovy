@@ -38,6 +38,12 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             id 'com.intershop.gradle.scmversion'
         }
 
+        scm {
+            prefixes {
+                tagPrefix = 'ORELEASE'
+            }
+        }
+
         version = scm.version.version
 
         println "branchname: \${scm.version.branchName}"
@@ -75,6 +81,9 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             version {
                 type = 'fourDigits'
                 initialVersion = '1.0.0.0'
+            }
+            prefixes {
+                tagPrefix = 'ORELEASE'
             }
         }
 

@@ -46,15 +46,25 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
     }
 
     void createLog() {
-        VersionTag pvt = versionExt.getPreviousVersionTag(getTargetVersion())
-
-        this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
-
-        Iterable<RevCommit> refs = localService.client.log().addRange(getObjectId(pvt.branchObject.id), getObjectId(localService.getRevID())).call();
-        refs.findAll().each {RevCommit rc ->
-            this.changelogFile.append(getLineMessage(rc.getFullMessage(), rc.getName().substring(0,8)))
-            getFilesInCommit(rc)
+        VersionTag pvt = null
+        try {
+            pvt = versionExt.getPreviousVersionTag(getTargetVersion())
+        } catch(Exception ex) {
+            log.warn(ex.getMessage())
         }
+
+        if(pvt) {
+            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
+
+            Iterable<RevCommit> refs = localService.client.log().addRange(getObjectId(pvt.branchObject.id), getObjectId(localService.getRevID())).call();
+            refs.findAll().each { RevCommit rc ->
+                this.changelogFile.append(getLineMessage(rc.getFullMessage(), rc.getName().substring(0, 8)))
+                getFilesInCommit(rc)
+            }
+        } else {
+            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), 'not available'))
+        }
+        this.changelogFile.append(getFooter())
     }
 
     private void getFilesInCommit(RevCommit commit) {

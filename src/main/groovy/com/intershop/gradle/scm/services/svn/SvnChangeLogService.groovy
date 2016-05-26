@@ -47,38 +47,46 @@ class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogServic
     }
 
     void createLog() {
-        VersionTag pvt = versionExt.getPreviousVersionTag(getTargetVersion())
+        VersionTag pvt = null
+        try {
+            pvt = versionExt.getPreviousVersionTag(getTargetVersion())
+        } catch(Exception ex) {
+            log.warn(ex.getMessage())
+        }
 
-        SvnLogMergeInfo mergeInfo = svnOpFactory.createLogMergeInfo()
+        if(pvt) {
+            SvnLogMergeInfo mergeInfo = svnOpFactory.createLogMergeInfo()
 
-        mergeInfo.addTarget(SvnTarget.fromURL(getVersionBranch(BranchType.tag).appendPath(pvt.branchObject.name, true)))
-        mergeInfo.setSource(SvnTarget.fromURL(localService.url))
+            mergeInfo.addTarget(SvnTarget.fromURL(getVersionBranch(BranchType.tag).appendPath(pvt.branchObject.name, true)))
+            mergeInfo.setSource(SvnTarget.fromURL(localService.url))
 
-        mergeInfo.setDiscoverChangedPaths(true)
-        mergeInfo.setRevisionProperties()
-        mergeInfo.setFindMerged(false)
+            mergeInfo.setDiscoverChangedPaths(true)
+            mergeInfo.setRevisionProperties()
+            mergeInfo.setFindMerged(false)
 
-        String strURL = localService.projectRootSvnUrl.toString()
-        int pos = strURL.lastIndexOf('/')
-        String svnProjectName = strURL.substring(pos)
+            String strURL = localService.projectRootSvnUrl.toString()
+            int pos = strURL.lastIndexOf('/')
+            String svnProjectName = strURL.substring(pos)
 
-        this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
+            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
 
-        mergeInfo.setReceiver(new ISvnObjectReceiver<SVNLogEntry>() {
-            @Override
-            void receive(SvnTarget svnTarget, SVNLogEntry logEntry) throws SVNException {
-                SvnChangeLogService.this.changelogFile.append(getLineMessage(logEntry.message, Long.toString(logEntry.revision)))
-                logEntry.changedPaths.each { String s, SVNLogEntryPath p ->
-                    if(s.contains(svnProjectName) || ! filterProject) {
-                        SvnChangeLogService.this.changelogFile.append(
-                                getLineChangedFile(filterProject ? s.substring(s.indexOf(svnProjectName)) : s,
-                                Character.toString(p.getType())))
+            mergeInfo.setReceiver(new ISvnObjectReceiver<SVNLogEntry>() {
+                @Override
+                void receive(SvnTarget svnTarget, SVNLogEntry logEntry) throws SVNException {
+                    SvnChangeLogService.this.changelogFile.append(getLineMessage(logEntry.message, Long.toString(logEntry.revision)))
+                    logEntry.changedPaths.each { String s, SVNLogEntryPath p ->
+                        if (s.contains(svnProjectName) || !filterProject) {
+                            SvnChangeLogService.this.changelogFile.append(
+                                    getLineChangedFile(filterProject ? s.substring(s.indexOf(svnProjectName)) : s,
+                                            Character.toString(p.getType())))
+                        }
                     }
                 }
-            }
-        })
-        mergeInfo.run()
-
+            })
+            mergeInfo.run()
+        } else {
+            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), 'not available'))
+        }
         this.changelogFile.append(getFooter())
     }
 
