@@ -54,11 +54,11 @@ class ToVersion extends DefaultTask {
         String feature = ''
 
         if(project.hasProperty(VERSION_PROPNAME)) {
-            targetVersion = project.properties[VERSION_PROPNAME]
+            targetVersion = project.property(VERSION_PROPNAME)
             log.debug('Version is {}', targetVersion)
         }
         if(project.hasProperty(FEATURE_RPOPNAME)) {
-            feature = project.properties[FEATURE_RPOPNAME]
+            feature = project.property(FEATURE_RPOPNAME)
             log.debug('Feature is {}', feature)
         }
 

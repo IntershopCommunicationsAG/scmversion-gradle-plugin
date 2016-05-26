@@ -38,6 +38,12 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             id 'com.intershop.gradle.scmversion'
         }
 
+        scm {
+            prefixes {
+                tagPrefix = 'ORELEASE'
+            }
+        }
+
         version = scm.version.version
 
         println "branchname: \${scm.version.branchName}"
@@ -75,6 +81,9 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             version {
                 type = 'fourDigits'
                 initialVersion = '1.0.0.0'
+            }
+            prefixes {
+                tagPrefix = 'ORELEASE'
             }
         }
 
@@ -436,6 +445,82 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.1.0')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task with svn tag from feauture branch on CI server - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/tags/RELEASE_1.0.0-fb-123-dev1")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'RELEASE'
+            }
+
+            //version {
+            //    versionBranch = 'branch'
+            //}
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-fb-123-dev1')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task with svn tag from feauture branch with short version number on CI server - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/tags/RELEASE_1-fb-123-dev1")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'RELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-fb-123-dev1')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -1295,4 +1380,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         where:
         gradleVersion << supportedGradleVersions
     }
+
+
 }

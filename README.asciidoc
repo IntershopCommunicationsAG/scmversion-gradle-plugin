@@ -1,7 +1,6 @@
 = SCM Version Plugin
-:latestRevision: 1.0.4
+:latestRevision: 1.0.5
 :toc:
-:sectnums:
 
 == Summary
 Based on the used SCM (Source Control Management) this plugin provides project configuration handling and specific tasks regarding the version handling of the project.
@@ -303,7 +302,7 @@ On a local developer machine `'LOCAL'` will be added to the version.
 |*previousVersion*        |`String`|*version.previousVersion* | Any version with tag for change log calculation. +
 It is possible to override the value with the enviroment variable `PREV_VERSION`
 |*changelogFile*        |`File`  |`<buildDir>/changelog/ +
-changelog.asciidoc`| The change log will be written to this file.
+changelog.asciidoc`| The change log will be written to this file. The log file is empty, if the previous version does not exists.
 |*filterProject*        |`boolean`| `false` | Filter changed files for projects (first folder in changed files must be identical to last folder of project svn url)
 |===
 

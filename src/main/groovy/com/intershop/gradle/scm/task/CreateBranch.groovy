@@ -58,8 +58,8 @@ class CreateBranch extends DefaultTask {
         Version version = versionService.getPreVersion()
         boolean isFeatureBranch = false
 
-        if(project.hasProperty(PROPNAME) && project.properties[PROPNAME]) {
-            String feature = project.properties[PROPNAME]
+        if(project.hasProperty(PROPNAME) && project.property(PROPNAME)) {
+            String feature = project.property(PROPNAME)
             if(versionService.localService.branchType == BranchType.branch || versionService.localService.branchType == BranchType.featureBranch) {
                 version = versionService.getPreVersion()
             }
