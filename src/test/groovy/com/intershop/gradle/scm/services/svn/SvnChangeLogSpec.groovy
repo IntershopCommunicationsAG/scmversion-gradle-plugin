@@ -21,7 +21,6 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.test.utils.AbstractScmSpec
 import com.intershop.gradle.test.util.TestDir
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -129,8 +128,7 @@ class SvnChangeLogSpec extends AbstractScmSpec{
         scls.createLog()
 
         then:
-        def e = thrown(GradleException)
-        e.message == 'The configured previous version is not available! Please check your configuration.'
+        testLog.exists()
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -150,8 +148,7 @@ class SvnChangeLogSpec extends AbstractScmSpec{
         scls.createLog()
 
         then:
-        def e = thrown(GradleException)
-        e.message == 'There is no previous version! Please check your configuration.'
+        testLog.exists()
     }
 
     private Project prepareProject(String path) {
