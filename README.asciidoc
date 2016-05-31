@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 1.0.5
+:latestRevision: 1.1.1
 :toc:
 
 == Summary
