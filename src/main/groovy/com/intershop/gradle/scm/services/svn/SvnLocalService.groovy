@@ -135,7 +135,7 @@ class SvnLocalService extends ScmLocalService {
         svnStatus.setReceiver(new ISvnObjectReceiver<SvnStatus>() {
             public void receive(SvnTarget target, SvnStatus status) throws SVNException {
                 if(status.nodeStatus.getID() != SVNStatusType.STATUS_NORMAL || status.nodeStatus.getID() != SVNStatusType.STATUS_IGNORED) {
-                    log.info('Local changes detected: \n {}', status.changelist)
+                    log.info('SVN: Local changes detected: \n {}', status.changelist)
                     changed = true
                 }
             }

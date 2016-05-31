@@ -1052,6 +1052,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('This file is not indexed new.properties')
 
         where:
         gradleVersion << supportedGradleVersions
