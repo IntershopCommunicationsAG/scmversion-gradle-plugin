@@ -106,6 +106,29 @@ class GitLocalService extends ScmLocalService{
         Status status = gitClient.status().call()
 
         changed = status.untracked.size() > 0 || status.uncommittedChanges.size() > 0 || status.removed.size() > 0 || status.added.size() > 0 || status.changed.size() > 0 || status.modified.size() > 0
+
+        if(log.infoEnabled && changed) {
+            if(status.untracked.size() > 0) {
+                status.untracked.each {
+                    log.info('GIT: This file is not indexed {}', it)
+                }
+                status.removed.each {
+                    log.info('GIT: This file is deleted {}', it)
+                }
+                status.added.each {
+                    log.info('GIT: This file is added {}', it)
+                }
+                status.changed.each {
+                    log.info('GIT: This file is changed {}', it)
+                }
+                status.modified.each {
+                    log.info('GIT: This file is modified {}', it)
+                }
+                status.uncommittedChanges.each {
+                    log.info('GIT: This file is uncommitted {}', it)
+                }
+            }
+        }
     }
 
     private String checkHeadForTag() {
