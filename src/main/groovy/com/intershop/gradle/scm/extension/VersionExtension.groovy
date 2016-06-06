@@ -19,6 +19,7 @@ import com.intershop.gradle.scm.builder.ScmBuilder
 import com.intershop.gradle.scm.services.ScmVersionService
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.version.VersionTag
+import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -269,7 +270,8 @@ class VersionExtension extends AbstractExtension {
      */
     public String getPreviousVersion() {
         if(! internalPreviousVersion) {
-            internalPreviousVersion = this.getVersionService().getPreviousVersion().toString()
+            Version prevVersion = this.getVersionService().getPreviousVersion()
+            internalPreviousVersion = prevVersion ? prevVersion.toString() : ''
         }
         return internalPreviousVersion
     }
