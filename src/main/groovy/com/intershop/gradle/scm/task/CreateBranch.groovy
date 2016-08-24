@@ -25,10 +25,6 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-
-import static org.gradle.logging.StyledTextOutput.Style.Header
 /**
  * <p>Gradle task 'branch'</p>
  * <p>It creates a branch on the SCM based on the SCM remote client. It is
@@ -67,19 +63,23 @@ class CreateBranch extends DefaultTask {
             isFeatureBranch = true
         }
 
+        String newRev = ''
         try {
-            String newRev = versionService.createBranch(version.toStringFor(versionConfig.patternDigits), isFeatureBranch)
-
-            if (!newRev) {
-                log.error('It is not possible to create a branch!')
-                throw new GradleException('It is not possible to create a branch on the SCM!')
-            } else {
-                StyledTextOutput output = services.get(StyledTextOutputFactory).create(CreateTag)
-                output.withStyle(Header).println('')
-                output.withStyle(Header).println("Branch created: ${version}")
-            }
+            newRev = versionService.createBranch(version.toStringFor(versionConfig.patternDigits), isFeatureBranch)
         }catch (Exception ex) {
             throw new GradleException("It is not possible to create a branch on the SCM! (${ex.message})")
+        }
+
+        doLast {
+            if (!newRev) {
+                log.error('It is not possible to create a tag!')
+                throw new GradleException('It is not possible to create a tag on the SCM!')
+            } else {
+                println '----------------------------------------------'
+                println ''
+                println "Branch created: ${version}"
+                println '----------------------------------------------'
+            }
         }
     }
 }

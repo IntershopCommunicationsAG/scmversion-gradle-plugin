@@ -25,11 +25,6 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-
-import static org.gradle.logging.StyledTextOutput.Style.Header
-
 /**
  * <p>Gradle task 'tag'</p>
  * <p>It creates a tag on the SCM based on the SCM remote client. It is
@@ -54,19 +49,23 @@ class CreateTag extends DefaultTask {
         }
 
         String version = versionService.getPreVersion().toString()
+        String newRev = ''
         try {
-            String newRev = versionService.createTag(version)
+            newRev = versionService.createTag(version)
+        } catch (ScmException se) {
+            throw new GradleException(se.getMessage())
+        }
 
+        doLast {
             if (!newRev) {
                 log.error('It is not possible to create a tag!')
                 throw new GradleException('It is not possible to create a tag on the SCM!')
             } else {
-                StyledTextOutput output = services.get(StyledTextOutputFactory).create(CreateTag)
-                output.withStyle(Header).println('')
-                output.withStyle(Header).println("Tag created: ${version}")
+                println '----------------------------------------------'
+                println ''
+                println "Tag created: ${version}"
+                println '----------------------------------------------'
             }
-        } catch (ScmException se) {
-            throw new GradleException(se.getMessage())
         }
     }
 }
