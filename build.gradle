@@ -9,7 +9,7 @@ plugins {
     id 'idea'
 
     // intershop test plugin
-    id 'com.intershop.gradle.test' version '1.0.0'
+    id 'com.intershop.gradle.test' version '2.0.0'
 
     // plugin for documentation
     id 'org.asciidoctor.convert' version '1.5.3'
@@ -27,10 +27,10 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '1.3.0'
+version = '2.0.0'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 // set correct project status
 if (project.version.endsWith('-SNAPSHOT')) {
@@ -65,7 +65,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.10,2.11'
+    systemProperty 'intershop.gradle.versions', '2.11,3.0'
 }
 
 task copyAsciiDoc {
@@ -221,7 +221,7 @@ pluginBundle {
 }
 
 dependencies {
-    compile 'com.intershop.gradle.version:extended-version:1.0.1'
+    compile 'com.intershop.gradle.version:extended-version:2.0.0'
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
@@ -231,7 +231,13 @@ dependencies {
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
-    compile 'org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r'
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    runtime 'org.apache.httpcomponents:httpclient:4.4.1'
+    runtime 'org.slf4j:slf4j-api:1.7.10'
 
     testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude group: 'org.codehaus.groovy'
