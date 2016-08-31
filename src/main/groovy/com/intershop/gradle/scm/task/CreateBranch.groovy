@@ -70,16 +70,16 @@ class CreateBranch extends DefaultTask {
             throw new GradleException("It is not possible to create a branch on the SCM! (${ex.message})")
         }
 
-        doLast {
-            if (!newRev) {
-                log.error('It is not possible to create a tag!')
-                throw new GradleException('It is not possible to create a tag on the SCM!')
-            } else {
-                println '----------------------------------------------'
-                println ''
-                println "Branch created: ${version}"
-                println '----------------------------------------------'
-            }
+        if (!newRev) {
+            log.error('It is not possible to create a tag!')
+            throw new GradleException('It is not possible to create a tag on the SCM!')
+        } else {
+            String output= """
+                ----------------------------------------------
+                        Branch created: ${version}
+                ----------------------------------------------""".stripIndent()
+
+            println output
         }
     }
 }

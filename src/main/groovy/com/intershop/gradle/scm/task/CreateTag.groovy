@@ -56,16 +56,16 @@ class CreateTag extends DefaultTask {
             throw new GradleException(se.getMessage())
         }
 
-        doLast {
-            if (!newRev) {
-                log.error('It is not possible to create a tag!')
-                throw new GradleException('It is not possible to create a tag on the SCM!')
-            } else {
-                println '----------------------------------------------'
-                println ''
-                println "Tag created: ${version}"
-                println '----------------------------------------------'
-            }
+        if (!newRev) {
+            log.error('It is not possible to create a tag!')
+            throw new GradleException('It is not possible to create a tag on the SCM!')
+        } else {
+            String output= """
+                ----------------------------------------------
+                    Tag created: ${version}
+                ----------------------------------------------""".stripIndent()
+
+            println output
         }
     }
 }

@@ -40,11 +40,12 @@ class ShowVersion extends DefaultTask {
         String version = versionConfig.getVersion()
         log.debug('Version is {}', version)
 
-        doLast {
-            println '----------------------------------------------'
-            println ''
-            println "Project version: ${version}"
-            println '----------------------------------------------'
-        }
+
+        String output= """
+            ----------------------------------------------
+                Project version: ${version}
+            ----------------------------------------------""".stripIndent()
+
+        println output
     }
 }
