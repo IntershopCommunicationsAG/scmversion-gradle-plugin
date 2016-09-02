@@ -21,10 +21,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-
-import static org.gradle.logging.StyledTextOutput.Style.Header
 /**
  * <p>Gradle task 'showVersion'</p>
  * <p>It shows the calculated version from the SCM.</p>
@@ -44,8 +40,12 @@ class ShowVersion extends DefaultTask {
         String version = versionConfig.getVersion()
         log.debug('Version is {}', version)
 
-        StyledTextOutput output = services.get(StyledTextOutputFactory).create(ShowVersion)
-        output.withStyle(Header).println('')
-        output.withStyle(Header).println("Project version: ${version}")
+
+        String output= """
+            ----------------------------------------------
+                Project version: ${version}
+            ----------------------------------------------""".stripIndent()
+
+        println output
     }
 }
