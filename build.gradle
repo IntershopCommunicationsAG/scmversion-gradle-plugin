@@ -9,7 +9,7 @@ plugins {
     id 'idea'
 
     // intershop test plugin
-    id 'com.intershop.gradle.test' version '2.0.0'
+    id 'com.intershop.gradle.test' version '2.1.0'
 
     // plugin for documentation
     id 'org.asciidoctor.convert' version '1.5.3'
@@ -27,7 +27,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.0.0'
+version = '2.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -65,7 +65,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.11,3.0,3.1'
+    systemProperty 'intershop.gradle.versions', '2.11,3.1'
 }
 
 task copyAsciiDoc {
