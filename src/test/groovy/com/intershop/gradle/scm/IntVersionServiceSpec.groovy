@@ -17,9 +17,13 @@ package com.intershop.gradle.scm
 
 import com.intershop.gradle.scm.test.utils.AbstractTaskSpec
 import spock.lang.Requires
+import groovy.util.logging.Slf4j
+import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
+@Slf4j
+@Unroll
 class IntVersionServiceSpec extends AbstractTaskSpec {
 
     @Requires({ System.properties['svnurl'] &&
