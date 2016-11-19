@@ -9,7 +9,7 @@ plugins {
     id 'idea'
 
     // intershop test plugin
-    id 'com.intershop.gradle.test' version '2.1.0'
+    id 'com.intershop.gradle.test' version '2.2.0'
 
     // plugin for documentation
     id 'org.asciidoctor.convert' version '1.5.3'
@@ -18,19 +18,19 @@ plugins {
     id 'maven-publish'
 
     // plugin for publishing to Gradle Portal
-    id 'com.gradle.plugin-publish' version '0.9.4'
+    id 'com.gradle.plugin-publish' version '0.9.6'
 
     // plugin for publishing to jcenter
-    id 'com.jfrog.bintray' version '1.6'
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.1.0'
+version = '2.2.0'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 // set correct project status
 if (project.version.endsWith('-SNAPSHOT')) {
@@ -221,17 +221,17 @@ pluginBundle {
 }
 
 dependencies {
-    compile 'com.intershop.gradle.version:extended-version:1.1.0'
+    compile 'com.intershop.gradle.version:extended-version:1.2.0'
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
-    compile('org.tmatesoft.svnkit:svnkit:1.8.12') {
+    compile('org.tmatesoft.svnkit:svnkit:1.8.14') {
         exclude group: 'net.java.dev.jna'
     }
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
-    compile('org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r') {
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
