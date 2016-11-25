@@ -227,7 +227,9 @@ dependencies {
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
     compile('org.tmatesoft.svnkit:svnkit:1.8.14') {
         exclude group: 'net.java.dev.jna'
+        exclude group: 'com.trilead', module: 'trilead-ssh2'
     }
+    compile 'com.trilead:trilead-ssh2:1.0.0-build220'
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
