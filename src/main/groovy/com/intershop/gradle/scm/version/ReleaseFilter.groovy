@@ -31,7 +31,7 @@ class ReleaseFilter extends AbstractBranchFilter {
     private def regexPattern
 
     ReleaseFilter(PrefixConfig prefixConfig, Version sourceVersion) {
-        String patternString = "^${prefixConfig.getPrefix(BranchType.tag)}${prefixConfig.getPrefixSeperator()}"
+        String patternString = "^${prefixConfig.getPrefix(BranchType.tag)}${prefixConfig.getTagPrefixSeperator() ?: prefixConfig.getPrefixSeperator()}"
         if(sourceVersion.getNormalVersion().getVersionType() == VersionType.threeDigits) {
             patternString += threeDigitsFilter
         } else {

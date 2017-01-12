@@ -309,6 +309,12 @@ trait ScmVersionService {
      * @return
      */
     String getBranchName(BranchType type, String version) {
+        if(type == BranchType.tag && localService.prefixes.tagPrefixSeperator) {
+            return "${localService.prefixes.getPrefix(type)}${localService.prefixes.tagPrefixSeperator}${version}"
+        }
+        if((type == BranchType.branch || type == BranchType.featureBranch) && localService.prefixes.branchPrefixSeperator ) {
+            return "${localService.prefixes.getPrefix(type)}${localService.prefixes.branchPrefixSeperator}${version}"
+        }
         return "${localService.prefixes.getPrefix(type)}${localService.prefixes.prefixSeperator}${version}"
     }
 }
