@@ -79,11 +79,24 @@ class PrefixConfig {
     String prefixSeperator = '_'
 
     /**
+     * Separator between prefix and version for branches.
+     */
+    String branchPrefixSeperator = null
+
+    /**
+     * Separator between prefix and version for tags.
+     */
+    String tagPrefixSeperator = null
+
+    /**
      * Creates a search pattern for feature branches.
      *
      * @return Search pattern for feature branches.
      */
     public String getFeatureBranchPattern() {
+        if(branchPrefixSeperator) {
+            return "${featurePrefix}${branchPrefixSeperator}${featureBranchPatternSuffix}"
+        }
         return "${featurePrefix}${prefixSeperator}${featureBranchPatternSuffix}"
     }
 

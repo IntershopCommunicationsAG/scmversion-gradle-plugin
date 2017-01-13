@@ -65,7 +65,16 @@ class ScmBranchFilter extends AbstractBranchFilter {
             if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}" }
         }
 
-        String patternString = "^${this.prefixes.getPrefix(versionBranchtype)}${prefixes.getPrefixSeperator()}("
+        String patternString = "^${this.prefixes.getPrefix(versionBranchtype)}"
+
+        if((versionBranchtype == BranchType.branch || versionBranchtype.featureBranch) && prefixes.getBranchPrefixSeperator()) {
+            patternString += "${prefixes.getBranchPrefixSeperator()}("
+        } else if(versionBranchtype == BranchType.tag && prefixes.getTagPrefixSeperator()) {
+            patternString += "${prefixes.getTagPrefixSeperator()}("
+        } else {
+            patternString += "${prefixes.getPrefixSeperator()}("
+        }
+
         patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
 
         switch (versionBranchtype) {
