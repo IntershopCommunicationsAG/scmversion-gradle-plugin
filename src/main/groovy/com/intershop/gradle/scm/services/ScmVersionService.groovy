@@ -298,7 +298,7 @@ trait ScmVersionService {
      */
     public ScmBranchFilter getBranchFilter(BranchType type) {
         BranchType bt = type != null ? type : versionExt.getVersionBranchType()
-        return new ScmBranchFilter(bt, localService.prefixes, localService.branchName, localService.featureBranchName, versionExt.getPatternDigits())
+        return new ScmBranchFilter(bt, localService.prefixes, localService.branchName, localService.branchType, localService.featureBranchName, versionExt.getPatternDigits())
     }
 
     /**
