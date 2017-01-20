@@ -29,8 +29,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
     /**
      * Search pattern for all branches and tags with version information.
      */
-    private static final def trunkregex =/_(\d+(\.\d+)?(\.\d+)?(\.\d+)?)(${Version.METADATA_SEPARATOR}(\w+\.?\d+))?/
-    private static final def versionregex =/_(\d+(\.\d+)?(\.\d+)?(\.\d+)?)/
+    private static final String versionregex = '(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)'
 
     // regex pattern will be created with some predefined variables
     private def regexPattern
@@ -48,16 +47,26 @@ class ScmBranchFilter extends AbstractBranchFilter {
      * @param featureBranch feature branch key (default: '')
      * @param patternDigits number of digits for the filter (default: 2)
      */
-    ScmBranchFilter(BranchType versionBranchtype, PrefixConfig prefixes, String branchFilterName = '', String featureBranch = '', int patternDigits = 2) {
+    ScmBranchFilter(BranchType versionBranchtype, PrefixConfig prefixes, String branchFilterName = '', BranchType branchFilterType , String featureBranch = '', int patternDigits = 2) {
         String[] vdata = new String[4]
         this.prefixes = prefixes
 
         log.debug("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
 
-        def m = branchFilterName =~ versionregex
-        if(m.getCount()) {
-            String tv = m[0][1]
-            vdata = tv.split('\\.')
+        if(branchFilterName) {
+            String branchFilterNamePattern = ''
+
+            branchFilterNamePattern += branchFilterType == BranchType.branch && prefixes.getBranchPrefixSeperator() ? prefixes.getBranchPrefixSeperator() : ''
+            branchFilterNamePattern += branchFilterType == BranchType.tag && prefixes.getTagPrefixSeperator() ? prefixes.getTagPrefixSeperator() : ''
+            branchFilterNamePattern += !prefixes.getTagPrefixSeperator() && !prefixes.getBranchPrefixSeperator() ? prefixes.getPrefixSeperator() : ''
+
+            branchFilterNamePattern += versionregex
+            def m = branchFilterName =~ /${branchFilterNamePattern}/
+
+            if(m.getCount()) {
+                String tv = m[0][1]
+                vdata = tv.split('\\.')
+            }
         }
 
         List dp = ['\\d+', '(\\.\\d+)?', '(\\.\\d+)?', '(\\.\\d+)?' ]
