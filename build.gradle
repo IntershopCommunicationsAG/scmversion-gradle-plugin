@@ -65,7 +65,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.11,3.2'
+    systemProperty 'intershop.gradle.versions', '2.11,3.4'
 }
 
 task copyAsciiDoc {
@@ -221,11 +221,11 @@ pluginBundle {
 }
 
 dependencies {
-    compile 'com.intershop.gradle.version:extended-version:1.2.0'
+    compile 'com.intershop.gradle.version:extended-version:1.3.0'
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
-    compile('org.tmatesoft.svnkit:svnkit:1.8.14') {
+    compile('org.tmatesoft.svnkit:svnkit:1.8.15') {
         exclude group: 'net.java.dev.jna'
         exclude group: 'com.trilead', module: 'trilead-ssh2'
     }
@@ -233,7 +233,7 @@ dependencies {
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
-    compile('org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r') {
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.6.0.201612231935-r') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
