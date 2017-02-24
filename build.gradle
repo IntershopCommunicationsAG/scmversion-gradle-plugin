@@ -233,7 +233,7 @@ dependencies {
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
-    compile('org.eclipse.jgit:org.eclipse.jgit:4.6.0.201612231935-r') {
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
