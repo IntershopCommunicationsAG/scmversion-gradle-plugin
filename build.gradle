@@ -27,7 +27,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.3.3'
+version = '2.3.4'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -65,7 +65,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.11,3.2'
+    systemProperty 'intershop.gradle.versions', '2.11,3.4'
 }
 
 task copyAsciiDoc {
@@ -221,11 +221,11 @@ pluginBundle {
 }
 
 dependencies {
-    compile 'com.intershop.gradle.version:extended-version:1.2.0'
+    compile 'com.intershop.gradle.version:extended-version:1.3.0'
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
-    compile('org.tmatesoft.svnkit:svnkit:1.8.14') {
+    compile('org.tmatesoft.svnkit:svnkit:1.8.15') {
         exclude group: 'net.java.dev.jna'
         exclude group: 'com.trilead', module: 'trilead-ssh2'
     }
