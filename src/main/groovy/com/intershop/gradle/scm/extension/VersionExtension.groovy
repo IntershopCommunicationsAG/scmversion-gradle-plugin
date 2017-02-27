@@ -43,6 +43,11 @@ import org.gradle.api.Project
 @Slf4j
 class VersionExtension extends AbstractExtension {
 
+    // Directory in the build directory for static version
+    private final static String SCMVERSIONDIR = 'scmversion'
+    // file name for file with a static version
+    private final static String STATICVERSIONFILE = 'static.version'
+
     // settings for environment configuration
     // dry run
     public final static String DRYRUN_ENV = 'DRYRUN'
@@ -64,6 +69,11 @@ class VersionExtension extends AbstractExtension {
     // system is offline without any connection to
     // the remote repository
     private final String offlineVersion
+
+    // variable for a project specific static version
+    // this version is taken from a file and without
+    // any connection to the version control system
+    private final String staticVersion
 
     // version service
     private ScmVersionService versionService
@@ -201,6 +211,20 @@ class VersionExtension extends AbstractExtension {
         if(project.hasProperty('offlineVersion')) {
             offlineVersion = project.property('offlineVersion')
         }
+
+        File staticVersionFile = new File(project.buildDir, "${SCMVERSIONDIR}/${STATICVERSIONFILE}")
+        if(project.hasProperty('staticVersion')) {
+            String sv = project.property('staticVersion').toString()
+            if(sv) {
+                staticVersionFile.getParentFile().mkdirs()
+                staticVersionFile.setText(sv)
+            } else {
+                staticVersionFile.delete()
+            }
+        }
+        if(staticVersionFile.exists()) {
+            staticVersion = staticVersionFile.text.trim()
+        }
     }
 
     /**
@@ -255,12 +279,14 @@ class VersionExtension extends AbstractExtension {
     public String getVersion() {
         if(offlineVersion) {
             return offlineVersion
-        } else {
-            if (! internalVersion) {
-                internalVersion = this.getVersionService().version
-            }
-            return internalVersion
         }
+        if(staticVersion) {
+            return staticVersion
+        }
+        if (! internalVersion) {
+            internalVersion = this.getVersionService().version
+        }
+        return internalVersion
     }
 
     /**
