@@ -29,6 +29,99 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     @Requires({ System.properties['svnurl'] &&
             System.properties['svnuser'] &&
             System.properties['svnpasswd'] })
+    def 'test static version property'() {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+            id 'java'
+        }
+
+        scm {
+            prefixes {
+                tagPrefix = 'ORELEASE'
+            }
+        }
+
+        version = scm.version.version
+
+        println "version is : \${scm.version.version}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', "-PstaticVersion=FBNAMEVER")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: FBNAMEVER')
+        result.output.contains('version is : FBNAMEVER')
+
+        when:
+        def resultwop = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace')
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        resultwop.task(":showVersion").outcome == SUCCESS
+        resultwop.output.contains('Project version: FBNAMEVER')
+        resultwop.output.contains('version is : FBNAMEVER')
+
+        when:
+        def resultsvn = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', "-PstaticVersion=")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        resultsvn.task(":showVersion").outcome == SUCCESS
+        resultsvn.output.contains('Project version: 1.0.0-LOCAL')
+        resultsvn.output.contains('version is : 1.0.0-LOCAL')
+
+        when:
+        def resultn = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', "-PstaticVersion=FBNAMEVER")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        resultn.task(":showVersion").outcome == SUCCESS
+        resultn.output.contains('Project version: FBNAMEVER')
+        resultn.output.contains('version is : FBNAMEVER')
+
+        when:
+        def resultc = getPreparedGradleRunner()
+                .withArguments('clean', '--stacktrace')
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        resultc.task(":clean").outcome == SUCCESS
+
+        when:
+        def resultv = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace')
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        resultv.task(":showVersion").outcome == SUCCESS
+        resultv.output.contains('Project version: 1.0.0-LOCAL')
+        resultv.output.contains('version is : 1.0.0-LOCAL')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
     def 'test showVersion task with svn trunk - default version - #gradleVersion'(gradleVersion) {
         given:
         svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")

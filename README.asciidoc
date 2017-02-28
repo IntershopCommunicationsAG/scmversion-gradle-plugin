@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 2.3.0
+:latestRevision: 2.3.5
 :toc:
 
 == Summary
@@ -47,6 +47,7 @@ This implementation depends on SVNKit 1.8. Therefore an installed SVN client 1.8
 ====
 
 === Configuration Without Remote Access
+==== Configuration with a Project Property
 If there is no access to a remote repository, it is possible to specify a version string as project property `offlineVersion` (see above)
 
 [source]
@@ -54,7 +55,31 @@ If there is no access to a remote repository, it is possible to specify a versio
 gradlew -PofflineVersion=9.9.0.0-LOCAL publish
 ----
 This will add the version '9.9.0.0-LOCAL' to your project. It is possible to add this property also to the
-gradle.properties file in the Gradle user home.
+gradle.properties file in the Gradle user home. In this case all projects with this applied
+plugin uses the same version.
+
+==== Configuration with a Static Version
+This configuration is also working without any remote access, but project specific, because the replacement for
+the version information is stored in the build directory of the project. If
+`<project build dir>/scmversion/static.version` exists and the content is not empty,
+ the content of this is used for the version.
+
+If the first call of a project task is started with a parameter `staticVersion` and a
+version information, the file will be created with the version information.
+
+[source]
+----
+gradlew -PstaticVersion=TRUNKVER publish
+----
+This will set the version to `TRUNKVER`. The project runs now always with this version.
+It is possible to remove this configuration with an empty string for `staticVersion` or
+if exists with the task `clean`.
+
+[source]
+----
+gradlew -PstaticVersion= publish
+----
+This command will reset the version to the standard behaviour.
 
 CAUTION: This version will be published to the specified repository and can be used by other processes!
 
