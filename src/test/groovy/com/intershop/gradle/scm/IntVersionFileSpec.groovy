@@ -49,7 +49,7 @@ class IntVersionFileSpec extends AbstractTaskSpec {
         when:
         def result = getPreparedGradleRunner()
                 .withArguments('showVersion', '--stacktrace')
-                .withPluginClasspath(pluginClasspath)
+                .withGradleVersion(gradleVersion)
                 .build()
 
         then:
@@ -87,7 +87,7 @@ class IntVersionFileSpec extends AbstractTaskSpec {
         when:
         def result = getPreparedGradleRunner()
                 .withArguments('showVersion', '--stacktrace')
-                .withPluginClasspath(pluginClasspath)
+                .withGradleVersion(gradleVersion)
                 .build()
 
         then:

@@ -158,7 +158,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -168,7 +168,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('release', '-PrunOnCI=true', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

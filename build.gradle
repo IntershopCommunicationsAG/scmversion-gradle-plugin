@@ -8,9 +8,6 @@ plugins {
     // ide plugin
     id 'idea'
 
-    // intershop test plugin
-    id 'com.intershop.gradle.test' version '2.2.0'
-
     // plugin for documentation
     id 'org.asciidoctor.convert' version '1.5.3'
 
@@ -27,7 +24,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.3.5'
+version = '3.0.0'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -65,7 +62,9 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.11,3.4'
+    systemProperty 'intershop.gradle.versions', '4.0'
+    //working dir for tests
+    systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
 }
 
 task copyAsciiDoc {
@@ -233,7 +232,7 @@ dependencies {
     runtime 'net.java.dev.jna:jna:3.2.7'
 
     //jgit
-    compile('org.eclipse.jgit:org.eclipse.jgit:4.5.0.201609210915-r') {
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.8.0.201706111038-r') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
@@ -241,9 +240,9 @@ dependencies {
     runtime 'org.apache.httpcomponents:httpclient:4.4.1'
     runtime 'org.slf4j:slf4j-api:1.7.10'
 
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
-        exclude group: 'org.codehaus.groovy'
-    }
+    testCompile 'com.intershop.gradle.test:test-gradle-plugin:3.0.0'
+    testCompile gradleTestKit()
+
     testCompile 'commons-io:commons-io:2.2'
 }
 
