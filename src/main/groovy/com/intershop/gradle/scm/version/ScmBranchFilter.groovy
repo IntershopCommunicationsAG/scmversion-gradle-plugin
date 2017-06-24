@@ -126,7 +126,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
         def m = test =~ regexPattern
 
         if(m.matches() && m.count == 1 && (m[0] as List).size() > 0) {
-            return test.substring(test.indexOf(((m[0] as List)[1]).toString().toInteger()))
+            return test.substring(test.indexOf(((m[0] as List)[1]).toString()))
         }
 
         return ''

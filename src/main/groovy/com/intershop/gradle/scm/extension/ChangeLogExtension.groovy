@@ -47,8 +47,8 @@ class ChangeLogExtension extends AbstractExtension {
         targetVersion.get()
     }
 
-    void setTargetVersion(String message) {
-        this.targetVersion.set(message)
+    void setTargetVersion(String targetVersion) {
+        this.targetVersion.set(targetVersion)
     }
 
     final PropertyState<File> changelogFile
@@ -89,9 +89,9 @@ class ChangeLogExtension extends AbstractExtension {
     ChangeLogExtension(Project project) {
         super(project)
 
-
-
-
+        targetVersion = project.property(String)
+        changelogFile = project.property(File)
+        filterProject = project.property(Boolean)
     }
 
 
