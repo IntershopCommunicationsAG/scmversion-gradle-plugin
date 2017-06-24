@@ -38,7 +38,7 @@ class CreateBranch extends DefaultTask {
 
     public final static String PROPNAME = 'feature'
 
-    public CreateBranch() {
+    CreateBranch() {
         this.outputs.upToDateWhen { false }
     }
 
@@ -70,7 +70,7 @@ class CreateBranch extends DefaultTask {
             throw new GradleException("It is not possible to create a branch on the SCM! (${ex.message})")
         }
 
-        if (!newRev) {
+        if (! newRev) {
             log.error('It is not possible to create a tag!')
             throw new GradleException('It is not possible to create a tag on the SCM!')
         } else {

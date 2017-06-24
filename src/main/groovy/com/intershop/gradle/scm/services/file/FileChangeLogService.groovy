@@ -21,11 +21,13 @@ import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.ScmKey
+import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.ScmUser
 import groovy.util.logging.Slf4j
+import org.gradle.api.Project
 
 @Slf4j
-class FileChangeLogService extends FileRemoteService implements ScmChangeLogService{
+class FileChangeLogService extends FileRemoteService implements ScmChangeLogService {
 
     FileChangeLogService(ScmLocalService sls,
                          VersionExtension versionExt,
@@ -38,4 +40,14 @@ class FileChangeLogService extends FileRemoteService implements ScmChangeLogServ
     void createLog() {
         log.warn('This function is unsupported scm for the change log creation.')
     }
+
+    File changelogFile
+
+    Project project
+
+    String targetVersion
+
+    ScmType type
+
+    boolean filterProject
 }

@@ -26,7 +26,7 @@ class ScmException extends RuntimeException {
     /**
      * Constructs a {@code ScmException} instance with no error message.
      */
-    public ScmException() {
+    ScmException() {
         super()
     }
 
@@ -35,7 +35,7 @@ class ScmException extends RuntimeException {
      *
      * @param message the error message
      */
-    public ScmException(String message) {
+    ScmException(String message) {
         super(message)
     }
 
@@ -44,7 +44,7 @@ class ScmException extends RuntimeException {
      *
      * @param message the error message
      */
-    public ScmException(String message, Throwable cause) {
+    ScmException(String message, Throwable cause) {
         super(message, cause)
     }
 
@@ -54,7 +54,7 @@ class ScmException extends RuntimeException {
      * @return the string representation of this exception
      */
     @Override
-    public String toString() {
+    String toString() {
         Throwable cause = getCause()
         String msg = getMessage()
         if (msg != null) {

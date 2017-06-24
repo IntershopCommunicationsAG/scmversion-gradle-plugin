@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.services.svn
 
 import com.intershop.gradle.scm.services.ScmLocalService
@@ -23,6 +21,7 @@ import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.ScmException
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.AbstractBranchFilter
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.tmatesoft.svn.core.SVNDepth
 import org.tmatesoft.svn.core.SVNDirEntry
@@ -34,6 +33,7 @@ import org.tmatesoft.svn.core.wc2.SvnList
 import org.tmatesoft.svn.core.wc2.SvnOperationFactory
 import org.tmatesoft.svn.core.wc2.SvnTarget
 
+@CompileStatic
 @Slf4j
 class SvnRemoteService {
 
@@ -76,7 +76,7 @@ class SvnRemoteService {
      * @param branchFilter  Filters branch names
      * @return  map with revision and object with all information about the assoziated branch
      */
-    public Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
+    Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
         return getBranchMap(branchFilter, BranchType.tag)
     }
 
@@ -96,7 +96,7 @@ class SvnRemoteService {
 
         // receive all 'branches' (a tag is only a special branch)
         list.setReceiver(new ISvnObjectReceiver<SVNDirEntry>() {
-            public void receive(SvnTarget target, SVNDirEntry object) throws SVNException {
+            void receive(SvnTarget target, SVNDirEntry object) throws SVNException {
                 final String name = object.getRelativePath()
                 String version = branchFilter.getVersionStr(name)
 

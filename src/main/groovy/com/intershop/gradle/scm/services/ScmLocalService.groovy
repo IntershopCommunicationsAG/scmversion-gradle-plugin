@@ -47,7 +47,7 @@ abstract class ScmLocalService {
     /**
      * This is true, if the local working copy changed.
      */
-    protected boolean changed = false
+    boolean changed = false
 
     /**
      * The directory of the working copy.
@@ -83,7 +83,7 @@ abstract class ScmLocalService {
      *
      * @return directory of the working copy.
      */
-    public File getProjectDir() {
+    File getProjectDir() {
         return projectDir
     }
 
@@ -92,7 +92,7 @@ abstract class ScmLocalService {
      *
      * @return true if the working copy was changed.
      */
-    public BranchType getBranchType() {
+    BranchType getBranchType() {
         return branchType
     }
 
@@ -101,7 +101,7 @@ abstract class ScmLocalService {
      *
      * @return branch name of the working copy.
      */
-    public String getBranchName() {
+    String getBranchName() {
         return branchName
     }
 
@@ -110,7 +110,7 @@ abstract class ScmLocalService {
      *
      * @return branch name of the working copy.
      */
-    public String getFeatureBranchName() {
+    String getFeatureBranchName() {
         return featureBranchName
     }
 
@@ -119,7 +119,7 @@ abstract class ScmLocalService {
      *
      * @return true if the working copy was changed.
      */
-    public boolean isChanged() {
+    boolean isChanged() {
         return changed
     }
 

@@ -70,7 +70,7 @@ class DryVersionService extends DryRemoteService implements ScmVersionService {
         return remoteClient.getVersionObject()
     }
 
-    public Map<Version, VersionTag> getVersionTagMap() {
+    Map<Version, VersionTag> getVersionTagMap() {
         return remoteClient.getVersionTagMap()
     }
 
@@ -129,7 +129,7 @@ class DryVersionService extends DryRemoteService implements ScmVersionService {
      * @return true, if the specified release version is available
      */
     @Override
-    public boolean isReleaseVersionAvailable(String version) {
+    boolean isReleaseVersionAvailable(String version) {
         return remoteClient.isReleaseVersionAvailable(version)
     }
 }

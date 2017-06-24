@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.intershop.gradle.scm.services.svn
 
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.BranchType
+import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.VersionTag
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.gradle.api.Project
 import org.tmatesoft.svn.core.SVNException
 import org.tmatesoft.svn.core.SVNLogEntry
 import org.tmatesoft.svn.core.SVNLogEntryPath
@@ -30,8 +32,11 @@ import org.tmatesoft.svn.core.wc2.ISvnObjectReceiver
 import org.tmatesoft.svn.core.wc2.SvnLogMergeInfo
 import org.tmatesoft.svn.core.wc2.SvnTarget
 
+import static com.intershop.gradle.scm.services.ChangeLogServiceHelper.*
+
+@CompileStatic
 @Slf4j
-class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogService{
+class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogService {
 
     private VersionExtension versionExt
 
@@ -45,6 +50,16 @@ class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogServic
         // set default value
         filterProject = false
     }
+
+    File changelogFile
+
+    Project project
+
+    String targetVersion
+
+    ScmType type
+
+    boolean filterProject
 
     void createLog() {
         VersionTag pvt = null
@@ -77,8 +92,7 @@ class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogServic
                     logEntry.changedPaths.each { String s, SVNLogEntryPath p ->
                         if (s.contains(svnProjectName) || !filterProject) {
                             SvnChangeLogService.this.changelogFile.append(
-                                    getLineChangedFile(filterProject ? s.substring(s.indexOf(svnProjectName)) : s,
-                                            Character.toString(p.getType())))
+                                getLineChangedFile((filterProject ? s.substring(s.indexOf(svnProjectName)) : s), Character.toString(p.getType())))
                         }
                     }
                 }
@@ -89,6 +103,5 @@ class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogServic
         }
         this.changelogFile.append(getFooter())
     }
-
 
 }

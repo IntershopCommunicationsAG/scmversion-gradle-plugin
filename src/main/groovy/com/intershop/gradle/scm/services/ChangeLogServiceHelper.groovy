@@ -21,27 +21,30 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.Project
 
 @CompileStatic
-interface ScmChangeLogService {
+class ChangeLogServiceHelper {
 
-    File getChangelogFile()
+    static String getHeader(String sourceVersion, String targetVersion) {
+        return """
+        = Change Log for ${sourceVersion}
 
-    void setChangelogFile(File changelogFile)
+        This list contains changes since version ${targetVersion}. +
+        Created: ${new Date()}
 
-    Project getProject()
+        [cols="5%,5%,90%", width="95%", options="header"]
+        |===
+        """.stripIndent()
+    }
 
-    void setProject(Project project)
+    static String getFooter() {
+        return """|===
+        """.stripIndent()
+    }
 
-    String getTargetVersion()
+    static String getLineChangedFile(String path, String changeType) {
+        return "| | ${changeType} | ${path} \n"
+    }
 
-    void setTargetVersion(String targetVersion)
-
-    ScmType getType()
-
-    void setType(ScmType type)
-
-    boolean getFilterProject()
-
-    void setFilterProject(boolean filterProject)
-
-    void createLog()
+    static String getLineMessage(String message, String rev) {
+        return "3+| ${message} (${rev}) \n"
+    }
 }

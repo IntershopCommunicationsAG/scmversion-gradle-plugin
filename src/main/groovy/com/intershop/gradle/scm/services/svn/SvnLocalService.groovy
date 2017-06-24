@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.services.svn
 
 import com.intershop.gradle.scm.extension.ScmExtension
@@ -30,6 +28,10 @@ import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions
 import org.tmatesoft.svn.core.wc.SVNStatusType
 import org.tmatesoft.svn.core.wc.SVNWCUtil
 import org.tmatesoft.svn.core.wc2.*
+
+import static org.tmatesoft.svn.core.SVNURL.parseURIEncoded
+import static java.net.URLDecoder.decode
+
 /**
  * This is the implementation of a ScmInfoService of Subversion based working copy.
  */
@@ -45,7 +47,7 @@ class SvnLocalService extends ScmLocalService {
     /**
      * SVN URL of the project
      */
-    private final SVNURL url
+    final SVNURL url
 
     /**
      * SVN Revsion ID
@@ -93,7 +95,7 @@ class SvnLocalService extends ScmLocalService {
                 def m = url.toString() =~ test
                 if( m.getCount()) {
 
-                    projectRootUrl = SVNURL.parseURIEncoded( java.net.URLDecoder.decode(m[0][1], "UTF-8") )
+                    projectRootUrl = parseURIEncoded( decode((m[0] as List)[1].toString(), "UTF-8") )
 
                     switch (idx) {
                         case 0:
@@ -101,26 +103,26 @@ class SvnLocalService extends ScmLocalService {
                             branchName = 'trunk'
                             break
                         case 1:
-                            branchName = m[0][2]
+                            branchName = (m[0] as List)[2]
                             def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
 
                             if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
                                 branchType = BranchType.featureBranch
-                                featureBranchName = mfb[0][mfb[0].size() - 1]
+                                featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
                             } else {
                                 branchType = BranchType.branch
                             }
                             break
                         case 2:
                             branchType = BranchType.tag
-                            branchName = m[0][2]
+                            branchName = (m[0] as List)[2]
                             break
                     }
                 }
             }
 
         } catch(SVNException ex) {
-            log.error("Project directory ${projectDir.absolutePath} is not a svn copy ex.message")
+            log.error("Project directory ${projectDir.absolutePath} is not a svn copy ex.message {}", ex.getMessage())
         }
 
         //identify local changes
@@ -133,7 +135,7 @@ class SvnLocalService extends ScmLocalService {
         svnStatus.remote = false
 
         svnStatus.setReceiver(new ISvnObjectReceiver<SvnStatus>() {
-            public void receive(SvnTarget target, SvnStatus status) throws SVNException {
+            void receive(SvnTarget target, SvnStatus status) throws SVNException {
                 if(status.nodeStatus.getID() != SVNStatusType.STATUS_NORMAL || status.nodeStatus.getID() != SVNStatusType.STATUS_IGNORED) {
                     log.info('SVN: Local changes detected: \n {}', status.changelist)
                     changed = true
@@ -147,7 +149,7 @@ class SvnLocalService extends ScmLocalService {
      * Returns the SVN url object of the project.
      * @return remote SVN url
      */
-    public SVNURL getRemoteSvnUrl() {
+    SVNURL getRemoteSvnUrl() {
         return url
     }
 
@@ -157,7 +159,7 @@ class SvnLocalService extends ScmLocalService {
      * @return remote url
      */
     @Override
-    public String getRemoteUrl() {
+    String getRemoteUrl() {
         return url.toString()
     }
 
@@ -166,7 +168,7 @@ class SvnLocalService extends ScmLocalService {
      *
      * @return  the SVNURL object analog to remoteUrl
      */
-    public SVNURL getProjectRootSvnUrl() {
+    SVNURL getProjectRootSvnUrl() {
         return projectRootUrl
     }
 
@@ -175,7 +177,7 @@ class SvnLocalService extends ScmLocalService {
      *
      * @return the remote root url of this project
      */
-    public String getProjectRootUrl() {
+    String getProjectRootUrl() {
         return projectRootUrl.toString()
     }
 
@@ -183,7 +185,7 @@ class SvnLocalService extends ScmLocalService {
      *
      * @return the original SVN revision id analage to revID
      */
-    public long getRevision() {
+    long getRevision() {
         return revision
     }
 
@@ -193,7 +195,7 @@ class SvnLocalService extends ScmLocalService {
      * @return revision id
      */
     @Override
-    public String getRevID() {
+    String getRevID() {
         return Long.toString(revision)
     }
 }

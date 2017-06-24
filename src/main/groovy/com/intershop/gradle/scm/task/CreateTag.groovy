@@ -34,7 +34,7 @@ import org.gradle.api.tasks.TaskAction
 @CompileStatic
 class CreateTag extends DefaultTask {
 
-    public CreateTag() {
+    CreateTag() {
         this.outputs.upToDateWhen { false }
     }
 
@@ -56,7 +56,7 @@ class CreateTag extends DefaultTask {
             throw new GradleException(se.getMessage())
         }
 
-        if (!newRev) {
+        if (! newRev) {
             log.error('It is not possible to create a tag!')
             throw new GradleException('It is not possible to create a tag on the SCM!')
         } else {

@@ -17,7 +17,6 @@ package com.intershop.gradle.scm
 
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.task.*
-import com.intershop.release.task.*
 import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project

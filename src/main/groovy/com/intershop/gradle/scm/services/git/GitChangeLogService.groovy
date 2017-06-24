@@ -21,6 +21,7 @@ import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.ScmKey
+import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.VersionTag
 import groovy.util.logging.Slf4j
@@ -30,6 +31,9 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.treewalk.filter.TreeFilter
+import org.gradle.api.Project
+
+import static com.intershop.gradle.scm.services.ChangeLogServiceHelper.*
 
 @Slf4j
 class GitChangeLogService extends GitRemoteService implements ScmChangeLogService {
@@ -45,6 +49,16 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
         type = sls.type
     }
 
+    File changelogFile
+
+    Project project
+
+    String targetVersion
+
+    ScmType type
+
+    boolean filterProject
+
     void createLog() {
         VersionTag pvt = null
         try {
@@ -56,7 +70,7 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
         if(pvt) {
             this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
 
-            Iterable<RevCommit> refs = localService.client.log().addRange(getObjectId(pvt.branchObject.id), getObjectId(localService.getRevID())).call();
+            Iterable<RevCommit> refs = localService.client.log().addRange(getObjectId(pvt.branchObject.id), getObjectId(localService.getRevID())).call()
             refs.findAll().each { RevCommit rc ->
                 this.changelogFile.append(getLineMessage(rc.getFullMessage(), rc.getName().substring(0, 8)))
                 getFilesInCommit(rc)

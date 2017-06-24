@@ -60,7 +60,7 @@ class FileVersionService extends FileRemoteService implements ScmVersionService 
         return svo
     }
 
-    public Map<Version, VersionTag> getVersionTagMap() {
+    Map<Version, VersionTag> getVersionTagMap() {
         log.info("Not available for file system only projects!")
         return [:]
     }
@@ -114,7 +114,7 @@ class FileVersionService extends FileRemoteService implements ScmVersionService 
      * @return true, if the specified release version is available
      */
     @Override
-    public boolean isReleaseVersionAvailable(String version) {
+    boolean isReleaseVersionAvailable(String version) {
         log.info("Not available for file system only projects!")
         return false
     }

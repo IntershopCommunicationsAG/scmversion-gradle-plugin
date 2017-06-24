@@ -157,7 +157,7 @@ class ScmExtension extends AbstractExtension{
      * Getter for scmType
      * @return the scmType object for the detected SCM
      */
-    public ScmType getScmType() {
+    ScmType getScmType() {
         return scmType
     }
 

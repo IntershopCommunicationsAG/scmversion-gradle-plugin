@@ -276,7 +276,7 @@ class VersionExtension extends AbstractExtension {
      *
      * @return version string
      */
-    public String getVersion() {
+    String getVersion() {
         if(offlineVersion) {
             return offlineVersion
         }
@@ -294,7 +294,7 @@ class VersionExtension extends AbstractExtension {
      * @param target
      * @return information with Version and Tag information
      */
-    public String getPreviousVersion() {
+    String getPreviousVersion() {
         if(! internalPreviousVersion) {
             Version prevVersion = this.getVersionService().getPreviousVersion()
             internalPreviousVersion = prevVersion ? prevVersion.toString() : ''
@@ -306,7 +306,7 @@ class VersionExtension extends AbstractExtension {
      * Returns the branch name
      * @return short branch name
      */
-    public String getBranchName() {
+    String getBranchName() {
         if(! internalBranchName) {
             String bname = this.getVersionService().getLocalService().branchName
             internalBranchName = bname.lastIndexOf('/') + 1 < bname.length() ? bname.substring(bname.lastIndexOf('/') + 1) : bname
@@ -319,7 +319,7 @@ class VersionExtension extends AbstractExtension {
      * @param target
      * @return information with Version and Tag information
      */
-    public VersionTag getPreviousVersionTag(String target = '') {
+    VersionTag getPreviousVersionTag(String target = '') {
         this.getVersionService().getPreviousVersionTag(target)
     }
 
@@ -328,14 +328,14 @@ class VersionExtension extends AbstractExtension {
      *
      * @return version service based on the SCM
      */
-    public ScmVersionService getVersionService() {
+    ScmVersionService getVersionService() {
         if(! versionService) {
             versionService = ScmBuilder.getScmVersionService(project, this)
         }
         return versionService
     }
 
-    public ScmVersionService updateVersionService() {
+    ScmVersionService updateVersionService() {
         versionService = ScmBuilder.getScmVersionService(project, this)
         return versionService
     }

@@ -22,6 +22,7 @@ import com.intershop.gradle.scm.utils.ScmException
 import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.AbstractBranchFilter
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.FetchCommand
 import org.eclipse.jgit.api.TransportCommand
@@ -36,10 +37,11 @@ import org.eclipse.jgit.transport.*
 /**
  * Remote Scm service for Git
  */
+@CompileStatic
 @Slf4j
 class GitRemoteService {
 
-    protected final GitLocalService localService = null
+    protected GitLocalService localService = null
 
     /**
      * Credential configuration
@@ -102,7 +104,7 @@ class GitRemoteService {
     /**
      * Map with rev ids and assigned tag names.
      */
-    public Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
+    Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
         //specify return value
         Map<String, BranchObject> rv = [:]
 
@@ -139,7 +141,7 @@ class GitRemoteService {
             addCredentialsToCmd(cmd)
             cmd.call()
         } catch(InvalidRemoteException nrex) {
-            log.warn('No remote repository is available!')
+            log.warn('No remote repository is available! {}', nrex.getMessage())
         } catch(TransportException tex) {
             log.warn('It was not possible to fetch all tags. Please check your credential configuration.', tex)
         }
@@ -156,7 +158,7 @@ class GitRemoteService {
             cmd.setCredentialsProvider(credentials)
         } else if (sshConnector) {
             cmd.setTransportConfigCallback(new TransportConfigCallback() {
-                public void configure(Transport transport) {
+                void configure(Transport transport) {
                     SshTransport sshTransport = (SshTransport) transport
                     sshTransport.setSshSessionFactory(sshConnector)
                 }

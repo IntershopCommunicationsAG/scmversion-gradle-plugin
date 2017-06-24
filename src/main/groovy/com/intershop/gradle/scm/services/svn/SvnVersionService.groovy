@@ -27,6 +27,7 @@ import com.intershop.gradle.scm.version.ScmVersionObject
 import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionParser
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.tmatesoft.svn.core.*
 import org.tmatesoft.svn.core.io.SVNRepository
@@ -39,6 +40,7 @@ import org.tmatesoft.svn.core.wc2.*
  * It calculates the version and has methods to create a branch, a tag or
  * move the working copy to a special version.
  */
+@CompileStatic
 @Slf4j
 class SvnVersionService extends SvnRemoteService implements ScmVersionService {
 
@@ -54,7 +56,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
     SvnVersionService(ScmLocalService sls,
                       ScmUser user) {
         super(sls, user)
-        localService = sls
+        localService = (SvnLocalService)sls
     }
 
     /**
@@ -62,7 +64,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      *
      * @return version object from scm
      */
-    public ScmVersionObject getVersionObject() {
+    ScmVersionObject getVersionObject() {
         ScmBranchFilter tagFilter = getBranchFilter(BranchType.tag)
         ScmBranchFilter branchFilter = getBranchFilter(BranchType.branch)
 
@@ -92,7 +94,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
 
         // receive all 'branches' (a tag is only a special branch)
         list.setReceiver(new ISvnObjectReceiver<SVNDirEntry>() {
-            public void receive(SvnTarget target, SVNDirEntry object) throws SVNException {
+            void receive(SvnTarget target, SVNDirEntry object) throws SVNException {
                 final String name = object.getRelativePath()
                 log.debug('Check branch name for version {}', name)
                 String version = tf.getVersionStr(name)
@@ -112,7 +114,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
             boolean remoteChanges = false
             if (!localService.changed) {
                 log.debug('Content of project was not changed locally.')
-                remoteChanges = isChanged(branches.get(l.get(0)), versionExt.getVersionBranchType())
+                remoteChanges = isChanged(branches.get(l.get(0)).toString(), versionExt.getVersionBranchType())
             }
             log.debug('Create ScmVersionObject for {},{},{}', branches.get(l.get(0)).toString(), (Version)l.get(0),remoteChanges || localService.changed)
             ScmVersionObject rv = new ScmVersionObject(branches.get(l.get(0)).toString(), (Version)l.get(0), remoteChanges || localService.changed)
@@ -133,7 +135,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
         return getFallbackVersion()
     }
 
-    public Map<Version, VersionTag> getVersionTagMap() {
+    Map<Version, VersionTag> getVersionTagMap() {
         Map<String, BranchObject> branchMap = this.getTagMap(new ReleaseFilter(localService.prefixes, getPreVersion()))
 
         Map<Version, VersionTag> versionTags = [:]
@@ -160,7 +162,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
                 SvnTarget.fromURL(getVersionBranch(type).appendPath(branchName, false), SVNRevision.HEAD))
 
         svnDiff.setReceiver(new ISvnObjectReceiver<SvnDiffStatus>() {
-            public void receive(SvnTarget target, SvnDiffStatus object) throws SVNException {
+            void receive(SvnTarget target, SvnDiffStatus object) throws SVNException {
                 log.debug("{} was changed", object.path)
                 ++changes
             }
@@ -176,7 +178,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the working after the move
      */
-    public String moveTo(String version, boolean featureBranch) {
+    String moveTo(String version, boolean featureBranch) {
         log.debug('svn checkout {}', version)
 
         SVNURL url = null
@@ -207,7 +209,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * @param version
      * @return the revision id of the tag
      */
-    public String createTag(String version, String revid = localService.getRevID()) {
+    String createTag(String version, String revid = localService.getRevID()) {
         if ( checkBranch(BranchType.tag, version) ) {
             throw new ScmException("Tag for ${version} exists!")
         }
@@ -225,7 +227,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the branch
      */
-    public String createBranch(String version, boolean featureBranch, String revid = localService.getRevID()) {
+    String createBranch(String version, boolean featureBranch, String revid = localService.getRevID()) {
 
         if (checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version) ) {
             throw new ScmException("Branch for ${version} exists!")
@@ -243,7 +245,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * @param version
      * @return true, if the specified release version is available
      */
-    public boolean isReleaseVersionAvailable(String version) {
+    boolean isReleaseVersionAvailable(String version) {
         return checkBranch(BranchType.tag, version)
     }
 
@@ -305,7 +307,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
         svnLog.stopOnCopy = true
         svnLog.setSingleTarget(SvnTarget.fromFile(localService.projectDir))
         svnLog.setReceiver(new ISvnObjectReceiver<SVNLogEntry>() {
-            public void receive(SvnTarget target, SVNLogEntry logEntry) throws SVNException {
+            void receive(SvnTarget target, SVNLogEntry logEntry) throws SVNException {
                 log.info('Changes on branch detected: {}', logEntry.getRevision())
                 ++changes
             }
@@ -316,6 +318,5 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
         //Initial commit is always available
         return (changes > 1)
     }
-
 
 }

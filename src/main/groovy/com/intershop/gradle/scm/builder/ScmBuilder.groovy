@@ -66,7 +66,7 @@ class ScmBuilder {
             case ScmType.git:
                 service = new GitLocalService(project.getRootProject().getRootDir(), scmExt)
                 break
-            case ScmType.file:
+            default:
                 service = new FileLocalService(project.getRootProject().getRootDir(), scmExt)
                 break
         }
@@ -85,7 +85,7 @@ class ScmBuilder {
 
         ScmExtension scmExt = getScmExtension(project)
 
-        ScmLocalService sls = ScmBuilder.getScmLocalService(project)
+        ScmLocalService sls = getScmLocalService(project)
         ScmVersionService service
 
         switch (scmExt.scmType) {
@@ -95,7 +95,7 @@ class ScmBuilder {
             case ScmType.git:
                 service = new GitVersionService(sls, scmExt.user, scmExt.key)
                 break
-            case ScmType.file:
+            default:
                 service = new FileVersionService(sls, scmExt.user)
                 break
         }
@@ -120,7 +120,7 @@ class ScmBuilder {
         ScmExtension scmExt = getScmExtension(project)
         VersionExtension versionExt = getScmExtension(project).version
 
-        ScmLocalService sls = ScmBuilder.getScmLocalService(project)
+        ScmLocalService sls = getScmLocalService(project)
 
         ScmChangeLogService service
 
@@ -131,7 +131,7 @@ class ScmBuilder {
             case ScmType.git:
                 service = new GitChangeLogService(sls, versionExt, scmExt.user, scmExt.key)
                 break
-            case ScmType.file:
+            default:
                 service = new FileChangeLogService(sls, versionExt, scmExt.user, scmExt.key)
                 break
         }

@@ -21,6 +21,7 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.BranchType
 import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.LogCommand
@@ -30,7 +31,7 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 
 @Slf4j
-@CompileDynamic
+@CompileStatic
 class GitLocalService extends ScmLocalService{
 
     /*
@@ -55,7 +56,6 @@ class GitLocalService extends ScmLocalService{
      * @param projectDir
      * @param prefixes
      */
-    @CompileDynamic
     GitLocalService(File projectDir, ScmExtension scmExtension) {
         super(projectDir, scmExtension)
 
@@ -71,9 +71,9 @@ class GitLocalService extends ScmLocalService{
             branchType = BranchType.trunk
         } else {
             def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
-            if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
+            if(mfb.matches() && mfb.count == 1 && ((mfb[0] as List).size() == 5 || (mfb[0] as List).size() == 6)) {
                 branchType = BranchType.featureBranch
-                featureBranchName = mfb[0][mfb[0].size() - 1]
+                featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
             } else {
                 String tn = checkHeadForTag()
                 if(tn) {
@@ -99,8 +99,8 @@ class GitLocalService extends ScmLocalService{
             logsLocal.each { RevCommit rev ->
                 revsLocal.add(rev.toString())
             }
-        }catch (Exception ex) {
-            log.warn('No repo info available!')
+        } catch (Exception ex) {
+            log.warn('No repo info available! {}', ex.getMessage())
         }
 
         Status status = gitClient.status().call()
@@ -147,7 +147,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitRepo Object
      * @return
      */
-    public Repository getRepository() {
+    Repository getRepository() {
         return gitRepo
     }
 
@@ -155,7 +155,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitClient Object
      * @return
      */
-    public Git getClient() {
+    Git getClient() {
         return gitClient
     }
 
@@ -165,7 +165,7 @@ class GitLocalService extends ScmLocalService{
      * @return remote url
      */
     @Override
-    public String getRemoteUrl() {
+    String getRemoteUrl() {
         return remoteUrl
     }
 
@@ -175,7 +175,7 @@ class GitLocalService extends ScmLocalService{
      * @return revision id
      */
     @Override
-    public String getRevID() {
+    String getRevID() {
         ObjectId id = gitRepo.resolve(Constants.HEAD)
         String rv = ''
 

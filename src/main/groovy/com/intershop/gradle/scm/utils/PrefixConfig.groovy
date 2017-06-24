@@ -93,7 +93,7 @@ class PrefixConfig {
      *
      * @return Search pattern for feature branches.
      */
-    public String getFeatureBranchPattern() {
+    String getFeatureBranchPattern() {
         if(branchPrefixSeperator) {
             return "${featurePrefix}${branchPrefixSeperator}${featureBranchPatternSuffix}"
         }
@@ -106,7 +106,7 @@ class PrefixConfig {
      *
      * @return validated prefix for stabilization branches
      */
-    public String getStabilizationPrefix() {
+    String getStabilizationPrefix() {
         return validatePrefix('stabilization branches', stabilizationPrefix)
     }
 
@@ -116,7 +116,7 @@ class PrefixConfig {
      *
      * @return validated prefix for feature branches
      */
-    public String getFeaturePrefix() {
+    String getFeaturePrefix() {
         return validatePrefix('feature branches', featurePrefix)
     }
 
@@ -126,7 +126,7 @@ class PrefixConfig {
      *
      * @return validated prefix for release tags
      */
-    public String getTagPrefix() {
+    String getTagPrefix() {
         return validatePrefix('release tags', tagPrefix)
     }
 
@@ -136,7 +136,7 @@ class PrefixConfig {
      * @param type branch type
      * @return the prefix for the specified branch type
      */
-    public String getPrefix(BranchType type) {
+    String getPrefix(BranchType type) {
         switch (type) {
             case BranchType.branch:
                 return stabilizationPrefix
@@ -144,7 +144,7 @@ class PrefixConfig {
             case BranchType.featureBranch:
                 return featurePrefix
                 break
-            case BranchType.tag:
+            default:
                 return tagPrefix
                 break
         }
@@ -157,7 +157,7 @@ class PrefixConfig {
      * @return the branch type for the specified prefix
      * @throws com.intershop.gradle.scm.utils.ScmException if the prefix is not configured.
      */
-    public BranchType getBranchType(String prefix) {
+    BranchType getBranchType(String prefix) {
         if(prefix == stabilizationPrefix) {
             return BranchType.branch
         }
@@ -170,7 +170,7 @@ class PrefixConfig {
         throw new ScmException('Prefix is not specified!')
     }
 
-    private String validatePrefix(String type, String prefix) {
+    static String validatePrefix(String type, String prefix) {
         if(! prefix) {
             throw new IllegalArgumentException("The setting for ${type} is eampty!")
         }

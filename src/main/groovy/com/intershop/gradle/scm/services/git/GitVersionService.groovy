@@ -27,6 +27,7 @@ import com.intershop.gradle.scm.version.ScmBranchFilter
 import com.intershop.gradle.scm.version.ScmVersionObject
 import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.Version
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.api.errors.GitAPIException
@@ -43,6 +44,7 @@ import org.eclipse.jgit.revwalk.RevWalk
  * move the working copy to a special version.
  * This is the implementation for the remote access to the Git remote project.
  */
+@CompileStatic
 @Slf4j
 class GitVersionService extends GitRemoteService implements ScmVersionService{
 
@@ -59,7 +61,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                       ScmUser user = null,
                       ScmKey key = null) {
         super(sls, user, key)
-        localService = sls
+        localService = (GitLocalService)sls
     }
 
     /**
@@ -67,7 +69,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      *
      * @return version object from scm
      */
-    public ScmVersionObject getVersionObject() {
+    ScmVersionObject getVersionObject() {
         ScmVersionObject rv = null
 
         // identify headId of the working copy
@@ -83,7 +85,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             String tagName
             String branchName
 
-            ScmBranchFilter tagFilter = getBranchFilter()
+            ScmBranchFilter tagFilter = getBranchFilter(BranchType.tag)
             ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? BranchType.featureBranch : BranchType.branch)
 
             String version = null
@@ -96,7 +98,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             // version from tag, if tag is available
             if (!tags.isEmpty()) {
                 walk.markStart(head)
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (commit = walk.next(); commit; commit = walk.next()) {
                     tagName = tags[commit.id.name()]
                     if (tagName) {
                         // commit is a tag
@@ -122,7 +124,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
 
                 pos = 0
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (commit = walk.next(); commit; commit = walk.next()) {
                     branchName = branches[commit.id.name()]
                     if (branchName) {
                         version = branchFilter.getVersionStr(branchName)
@@ -157,7 +159,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         return rv
     }
 
-    public Map<Version, VersionTag> getVersionTagMap() {
+    Map<Version, VersionTag> getVersionTagMap() {
         Map<String, BranchObject> branchMap = this.getTagMap(new ReleaseFilter(localService.prefixes, getPreVersion()))
 
         Map<Version, VersionTag> versionTags = [:]
@@ -176,7 +178,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the working after the move
      */
-    public String moveTo(String version, boolean featureBranch) {
+    String moveTo(String version, boolean featureBranch) {
         //checkout branch, wc is detached
         log.debug('git checkout {}', version)
 
@@ -225,7 +227,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param version
      * @return the revision id of the tag
      */
-    public String createTag(String version, String revid = this.localService.getRevID()) {
+    String createTag(String version, String revid = this.localService.getRevID()) {
         if(remoteConfigAvailable) {
             // check if tag exits
             if (checkBranch(BranchType.tag, version)) {
@@ -261,7 +263,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the branch
      */
-    public String createBranch(String version, boolean featureBranch, String revid = this.localService.getRevID()) {
+    String createBranch(String version, boolean featureBranch, String revid = this.localService.getRevID()) {
         if(remoteConfigAvailable) {
             // check if branch exits
             if (checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version) ) {
@@ -293,7 +295,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param version
      * @return true, if the specified release version is available
      */
-    public boolean isReleaseVersionAvailable(String version) {
+    boolean isReleaseVersionAvailable(String version) {
         return checkBranch(BranchType.tag, version)
     }
 
@@ -343,7 +345,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      */
     private Map<String, String> getTagMap() {
         //specify return value
-        Map<String, Ref> rv = [:]
+        Map<String, String> rv = [:]
 
         // fetch all tags from repo
         if(remoteConfigAvailable) {
@@ -353,7 +355,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         final RevWalk walk = new RevWalk(((GitLocalService)localService).repository)
 
         //specifx filter
-        ScmBranchFilter filter = getBranchFilter()
+        ScmBranchFilter filter = getBranchFilter(BranchType.tag)
 
         //check tags and calculate
         ((GitLocalService)localService).repository.getTags().each { tagName, rev ->
@@ -371,7 +373,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      */
     private Map<String, String> getBranchMap() {
         //specify return value
-        Map<String, Ref> rv = [:]
+        Map<String, String> rv = [:]
 
         if(remoteConfigAvailable) {
             fetchAllCmd()
@@ -410,7 +412,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             addCredentialsToCmd(cmd)
             cmd.call()
         } catch(InvalidRemoteException nrex) {
-            log.warn('No remote repository is available!')
+            log.warn('No remote repository is available! {}', nrex.getMessage())
         } catch(TransportException tex) {
             log.warn('It was not possible to fetch all. Please check your credential configuration.', tex)
         }

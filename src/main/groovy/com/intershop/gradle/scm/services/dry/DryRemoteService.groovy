@@ -49,7 +49,7 @@ class DryRemoteService {
 
     }
 
-    public Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
+    Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
         log.info("Not available for file system only projects!")
         return [:]
     }
