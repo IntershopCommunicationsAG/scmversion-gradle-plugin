@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.version
 
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.release.version.Version
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class VersionTag {
 
     VersionTag(Version ver, BranchObject branchObject) {

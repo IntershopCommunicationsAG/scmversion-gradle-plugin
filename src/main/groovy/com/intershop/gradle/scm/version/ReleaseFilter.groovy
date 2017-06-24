@@ -20,8 +20,11 @@ import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
+@CompileStatic
 @Slf4j
 class ReleaseFilter extends AbstractBranchFilter {
 
@@ -48,10 +51,10 @@ class ReleaseFilter extends AbstractBranchFilter {
     }
 
     @Override
-    public String getVersionStr(String test) {
+    String getVersionStr(String test) {
         def m = test =~ regexPattern
-        if(m.matches() && m.count == 1 && m[0].size() > 0) {
-            return test.substring(test.indexOf((m[0][1])))
+        if(m.matches() && m.count == 1 && (m[0] as List).size() > 0) {
+            return test.substring(test.indexOf(((m[0] as List)[1]).toString().toInteger()))
         }
 
         return ''

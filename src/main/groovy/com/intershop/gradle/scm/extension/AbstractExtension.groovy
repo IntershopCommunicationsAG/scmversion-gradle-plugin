@@ -16,6 +16,7 @@
 
 package com.intershop.gradle.scm.extension
 
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
 
@@ -24,6 +25,7 @@ import org.gradle.api.Project
  * identify environment variables.
  * Furthermore the project is stored.
  */
+@CompileStatic
 @Slf4j
 abstract class AbstractExtension {
 
@@ -42,16 +44,16 @@ abstract class AbstractExtension {
      * @param defaultValue  default value
      * @return              the string configuration
      */
-    protected String getVariable(String envVar, String projectVar, String defaultValue) {
+     String getVariable(String envVar, String projectVar, String defaultValue) {
         if(System.properties[envVar]) {
             log.debug('Specified from system property {}.', envVar)
             return System.properties[envVar].toString().trim()
         } else if(System.getenv(envVar)) {
             log.debug('Specified from system environment property {}.', envVar)
             return System.getenv(envVar).toString().trim()
-        } else if(project.hasProperty(projectVar) && project."${projectVar}") {
+        } else if(project.hasProperty(projectVar) && project.property(projectVar)) {
             log.debug('Specified from project property {}.', projectVar)
-            return project."${projectVar}".toString().trim()
+            return project.property(projectVar).toString().trim()
         }
         return defaultValue
     }

@@ -21,6 +21,8 @@ import com.intershop.gradle.scm.utils.ScmType
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.PropertyState
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -36,16 +38,50 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class CreateChangeLog extends DefaultTask {
 
+    final PropertyState<File> changelogFile = project.property(File)
+    final PropertyState<String> targetVersion = project.property(String)
+    final PropertyState<Boolean> filterProject = project.property(Boolean)
+
     @OutputFile
-    File changelogFile
+    File getChangelogFile() {
+        changelogFile.get()
+    }
+
+    void setChangelogFile(File changelogFile) {
+        this.changelogFile.set(changelogFile)
+    }
+
+    void setChangelogFile(Provider<File> changelogFile) {
+        this.changelogFile.set(changelogFile)
+    }
 
     @Input
-    String targetVersion
+    String getTargetVersion() {
+        targetVersion.get()
+    }
+
+    void setTargetVersion(String targetVersion) {
+        this.targetVersion.set(targetVersion)
+    }
+
+    void setTargetVersion(Provider<String> targetVersion) {
+        this.targetVersion.set(targetVersion)
+    }
 
     @Input
-    boolean filterProject
+    Boolean getFilterProject() {
+        filterProject.get()
+    }
 
-    public CreateChangeLog() {
+    void setFilterProject(Boolean filterProject) {
+        this.filterProject.set(filterProject)
+    }
+
+    void setFilterProject(Provider<Boolean> filterProject) {
+        this.filterProject.set(filterProject)
+    }
+
+    CreateChangeLog() {
         this.outputs.upToDateWhen { false }
         this.setDescription('Creates a changelog based on SCM information in ASCIIDoc format')
     }
@@ -58,7 +94,7 @@ class CreateChangeLog extends DefaultTask {
             // set configuration parameter
             changeLogService.setTargetVersion(getTargetVersion())
             changeLogService.changelogFile = getChangelogFile()
-            changeLogService.filterProject = getFilterProject()
+            changeLogService.filterProject = getFilterProject().booleanValue()
 
             changeLogService.changelogFile.getParentFile().mkdirs()
             if (changeLogService.changelogFile.exists()) {

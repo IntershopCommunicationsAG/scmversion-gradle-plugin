@@ -19,6 +19,8 @@ package com.intershop.gradle.scm.extension
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
+import org.gradle.api.provider.PropertyState
+import org.gradle.api.provider.Provider
 
 /**
  * <p>This is the extension object for the Intershop version plugin.</p>
@@ -33,21 +35,49 @@ import org.gradle.api.Project
 
 @CompileStatic
 @Slf4j
-class ChangeLogExtension extends AbstractExtension{
+class ChangeLogExtension extends AbstractExtension {
 
-    // scm user name / token (git,svn)
-    public final static String TARGETVERSION_ENV = 'TARGET_VERSION'
-    public final static String TARGETVERSION_PRJ = 'targetVersion'
+    final PropertyState<String> targetVersion
 
-    // scm user name / token (git,svn)
-    public final static String CHANGELOG_ENV = 'CHANGELOG_FILE'
-    public final static String CHANGELOG_PRJ = 'changelogFile'
+    Provider<String> getTargetVersionProvider() {
+        targetVersion
+    }
 
-    String targetVersion
+    String getTargetVersion() {
+        targetVersion.get()
+    }
 
-    File changelogFile
+    void setTargetVersion(String message) {
+        this.targetVersion.set(message)
+    }
 
-    boolean filterProject = false
+    final PropertyState<File> changelogFile
+
+    Provider<File> getChangelogFileProvider() {
+        changelogFile
+    }
+
+    File getChangelogFile() {
+        changelogFile.get()
+    }
+
+    void setChangelogFile(File changelogFile) {
+        this.changelogFile.set(changelogFile)
+    }
+
+    final PropertyState<Boolean> filterProject
+
+    Provider<Boolean> getFilterProjectProvider() {
+        filterProject
+    }
+
+    Boolean getFilterProjec() {
+        filterProject.get()
+    }
+
+    void setFilterProjec(boolean filterProject) {
+        this.filterProject.set(new Boolean(filterProject))
+    }
 
     /**
      * Initialize this extension and set default values
@@ -59,18 +89,9 @@ class ChangeLogExtension extends AbstractExtension{
     ChangeLogExtension(Project project) {
         super(project)
 
-        if(! targetVersion) {
-            targetVersion = getVariable(TARGETVERSION_ENV, TARGETVERSION_PRJ, '')
-        }
 
-        if(! changelogFile) {
-            String file = getVariable(CHANGELOG_ENV, CHANGELOG_PRJ, '')
-            if(file) {
-                changelogFile = project.file(file)
-            } else {
-                changelogFile = new File(project.getBuildDir(), 'changelog/changelog.asciidoc')
-            }
-        }
+
+
     }
 
 

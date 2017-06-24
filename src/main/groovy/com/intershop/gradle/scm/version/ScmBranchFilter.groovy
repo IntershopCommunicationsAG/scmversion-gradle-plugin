@@ -18,11 +18,13 @@ package com.intershop.gradle.scm.version
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.release.version.Version
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 /**
  * This is a filter object to find the correct branch with version information.
  */
+@CompileStatic
 @Slf4j
 class ScmBranchFilter extends AbstractBranchFilter {
 
@@ -33,8 +35,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
     // regex pattern will be created with some predefined variables
     private def regexPattern
-    // feature branch key
-    private String featureBranch = ''
+
     // prefix configuration
     private PrefixConfig prefixes
 
@@ -49,6 +50,8 @@ class ScmBranchFilter extends AbstractBranchFilter {
      */
     ScmBranchFilter(BranchType versionBranchtype, PrefixConfig prefixes, String branchFilterName = '', BranchType branchFilterType , String featureBranch = '', int patternDigits = 2) {
         String[] vdata = new String[4]
+        List<String> dp = ['\\d+', '(\\.\\d+)?', '(\\.\\d+)?', '(\\.\\d+)?' ]
+
         this.prefixes = prefixes
 
         log.debug("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
@@ -64,14 +67,13 @@ class ScmBranchFilter extends AbstractBranchFilter {
             def m = branchFilterName =~ /${branchFilterNamePattern}/
 
             if(m.getCount()) {
-                String tv = m[0][1]
+                String tv = (m[0] as List)[1]
                 vdata = tv.split('\\.')
             }
         }
 
-        List dp = ['\\d+', '(\\.\\d+)?', '(\\.\\d+)?', '(\\.\\d+)?' ]
         for(int i = 0; i < Math.min(patternDigits, vdata.length); i++) {
-            if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}" }
+            if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}".toString() }
         }
 
         String patternString = "^${this.prefixes.getPrefix(versionBranchtype)}"
@@ -120,11 +122,11 @@ class ScmBranchFilter extends AbstractBranchFilter {
      * @param test input string
      * @return a valid version string or an empty string
      */
-    public String getVersionStr(String test) {
+    String getVersionStr(String test) {
         def m = test =~ regexPattern
 
-        if(m.matches() && m.count == 1 && m[0].size() > 0) {
-            return test.substring(test.indexOf((m[0][1])))
+        if(m.matches() && m.count == 1 && (m[0] as List).size() > 0) {
+            return test.substring(test.indexOf(((m[0] as List)[1]).toString().toInteger()))
         }
 
         return ''

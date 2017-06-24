@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.intershop.gradle.scm.version
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 abstract class AbstractBranchFilter {
 
     abstract String getVersionStr(String branch)

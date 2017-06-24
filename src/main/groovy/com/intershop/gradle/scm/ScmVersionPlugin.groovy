@@ -18,6 +18,7 @@ package com.intershop.gradle.scm
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.task.*
 import com.intershop.release.task.*
+import groovy.transform.CompileStatic
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -35,12 +36,22 @@ import org.gradle.api.Task
  * <p><b>release</b> - create a version tag on the SCM and move the working copy to this version</p>
  * <p><b>showVersion</b> - shows the calculated version</p>
  */
+@CompileStatic
 class ScmVersionPlugin implements Plugin<Project> {
 
     /**
      * Name of the extension
      */
     public static final String SCM_EXTENSION = 'scm'
+
+
+    // target version property name
+    public final static String TARGETVERSION_ENV = 'TARGET_VERSION'
+    public final static String TARGETVERSION_PRJ = 'targetVersion'
+
+    // change log file
+    public final static String CHANGELOG_ENV = 'CHANGELOG_FILE'
+    public final static String CHANGELOG_PRJ = 'changelogFile'
 
     /**
      * Task namen
@@ -67,7 +78,12 @@ class ScmVersionPlugin implements Plugin<Project> {
         // Create Extension
         scmExtension = project.extensions.findByType(ScmExtension) ?: project.extensions.create(SCM_EXTENSION, ScmExtension, project)
 
-        project.ext.useSCMVersionConfig = true
+        scmExtension.changelog.setTargetVersion(scmExtension.changelog.getVariable(TARGETVERSION_ENV, TARGETVERSION_PRJ, ''))
+
+        String changeLogFile = scmExtension.changelog.getVariable(CHANGELOG_ENV, CHANGELOG_PRJ, '')
+        scmExtension.changelog.setChangelogFile( changeLogFile ? project.file(changeLogFile) : new File(project.getBuildDir(), 'changelog/changelog.asciidoc'))
+
+        project.getExtensions().getExtraProperties().set('useSCMVersionConfig', true)
 
         // Create Tasks
         Task showVersionTask = project.tasks.maybeCreate(SHOW_VERSION_TASK, ShowVersion)
@@ -91,9 +107,9 @@ class ScmVersionPlugin implements Plugin<Project> {
         prepareReleaseTask.description = 'Prepare a release process, create branch and/or tag, moves the working copy to the tag'
 
         CreateChangeLog task = project.tasks.maybeCreate(CHANGELOG_TASK, CreateChangeLog)
-        task.conventionMapping.changelogFile = { scmExtension.changelog.getChangelogFile() }
-        task.conventionMapping.targetVersion = { scmExtension.changelog.getTargetVersion() }
-        task.conventionMapping.filterProject = { scmExtension.changelog.getFilterProject() }
+        task.setChangelogFile( scmExtension.changelog.getChangelogFileProvider() )
+        task.setTargetVersion( scmExtension.changelog.getTargetVersionProvider() )
+        task.setFilterProject( scmExtension.changelog.getFilterProjectProvider() )
     }
 
 }
