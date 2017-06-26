@@ -88,12 +88,16 @@ class SvnChangeLogService extends SvnRemoteService implements ScmChangeLogServic
             mergeInfo.setReceiver(new ISvnObjectReceiver<SVNLogEntry>() {
                 @Override
                 void receive(SvnTarget svnTarget, SVNLogEntry logEntry) throws SVNException {
-                    SvnChangeLogService.this.changelogFile.append(getLineMessage(logEntry.message, Long.toString(logEntry.revision)))
+                    getChangelogFile().append(getLineMessage(logEntry.message, Long.toString(logEntry.revision)))
                     logEntry.changedPaths.each { String s, SVNLogEntryPath p ->
-                        if (s.contains(svnProjectName) || !filterProject) {
-                            SvnChangeLogService.this.changelogFile.append(
-                                getLineChangedFile((filterProject ? s.substring(s.indexOf(svnProjectName)) : s), Character.toString(p.getType())))
-                        }
+                        appendLog(s, p)
+                    }
+                }
+
+                void appendLog(String s, SVNLogEntryPath p) {
+                    if (s.contains(svnProjectName) || ! getFilterProject()) {
+                        getChangelogFile().append(
+                             getLineChangedFile((getFilterProject() ? s.substring(s.indexOf(svnProjectName)) : s), Character.toString(p.getType())))
                     }
                 }
             })
