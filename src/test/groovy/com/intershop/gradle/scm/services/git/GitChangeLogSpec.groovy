@@ -95,7 +95,7 @@ class GitChangeLogSpec extends AbstractScmSpec {
 
         ScmChangeLogService scls = ScmBuilder.getScmChangeLogService(project)
         scls.changelogFile = testLog
-        scls.targetVersion = '1.0.0'
+        scls.setTargetVersion('1.0.0')
 
         when:
         scls.createLog()

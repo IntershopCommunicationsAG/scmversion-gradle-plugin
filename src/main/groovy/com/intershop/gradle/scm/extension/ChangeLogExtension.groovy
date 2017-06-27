@@ -37,7 +37,8 @@ import org.gradle.api.provider.Provider
 @Slf4j
 class ChangeLogExtension extends AbstractExtension {
 
-    final PropertyState<String> targetVersion
+    // block for targetVersion - lazy evaluation - start
+    private final PropertyState<String> targetVersion
 
     Provider<String> getTargetVersionProvider() {
         targetVersion
@@ -47,11 +48,13 @@ class ChangeLogExtension extends AbstractExtension {
         targetVersion.get()
     }
 
-    void setTargetVersion(String message) {
-        this.targetVersion.set(message)
+    void setTargetVersion(String targetVersion) {
+        this.targetVersion.set(targetVersion)
     }
+    // block for targetVersion - lazy evaluation - end
 
-    final PropertyState<File> changelogFile
+    // block for changelogFile - lazy evaluation - start
+    private final PropertyState<File> changelogFile
 
     Provider<File> getChangelogFileProvider() {
         changelogFile
@@ -64,20 +67,23 @@ class ChangeLogExtension extends AbstractExtension {
     void setChangelogFile(File changelogFile) {
         this.changelogFile.set(changelogFile)
     }
+    // block for changelogFile - lazy evaluation - end
 
-    final PropertyState<Boolean> filterProject
+    // block for filterProject - lazy evaluation - start
+    private final PropertyState<Boolean> filterProject
 
     Provider<Boolean> getFilterProjectProvider() {
         filterProject
     }
 
-    Boolean getFilterProjec() {
+    Boolean getFilterProject() {
         filterProject.get()
     }
 
     void setFilterProjec(boolean filterProject) {
         this.filterProject.set(new Boolean(filterProject))
     }
+    // block for filterProject - lazy evaluation - end
 
     /**
      * Initialize this extension and set default values
@@ -89,9 +95,9 @@ class ChangeLogExtension extends AbstractExtension {
     ChangeLogExtension(Project project) {
         super(project)
 
-
-
-
+        targetVersion = project.property(String)
+        changelogFile = project.property(File)
+        filterProject = project.property(Boolean)
     }
 
 

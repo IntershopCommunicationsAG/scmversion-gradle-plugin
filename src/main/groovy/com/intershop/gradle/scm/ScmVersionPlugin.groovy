@@ -81,6 +81,7 @@ class ScmVersionPlugin implements Plugin<Project> {
 
         String changeLogFile = scmExtension.changelog.getVariable(CHANGELOG_ENV, CHANGELOG_PRJ, '')
         scmExtension.changelog.setChangelogFile( changeLogFile ? project.file(changeLogFile) : new File(project.getBuildDir(), 'changelog/changelog.asciidoc'))
+        scmExtension.changelog.setFilterProjec(false)
 
         project.getExtensions().getExtraProperties().set('useSCMVersionConfig', true)
 
