@@ -220,7 +220,7 @@ pluginBundle {
 }
 
 dependencies {
-    compile 'com.intershop.gradle.version:extended-version:1.3.0'
+    compile 'com.intershop.gradle.version:extended-version:2.0.0'
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
