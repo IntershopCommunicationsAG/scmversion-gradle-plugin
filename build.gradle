@@ -65,7 +65,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '2.11,3.4'
+    systemProperty 'intershop.gradle.versions', '2.11'
 }
 
 task copyAsciiDoc {

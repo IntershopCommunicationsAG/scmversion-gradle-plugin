@@ -76,7 +76,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         String patternString = "^${this.prefixes.getPrefix(versionBranchtype)}"
 
-        if((versionBranchtype == BranchType.branch || versionBranchtype == BranchType.featureBranch) && prefixes.getBranchPrefixSeperator()) {
+        if((versionBranchtype == BranchType.branch || versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.hotfixbBranch || versionBranchtype == BranchType.bugfixBranch) && prefixes.getBranchPrefixSeperator()) {
             patternString += "${prefixes.getBranchPrefixSeperator()}("
         } else if(versionBranchtype == BranchType.tag && prefixes.getTagPrefixSeperator()) {
             patternString += "${prefixes.getTagPrefixSeperator()}("
@@ -93,12 +93,18 @@ class ScmBranchFilter extends AbstractBranchFilter {
             case BranchType.featureBranch:
                 patternString += ")"
                 break
+            case BranchType.hotfixbBranch:
+                patternString += ")"
+                break
+            case BranchType.bugfixBranch:
+                patternString += ")"
+                break
             case BranchType.tag:
                 patternString += ")"
                 break
         }
 
-        if(featureBranch && (versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.tag)) {
+        if(featureBranch && (versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.bugfixBranch || versionBranchtype == BranchType.hotfixbBranch || versionBranchtype == BranchType.tag)) {
             patternString += "${Version.METADATA_SEPARATOR}${featureBranch}"
         }
         if(! featureBranch && versionBranchtype == BranchType.tag) {

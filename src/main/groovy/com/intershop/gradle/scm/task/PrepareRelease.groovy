@@ -50,7 +50,7 @@ class PrepareRelease extends DefaultTask {
                 versionService.createTag(version)
             }
 
-            if(versionService.moveTo(version.toString(), versionService.localService.branchType == BranchType.featureBranch) == '') {
+            if(versionService.moveTo(version.toString(), BranchType.tag) == '') {
                 throw new GradleException("It is not possible to move the existing working copy to version ${version} on the SCM!")
             }
             versionConfig.updateVersionService()

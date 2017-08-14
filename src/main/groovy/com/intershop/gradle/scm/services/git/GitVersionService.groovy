@@ -19,6 +19,7 @@ import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.services.ScmVersionService
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.gradle.scm.utils.BranchType
+import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.gradle.scm.utils.ScmException
 import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmUser
@@ -84,7 +85,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             String branchName
 
             ScmBranchFilter tagFilter = getBranchFilter()
-            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? BranchType.featureBranch : BranchType.branch)
+            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch)
 
             String version = null
 
@@ -173,10 +174,10 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * Moves the working copy to a specified version
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
-    public String moveTo(String version, boolean featureBranch) {
+    public String moveTo(String version, BranchType type = BranchType.branch) {
         //checkout branch, wc is detached
         log.debug('git checkout {}', version)
 
@@ -188,8 +189,8 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             branchName = getBranchName(BranchType.tag, version)
             versionMap = getTagMap()
             path = 'tags/'
-        } else if(checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version)) {
-            branchName = getBranchName(featureBranch ? BranchType.featureBranch : BranchType.branch, version)
+        } else if(checkBranch(type, version)) {
+            branchName = getBranchName(type, version)
             versionMap = getBranchMap()
             path = 'origin/'
         } else {
@@ -264,11 +265,11 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
     public String createBranch(String version, boolean featureBranch, String revid = this.localService.getRevID()) {
         if(remoteConfigAvailable) {
             // check if branch exits
-            if (checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version) ) {
+            if (checkBranch(featureBranch ? localService.getBranchType() : BranchType.branch, version) ) {
                 throw new ScmException("Branch for ${version} exists in this repo.")
             }
 
-            String branchName = getBranchName(featureBranch ? BranchType.featureBranch : BranchType.branch, version)
+            String branchName = getBranchName(featureBranch ? localService.getBranchType() : BranchType.branch, version)
 
             // create branch
             CreateBranchCommand cmd = ((GitLocalService)localService).client.branchCreate()

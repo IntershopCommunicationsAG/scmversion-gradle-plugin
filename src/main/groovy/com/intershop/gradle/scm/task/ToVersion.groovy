@@ -18,6 +18,7 @@ package com.intershop.gradle.scm.task
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmVersionService
+import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.release.version.ParserException
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionParser
@@ -40,6 +41,7 @@ import org.gradle.api.tasks.TaskAction
 class ToVersion extends DefaultTask {
 
     public final static String VERSION_PROPNAME = 'targetVersion'
+    public final static String BRANCHTYPE_PROPNAME = 'branchType'
     public final static String FEATURE_RPOPNAME = 'feature'
 
     public ToVersion() {
@@ -52,10 +54,15 @@ class ToVersion extends DefaultTask {
 
         String targetVersion = ''
         String feature = ''
+        String branchType = ''
 
         if(project.hasProperty(VERSION_PROPNAME)) {
             targetVersion = project.property(VERSION_PROPNAME)
             log.debug('Version is {}', targetVersion)
+        }
+        if(project.hasProperty(BRANCHTYPE_PROPNAME)) {
+            branchType = project.property(BRANCHTYPE_PROPNAME)
+            log.debug('Branch type is {}', feature)
         }
         if(project.hasProperty(FEATURE_RPOPNAME)) {
             feature = project.property(FEATURE_RPOPNAME)
@@ -63,6 +70,18 @@ class ToVersion extends DefaultTask {
         }
 
         if(targetVersion) {
+            BranchType bType = BranchType.branch
+
+            if(branchType) {
+                try {
+                    bType = BranchType.valueOf(branchType)
+                }catch (Exception ex) {
+                    log.warn('The specified branch type is not valid ({})!', branchType)
+                }
+            }
+
+            bType = feature ? BranchType.featureBranch : BranchType.branch
+
             Version v = null
             try {
                 v = VersionParser.parseVersion(targetVersion, versionConfig.getVersionType())
@@ -76,10 +95,11 @@ class ToVersion extends DefaultTask {
             }
 
             log.debug('Target version is {}', v.toString())
+            log.debug('Branch type is {}', bType.toString())
 
             ScmVersionService versionService = versionConfig.getVersionService()
             try {
-                String revision = versionService.moveTo(v.toString(), feature != null && feature != '')
+                String revision = versionService.moveTo(v.toString(), bType)
                 log.info('Working copy was switched to {} with revision id {}', v.toString(), revision)
             } catch(Exception ex) {
                 log.error('It was not possible to switch the current working copy to the specifed version.', ex)

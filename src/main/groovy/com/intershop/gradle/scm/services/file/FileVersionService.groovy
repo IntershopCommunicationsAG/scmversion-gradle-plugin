@@ -17,6 +17,7 @@ package com.intershop.gradle.scm.services.file
 
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.services.ScmVersionService
+import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.ScmVersionObject
 import com.intershop.gradle.scm.version.VersionTag
@@ -70,11 +71,11 @@ class FileVersionService extends FileRemoteService implements ScmVersionService 
      * This is not available for this implementation.
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
     @Override
-    String moveTo(String tagName, boolean featureBrach) {
+    String moveTo(String tagName, BranchType type) {
         log.info("Not available for file system only projects!")
         return ''
     }

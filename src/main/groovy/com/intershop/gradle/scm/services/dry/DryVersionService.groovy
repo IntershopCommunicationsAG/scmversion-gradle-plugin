@@ -17,6 +17,7 @@ package com.intershop.gradle.scm.services.dry
 
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.services.ScmVersionService
+import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.version.ScmVersionObject
 import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.Version
@@ -79,11 +80,11 @@ class DryVersionService extends DryRemoteService implements ScmVersionService {
      * This shows only the version if available.
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
     @Override
-    String moveTo(String version, boolean featureBrach) {
+    String moveTo(String version, BranchType type) {
         if(remoteClient.isReleaseVersionAvailable(version)) {
             log.info("Move working dir to ${version}")
         }
