@@ -42,6 +42,16 @@ class PrefixConfig {
     String featurePrefix
 
     /**
+     * Prefix for hotfix branches
+     */
+    String hotfixPrefix
+
+    /**
+     * Prefix for bugfix branches
+     */
+    String bugfixPrefix
+
+    /**
      * Prefix for release tags
      */
     String tagPrefix
@@ -56,6 +66,8 @@ class PrefixConfig {
     PrefixConfig() {
         stabilizationPrefix = 'SB'
         featurePrefix = 'FB'
+        hotfixPrefix = 'HB'
+        bugfixPrefix = 'BB'
         tagPrefix = 'RELEASE'
     }
 
@@ -68,9 +80,28 @@ class PrefixConfig {
      * @param tagPrefix prefix for release tags
      */
     PrefixConfig(String stabilizationPrefix, String featurePrefix, String tagPrefix) {
+        this()
         this.stabilizationPrefix = stabilizationPrefix
         this.featurePrefix = featurePrefix
         this.tagPrefix = tagPrefix
+    }
+
+    /**
+     * <p>Constructs a prefix configuration with
+     * parameters.</p>
+     *
+     * @param stabilizationPrefix prefix for stabilization branches
+     * @param featurePrefix prefix for feature branches
+     * @param tagPrefix prefix for release tags
+     * @param hotfixPrefix prefix for hotfix branches
+     * @param bugfixPrefix prefix for bugfix branches
+     */
+    PrefixConfig(String stabilizationPrefix, String featurePrefix, String tagPrefix, String hotfixPrefix, String bugfixPrefix) {
+        this.stabilizationPrefix = stabilizationPrefix
+        this.featurePrefix = featurePrefix
+        this.tagPrefix = tagPrefix
+        this.hotfixPrefix = hotfixPrefix
+        this.bugfixPrefix = bugfixPrefix
     }
 
     /**
@@ -95,9 +126,33 @@ class PrefixConfig {
      */
     String getFeatureBranchPattern() {
         if(branchPrefixSeperator) {
-            return "${featurePrefix}${branchPrefixSeperator}${featureBranchPatternSuffix}"
+            return "${featurePrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
         }
-        return "${featurePrefix}${prefixSeperator}${featureBranchPatternSuffix}"
+        return "${featurePrefix}${prefixSeperator}${extraBranchPatternSuffix}"
+    }
+
+    /**
+     * Creates a search pattern for feature branches.
+     *
+     * @return Search pattern for feature branches.
+     */
+    public String getHotfixBranchPattern() {
+        if(branchPrefixSeperator) {
+            return "${hotfixPrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
+        }
+        return "${hotfixPrefix}${prefixSeperator}${extraBranchPatternSuffix}"
+    }
+
+    /**
+     * Creates a search pattern for feature branches.
+     *
+     * @return Search pattern for feature branches.
+     */
+    public String getBugfixBranchPattern() {
+        if(branchPrefixSeperator) {
+            return "${bugfixPrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
+        }
+        return "${bugfixPrefix}${prefixSeperator}${extraBranchPatternSuffix}"
     }
 
     /**
@@ -118,6 +173,26 @@ class PrefixConfig {
      */
     String getFeaturePrefix() {
         return validatePrefix('feature branches', featurePrefix)
+    }
+
+    /**
+     * Checks the prefix. An empty prefix for feature branches
+     * is not allowed.
+     *
+     * @return validated prefix for feature branches
+     */
+    public String getHotfixPrefix() {
+        return validatePrefix('hotfix branches', hotfixPrefix)
+    }
+
+    /**
+     * Checks the prefix. An empty prefix for feature branches
+     * is not allowed.
+     *
+     * @return validated prefix for feature branches
+     */
+    public String getBugfixPrefix() {
+        return validatePrefix('bugfix branches', bugfixPrefix)
     }
 
     /**
@@ -144,6 +219,13 @@ class PrefixConfig {
             case BranchType.featureBranch:
                 return featurePrefix
                 break
+            case BranchType.hotfixbBranch:
+                return hotfixPrefix
+                break
+            case BranchType.bugfixBranch:
+                return bugfixPrefix
+                break
+            case BranchType.tag:
             default:
                 return tagPrefix
                 break
@@ -163,6 +245,12 @@ class PrefixConfig {
         }
         if(prefix == featurePrefix) {
             return BranchType.featureBranch
+        }
+        if(prefix == hotfixPrefix) {
+            return BranchType.hotfixbBranch
+        }
+        if(prefix == bugfixPrefix) {
+            return BranchType.bugfixBranch
         }
         if(prefix == tagPrefix) {
             return BranchType.tag

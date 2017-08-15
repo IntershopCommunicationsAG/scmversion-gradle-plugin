@@ -66,7 +66,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      */
     ScmVersionObject getVersionObject() {
         ScmBranchFilter tagFilter = getBranchFilter(BranchType.tag)
-        ScmBranchFilter branchFilter = getBranchFilter(BranchType.branch)
+        ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch)
 
         // the working copy is a tag
         if(((SvnLocalService)localService).branchType == BranchType.tag) {
@@ -121,7 +121,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
             return rv
         }
 
-        if(localService.branchType == BranchType.branch || localService.branchType == BranchType.featureBranch) {
+        if(localService.branchType == BranchType.branch || localService.branchType == BranchType.featureBranch || localService.branchType == BranchType.hotfixbBranch || localService.branchType == BranchType.bugfixBranch) {
             log.debug('Version is taken from the branch')
 
             String versionString = getBranchFilter(localService.branchType).getVersionStr(localService.branchName)
@@ -175,17 +175,18 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * Moves the working copy to a specified version
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
     String moveTo(String version, boolean featureBranch) {
+    public String moveTo(String version, BranchType type = BranchType.branch) {
         log.debug('svn checkout {}', version)
 
         SVNURL url = null
         if(checkBranch(BranchType.tag ,version)) {
             url = getVersionBranch(BranchType.tag).appendPath(getBranchName(BranchType.tag, version), false)
-        } else if(checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version)) {
-            url = getVersionBranch(BranchType.branch).appendPath(getBranchName(featureBranch ? BranchType.featureBranch : BranchType.branch, version),false)
+        } else if(checkBranch(type, version)) {
+            url = getVersionBranch(BranchType.branch).appendPath(getBranchName(type, version),false)
         } else {
             throw new ScmException("Version '${version}' does not exist")
         }
@@ -229,11 +230,11 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      */
     String createBranch(String version, boolean featureBranch, String revid = localService.getRevID()) {
 
-        if (checkBranch(featureBranch ? BranchType.featureBranch : BranchType.branch, version) ) {
+        if (checkBranch(featureBranch ? localService.getBranchType() : BranchType.branch, version) ) {
             throw new ScmException("Branch for ${version} exists!")
         }
 
-        String branchName = getBranchName(featureBranch ? BranchType.featureBranch : BranchType.branch, version)
+        String branchName = getBranchName(featureBranch ? localService.getBranchType() : BranchType.branch, version)
 
         return copyClient(SvnCopySource.create(SvnTarget.fromURL(((SvnLocalService)localService).getRemoteSvnUrl()), SVNRevision.create(Long.parseLong(revid))),
                           SvnTarget.fromURL(getVersionBranch(BranchType.branch).appendPath(branchName,false)), 'Branch')
@@ -260,10 +261,10 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
         SVNURL svnURL = null
         String name = getBranchName(type, version)
 
-        if(type == BranchType.featureBranch || type == BranchType.branch) {
-            svnURL = getVersionBranch(BranchType.branch).appendPath(name,false)
-        } else {
+        if(type == BranchType.tag) {
             svnURL = getVersionBranch(BranchType.tag).appendPath(name,false)
+        } else {
+            svnURL = getVersionBranch(BranchType.branch).appendPath(name,false)
         }
 
         SVNRepository repo = SVNRepositoryFactory.create(svnURL)

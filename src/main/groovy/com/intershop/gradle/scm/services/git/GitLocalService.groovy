@@ -71,8 +71,19 @@ class GitLocalService extends ScmLocalService{
             branchType = BranchType.trunk
         } else {
             def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
+            def mhb = branchName =~ /${prefixes.getHotfixBranchPattern()}/
+            def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
+
+            if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
             if(mfb.matches() && mfb.count == 1 && ((mfb[0] as List).size() == 5 || (mfb[0] as List).size() == 6)) {
                 branchType = BranchType.featureBranch
+                featureBranchName = mfb[0][mfb[0].size() - 1]
+            } else if(mhb.matches() && mhb.count == 1 && (mhb[0].size() == 5 || mhb[0].size() == 6)) {
+                branchType = BranchType.hotfixbBranch
+                featureBranchName = mhb[0][mhb[0].size() - 1]
+            } else if(mbb.matches() && mbb.count == 1 && (mbb[0].size() == 5 || mbb[0].size() == 6)) {
+                branchType = BranchType.bugfixBranch
+                featureBranchName = mbb[0][mbb[0].size() - 1]
                 featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
             } else {
                 String tn = checkHeadForTag()

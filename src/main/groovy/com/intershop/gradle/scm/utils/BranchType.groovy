@@ -44,6 +44,18 @@ enum BranchType {
             return 'featureBranch'
         }
     },
+    hotfixbBranch {
+        @Override
+        public String toString() {
+            return 'hotfixBranch'
+        }
+    },
+    bugfixBranch {
+        @Override
+        public String toString() {
+            return 'bugfixBranch'
+        }
+    },
     tag {
         @Override
         public String toString() {

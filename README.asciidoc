@@ -99,12 +99,21 @@ For parsing, calculation and sorting a library for an extended version object is
 Therefore branch names must comply with the following patterns. All examples use the default configuration.
 Depending on a special environment configuration (RUNONCI) the build extension is empty or SNAPSHOT, if this setting is true, otherwise it is LOCAL.
 
-==== Feature Branch
+==== Feature Branches, Hotfix Branches and Bugfix Branches
 [source]
 ----
-<feature branch prefix>_<version>-<featurebranch name>
+<feature, hotfix or bugfix branch prefix>_<version>-<branch name>
 ----
-The default feature branch prefix is `'FB'`. The version is the original version of the master/trunk.
+These are the default values
+[cols="50%,50%", width="50%", options="header"]
+|===
+|Branch Type  | Default value
+| Feature Branch | `'FB'`
+| Hotfix Branch | `'HB'`
+| Bugfix Branch | `'BB'`
+|===
+
+The version is the original version of the master/trunk.
 
 .Example
 ----
@@ -144,7 +153,7 @@ RELEASE_1.0.0-JIRA-4711-dev.1   Tag of a development milestone release of a feat
 * Default Branch (master) +
 The plugin is looking for a tag on the branch. If there is no tag the default value is used and extended with `SNAPSHOT`.
 
-* Branch/Feature Branch +
+* Branch / Feature,Hotfix,Bugfix Branch +
 The plugin is looking for a tag on the branch. If there is no valid tag on the branch, the version is taken from the name of the branch. The version will be always extended with `SNAPSHOT` on the CI server.
 
 * Tags +
@@ -154,7 +163,7 @@ Without local changes the plugin tries to calculate the name from the tag name.
 * Trunk +
 The plugin is looking for a tag that matches the specified criteria. In the most cases, the version is calculated from branches and will be extended with `SNAPSHOT`. This behavior can be configured.
 
-* Branch / Feature Branch +
+* Branch / Feature,Hotfix,Bugfix Branch +
 The plugin is looking for a tag that matches the branch name. If there is no valid tag on the branch, the version is taken from the name of the branch. The version will be always extended with `SNAPSHOT` on the CI server.
 
 * Tags +
@@ -178,6 +187,12 @@ scm {
 
         //default is 'FB'
         featurePrefix = 'FBP'
+
+        //default is 'HB'
+        hotfixPrefix = 'HBP'
+
+        //default is 'BB'
+        bugfixPrefix = 'BBP'
 
         //default is Release
         tagPrefix = 'RBP'
@@ -213,8 +228,7 @@ It makes changes to the SCM.  +
 For creating a feature branch it is necessary to specify a short name for the feature in a project property `*feature*`.
 |toVersion  |ToVersion        |This task moves the working copy to a target version.
 This version must be specified in a project property `*targetVersion*`. It is also possible to specify the short name of a
-feature in a property `*feature*`. +
-It changes the working copy.
+feature in a property `*feature*` and the kind of branch in the property `*branchType*`, that should be used. The default value for the type is `*branch*`. Possible values are `*featureBranch*`,  `*hotfixBranch*`, `*bugfixBranch*`, `*tag*`. It changes the working copy.
 |release    |PrepareRelease   |This task creates a tag, if necessary, and move the the working copy to the version. +
 It changes the working copy.
 |createChangelog |CreateChangeLog   | This task creates a change log with all changes between the latest commit of the current working copy and the tag of the previous version. It is possible to specify another 'previous' version. +
@@ -247,6 +261,8 @@ _This extension can be configured over environment variables and project propert
 
 |*stabilizationPrefix*    |`String` |`SB`       | Prefix for stabilization branches
 |*featurePrefix*          |`String` |`FB`       | Prefix for feature branches
+|*hotfixPrefix*           |`String` |`HB`       | Prefix for hotfix branches
+|*bugfixPrefix*           |`String` |`BB`       | Prefix for bugfix branches
 |*tagPrefix*              |`String` |`RELEASE`  | Prefix for release tags
 |*prefixSeperator*        |`String` |`_`        | Separator between prefix and version
 |===
