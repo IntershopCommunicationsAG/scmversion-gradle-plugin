@@ -55,7 +55,7 @@ class SvnLocalServiceSpec extends AbstractScmSpec {
         infoService.getBranchType() == BranchType.trunk
         infoService.getBranchName() == 'trunk'
         infoService.getFeatureBranchName() == ''
-        ! infoService.changed
+        infoService.changed
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -76,7 +76,7 @@ class SvnLocalServiceSpec extends AbstractScmSpec {
         infoService.getBranchType() == BranchType.branch
         infoService.getBranchName() == 'SB_1.1'
         infoService.getFeatureBranchName() == ''
-        ! infoService.changed
+        infoService.changed
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -119,7 +119,7 @@ class SvnLocalServiceSpec extends AbstractScmSpec {
         infoService.getBranchType() == BranchType.featureBranch
         infoService.getBranchName() == 'FB_1.0.0-fb-123'
         infoService.getFeatureBranchName() == 'fb-123'
-        ! infoService.changed
+        infoService.changed
     }
 
     @Requires({ System.properties['svnurl'] &&
@@ -145,7 +145,7 @@ class SvnLocalServiceSpec extends AbstractScmSpec {
         infoService.getBranchType() == BranchType.tag
         infoService.getBranchName() == 'SBRELEASE_1.1.0'
         infoService.getFeatureBranchName() == ''
-        ! infoService.changed
+        infoService.changed
     }
 
     ScmExtension prepareProject(File projectDir, String path) {

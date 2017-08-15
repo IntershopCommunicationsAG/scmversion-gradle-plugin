@@ -92,7 +92,7 @@ class SvnVersionServiceSpec extends AbstractScmSpec {
         SvnVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
 
         then:
-        ! client.getVersionObject().isChanged()
+        client.getVersionObject().isChanged()
         client.getVersionObject().version.toString() == '1.1.0'
         versionConfig.getBranchName() == 'SB_1.1'
     }
