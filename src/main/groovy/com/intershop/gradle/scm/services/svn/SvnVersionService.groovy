@@ -178,8 +178,7 @@ class SvnVersionService extends SvnRemoteService implements ScmVersionService {
      * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
-    String moveTo(String version, boolean featureBranch) {
-    public String moveTo(String version, BranchType type = BranchType.branch) {
+    String moveTo(String version, BranchType type = BranchType.branch) {
         log.debug('svn checkout {}', version)
 
         SVNURL url = null

@@ -86,10 +86,8 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             String tagName
             String branchName
 
-            ScmBranchFilter tagFilter = getBranchFilter()
-            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch)
             ScmBranchFilter tagFilter = getBranchFilter(BranchType.tag)
-            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? BranchType.featureBranch : BranchType.branch)
+            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch)
 
             String version = null
 

@@ -29,7 +29,7 @@ class PrefixConfig {
     /**
      * Search pattern for branches with version information.
      */
-    protected final static String featureBranchPatternSuffix = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)-(.+)"
+    protected final static String extraBranchPatternSuffix = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)-(.+)"
 
     /**
      * Prefix for stabilization branches
