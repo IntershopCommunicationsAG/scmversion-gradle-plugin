@@ -73,7 +73,7 @@ trait ScmVersionService {
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the working after the move
      */
-    abstract String moveTo(String version, boolean featureBranch)
+    abstract String moveTo(String version, BranchType type)
 
     /**
      * Creates a tag with the specified version.

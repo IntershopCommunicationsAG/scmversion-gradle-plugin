@@ -165,7 +165,7 @@ class ScmBranchFilterSpec extends Specification {
         'SB_10.0-IS-4711'  | ''
     }
 
-    def 'branch filter with different prefix separator configuration'() {
+    def 'branch filter with different prefix separator configurations'() {
         when:
         PrefixConfig pc = new PrefixConfig('enf7ga', 'enf7gapre', 'RELEASE')
         pc.tagPrefixSeperator = '_'
@@ -174,6 +174,24 @@ class ScmBranchFilterSpec extends Specification {
 
         then:
         filter.getVersionStr('enf7ga-7.5') == '7.5'
+
+        when:
+        filter = new ScmBranchFilter(BranchType.tag, pc, '', null, '', 2)
+
+        then:
+        filter.getVersionStr('RELEASE_7.5.5.1') == '7.5.5.1'
+
+    }
+
+    def 'branch filter with different prefixes configurations - extended'() {
+        when:
+        PrefixConfig pc = new PrefixConfig('SB', 'FB', 'RELEASE', 'HB', 'BB')
+        pc.tagPrefixSeperator = '_'
+        pc.branchPrefixSeperator = '_'
+        ScmBranchFilter filter = new ScmBranchFilter(BranchType.hotfixbBranch, pc, '', null, '', 2)
+
+        then:
+        filter.getVersionStr('HB_1.0') == '1.0'
 
         when:
         filter = new ScmBranchFilter(BranchType.tag, pc, '', null, '', 2)

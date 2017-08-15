@@ -426,6 +426,90 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     @Requires({ System.properties['svnurl'] &&
             System.properties['svnuser'] &&
             System.properties['svnpasswd'] })
+    def 'test showVersion task with svn bugfix branch - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/branches/BB_2.0.0-ISTOOL-1235")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                bugfixPrefix = 'BB'
+            }
+            version {
+                versionBranch = 'branch'
+            }
+        }
+
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-ISTOOL-1235-LOCAL')
+        result.output.contains('branchname: BB_2.0.0-ISTOOL-1235')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task with svn hotfix branch - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/branches/HB_2.0.0-ISTOOL-1234")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            prefixes {
+                hotfixPrefix = 'HB'
+            }
+            version {
+                versionBranch = 'branch'
+            }
+        }
+
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-ISTOOL-1234-LOCAL')
+        result.output.contains('branchname: HB_2.0.0-ISTOOL-1234')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
     def 'test showVersion task with svn feature branch - jira issue included - #gradleVersion'(gradleVersion) {
         given:
         svnCheckOut(testProjectDir, "${System.properties['svnurl']}/branches/FB_1.0.0-fb-123")
@@ -1076,6 +1160,80 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 1.1.1-LOCAL')
         result.output.contains('branchname: SB_1.1')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git bugfix branch - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'BB_2.0-JIRA-4712' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes {
+            bugfixPrefix = 'BB'
+        }
+
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.1-JIRA-4712-LOCAL')
+        result.output.contains('branchname: BB_2.0-JIRA-4712')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git hotfix branch - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'HB_2.0-JIRA-4711' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes {
+            hotfixPrefix = 'HB'
+        }
+
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.1-JIRA-4711-LOCAL')
+        result.output.contains('branchname: HB_2.0-JIRA-4711')
 
         where:
         gradleVersion << supportedGradleVersions
