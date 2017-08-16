@@ -428,7 +428,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             System.properties['svnpasswd'] })
     def 'test showVersion task with svn bugfix branch - #gradleVersion'(gradleVersion) {
         given:
-        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/branches/BB_2.0.0-ISTOOL-1235")
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/branches/BB_2.0.0-ISTOOL-12345")
 
         buildFile << """
         plugins {
@@ -458,8 +458,8 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-ISTOOL-1235-LOCAL')
-        result.output.contains('branchname: BB_2.0.0-ISTOOL-1235')
+        result.output.contains('Project version: 2.0.0-ISTOOL-12345-LOCAL')
+        result.output.contains('branchname: BB_2.0.0-ISTOOL-12345')
 
         where:
         gradleVersion << supportedGradleVersions
