@@ -27,7 +27,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.4.0'
+version = '2.5.0'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -169,6 +169,12 @@ publishing {
                 license.appendNode( 'url', 'http://www.apache.org/licenses/LICENSE-2.0' )
                 license.appendNode( 'distribution', 'repo' )
             }
+        }
+    }
+
+    repositories {
+        maven {
+            url "/Users/mraab/.gradle/.localRepo"
         }
     }
 }
