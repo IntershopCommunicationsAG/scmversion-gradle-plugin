@@ -36,6 +36,7 @@ import org.eclipse.jgit.api.*
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.jgit.api.errors.InvalidRemoteException
 import org.eclipse.jgit.api.errors.TransportException
+import org.eclipse.jgit.lib.AnyObjectId
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revplot.PlotCommitList
@@ -93,7 +94,6 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
 
             int pos = 0
 
-            RevCommit commit
             BranchObject tagObject
             BranchObject branchObject
 
@@ -108,7 +108,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             // version from tag, if tag is available
             if (!tags.isEmpty()) {
                 walk.markStart(head)
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
                     tagObject = tags[commit.id.name()]
                     if (tagObject) {
                         // commit is a tag
@@ -136,7 +136,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
 
                 pos = 0
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
 
                     branchObject = branches[commit.id.name()]
                     if (branchObject) {
@@ -216,7 +216,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         log.debug('git checkout {}', version)
 
         String branchName = ''
-        Map<String, String> versionMap = null
+        Map<String, BranchObject> versionMap = null
         String path = ''
 
         if(checkBranch(BranchType.tag, version)) {
@@ -379,7 +379,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      */
     private Map<String, BranchObject> getBranchMap(AbstractBranchFilter branchFilter) {
         //specify return value
-        Map<String, Ref> rv = [:]
+        Map<String, BranchObject> rv = [:]
 
         if(remoteConfigAvailable) {
             fetchAllCmd()
