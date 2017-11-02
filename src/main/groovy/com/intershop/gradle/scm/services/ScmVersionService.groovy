@@ -187,7 +187,7 @@ trait ScmVersionService {
             return versionObject.version
         }
 
-        if(localService.branchType != BranchType.featureBranch) {
+        if(localService.branchType != BranchType.featureBranch && localService.branchType != BranchType.bugfixBranch && localService.branchType != BranchType.hotfixbBranch) {
             if(versionObject.changed) {
                 if (! versionExt.increment && localService.branchType != BranchType.trunk) {
                     return versionObject.version.incrementVersion()
