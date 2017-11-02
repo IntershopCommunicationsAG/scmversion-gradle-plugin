@@ -70,28 +70,28 @@ class GitLocalService extends ScmLocalService{
         if(branchName == 'master') {
             branchType = BranchType.trunk
         } else {
-            def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
-            def mhb = branchName =~ /${prefixes.getHotfixBranchPattern()}/
-            def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
+                def mfb = branchName =~ /${prefixes.getFeatureBranchPattern(scmExtension.version.branchWithVersion)}/
+                def mhb = branchName =~ /${prefixes.getHotfixBranchPattern(scmExtension.version.branchWithVersion)}/
+                def mbb = branchName =~ /${prefixes.getBugfixBranchPattern(scmExtension.version.branchWithVersion)}/
 
-            if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
-                branchType = BranchType.featureBranch
-                featureBranchName = mfb[0][mfb[0].size() - 1]
-            } else if(mhb.matches() && mhb.count == 1 && (mhb[0].size() == 5 || mhb[0].size() == 6)) {
-                branchType = BranchType.hotfixbBranch
-                featureBranchName = mhb[0][mhb[0].size() - 1]
-            } else if(mbb.matches() && mbb.count == 1 && (mbb[0].size() == 5 || mbb[0].size() == 6)) {
-                branchType = BranchType.bugfixBranch
-                featureBranchName = mbb[0][mbb[0].size() - 1]
-            } else {
-                String tn = checkHeadForTag()
-                if(tn) {
-                    branchType = BranchType.tag
-                    branchName = tn
+                if (mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mfb[0].size() == 2) )) {
+                    branchType = BranchType.featureBranch
+                    featureBranchName = mfb[0][mfb[0].size() - 1]
+                } else if (mhb.matches() && mhb.count == 1 && (mhb[0].size() == 5 || mhb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mfb[0].size() == 2) )) {
+                    branchType = BranchType.hotfixbBranch
+                    featureBranchName = mhb[0][mhb[0].size() - 1]
+                } else if (mbb.matches() && mbb.count == 1 && (mbb[0].size() == 5 || mbb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mbb[0].size() == 2) )) {
+                    branchType = BranchType.bugfixBranch
+                    featureBranchName = mbb[0][mbb[0].size() - 1]
                 } else {
-                    branchType = BranchType.branch
+                    String tn = checkHeadForTag()
+                    if (tn) {
+                        branchType = BranchType.tag
+                        branchName = tn
+                    } else {
+                        branchType = BranchType.branch
+                    }
                 }
-            }
         }
 
         log.info('Branch name is {}', branchName)
