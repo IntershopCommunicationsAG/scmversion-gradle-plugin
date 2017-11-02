@@ -18,8 +18,7 @@ plugins {
     id 'maven-publish'
 
     // plugin for publishing to Gradle Portal
-    id 'com.gradle.plugin-publish' version '0.9.6'
-
+    id 'com.gradle.plugin-publish' version '0.9.9'
     // plugin for publishing to jcenter
     id 'com.jfrog.bintray' version '1.7.3'
 }
