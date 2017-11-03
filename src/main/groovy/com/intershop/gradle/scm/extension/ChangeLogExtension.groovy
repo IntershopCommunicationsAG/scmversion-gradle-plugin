@@ -19,7 +19,7 @@ package com.intershop.gradle.scm.extension
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
-import org.gradle.api.provider.PropertyState
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 
 /**
@@ -38,7 +38,7 @@ import org.gradle.api.provider.Provider
 class ChangeLogExtension extends AbstractExtension {
 
     // block for targetVersion - lazy evaluation - start
-    private final PropertyState<String> targetVersion
+    private final Property<String> targetVersion
 
     Provider<String> getTargetVersionProvider() {
         targetVersion
@@ -54,7 +54,7 @@ class ChangeLogExtension extends AbstractExtension {
     // block for targetVersion - lazy evaluation - end
 
     // block for changelogFile - lazy evaluation - start
-    private final PropertyState<File> changelogFile
+    private final Property<File> changelogFile
 
     Provider<File> getChangelogFileProvider() {
         changelogFile
@@ -70,7 +70,7 @@ class ChangeLogExtension extends AbstractExtension {
     // block for changelogFile - lazy evaluation - end
 
     // block for filterProject - lazy evaluation - start
-    private final PropertyState<Boolean> filterProject
+    private final Property<Boolean> filterProject
 
     Provider<Boolean> getFilterProjectProvider() {
         filterProject
@@ -95,9 +95,9 @@ class ChangeLogExtension extends AbstractExtension {
     ChangeLogExtension(Project project) {
         super(project)
 
-        targetVersion = project.property(String)
-        changelogFile = project.property(File)
-        filterProject = project.property(Boolean)
+        targetVersion = project.getObjects().property(String)
+        changelogFile = project.getObjects().property(File)
+        filterProject = project.getObjects().property(Boolean)
     }
 
 
