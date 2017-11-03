@@ -27,7 +27,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class FileRemoteService {
 
-    private final FileLocalService localService = null
+    private final FileLocalService localService
 
     FileRemoteService(ScmLocalService sls,
                       ScmUser user = null) {
@@ -38,7 +38,7 @@ class FileRemoteService {
         }
     }
 
-    public Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
+    static Map<String, BranchObject> getTagMap(AbstractBranchFilter branchFilter) {
         log.info("Not available for file system only projects!")
         return [:]
     }

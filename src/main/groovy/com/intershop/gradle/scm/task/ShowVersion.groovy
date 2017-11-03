@@ -29,7 +29,7 @@ import org.gradle.api.tasks.TaskAction
 @CompileStatic
 class ShowVersion extends DefaultTask {
 
-    public ShowVersion() {
+    ShowVersion() {
         this.outputs.upToDateWhen { false }
     }
 

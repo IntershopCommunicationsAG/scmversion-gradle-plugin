@@ -229,7 +229,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
-    public String moveTo(String version, BranchType type = BranchType.branch) {
+     String moveTo(String version, BranchType type = BranchType.branch) {
         //checkout branch, wc is detached
         log.debug('git checkout {}', version)
 
@@ -418,8 +418,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             if(branchName != 'master') {
                 String version = branchFilter.getVersionStr(branchName)
                 if(version) {
-                    Iterable<RevCommit> commits = ((GitLocalService)localService).client.log().add(((GitLocalService)localService).repository.resolve(name)).call();
-                    List<RevCommit> commitsList = commits.iterator().toList()
+                    Iterable<RevCommit> commits = ((GitLocalService)localService).client.log().add(((GitLocalService)localService).repository.resolve(name)).call()
                     rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, name.substring(name.lastIndexOf('/') + 1)))
                 }
             }

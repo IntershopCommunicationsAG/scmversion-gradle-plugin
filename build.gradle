@@ -150,7 +150,7 @@ publishing {
             }
 
             pom.withXml {
-                def Node root = asNode();
+                def Node root = asNode()
                 root.appendNode('name', project.name)
                 root.appendNode('description', project.description)
                 root.appendNode('url', "https:/gitlab.intershop.de/IntershopGradlePlugins/${project.name}")
@@ -163,7 +163,7 @@ publishing {
                 org.appendNode( 'name', 'Intershop Communications' )
                 org.appendNode( 'url', 'http://intershop.com' )
 
-                def license = root.appendNode( 'licenses' ).appendNode( 'license' );
+                def license = root.appendNode( 'licenses' ).appendNode( 'license' )
                 license.appendNode( 'name', 'Apache License, Version 2.0' )
                 license.appendNode( 'url', 'http://www.apache.org/licenses/LICENSE-2.0' )
                 license.appendNode( 'distribution', 'repo' )

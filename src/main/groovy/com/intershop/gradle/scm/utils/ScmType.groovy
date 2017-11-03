@@ -29,19 +29,19 @@ import groovy.transform.CompileStatic
 enum ScmType {
     git {
         @Override
-        public String toString() {
+        String toString() {
             return 'git'
         }
     },
     svn {
         @Override
-        public String toString() {
+        String toString() {
             return 'svn'
         }
     },
     file {
         @Override
-        public String toString() {
+        String toString() {
             return 'file'
         }
     }

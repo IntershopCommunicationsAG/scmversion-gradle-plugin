@@ -30,7 +30,7 @@ import org.junit.rules.TemporaryFolder
 class AbstractTaskSpec extends AbstractScmSpec {
 
     @Rule
-    TemporaryFolder tempFolder = new TemporaryFolder();
+    TemporaryFolder tempFolder = new TemporaryFolder()
 
     protected void prepareGitCheckout(File testProject, String source, String branch) {
         File tempDir = tempFolder.newFolder()
@@ -54,7 +54,7 @@ class AbstractTaskSpec extends AbstractScmSpec {
                 .setBranch(branch)
                 .setDirectory(tempDir)
                 .setTransportConfigCallback(new TransportConfigCallback() {
-                    public void configure(Transport transport) {
+                    void configure(Transport transport) {
                         SshTransport sshTransport = (SshTransport) transport
                         sshTransport.setSshSessionFactory(new SshConnector(keyFile, ''))
                     }

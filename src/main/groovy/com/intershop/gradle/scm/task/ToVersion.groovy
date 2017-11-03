@@ -44,7 +44,7 @@ class ToVersion extends DefaultTask {
     public final static String BRANCHTYPE_PROPNAME = 'branchType'
     public final static String FEATURE_RPOPNAME = 'feature'
 
-    public ToVersion() {
+    ToVersion() {
         this.outputs.upToDateWhen { false }
     }
 

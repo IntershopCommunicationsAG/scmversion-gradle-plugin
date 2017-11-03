@@ -38,15 +38,15 @@ class ScmVersionObject {
         this.changed = changed
     }
 
-    public String getScmPath() {
+    String getScmPath() {
         return scmpath
     }
 
-    public Version getVersion() {
+    Version getVersion() {
         return version
     }
 
-    public Version updateVersion(Version version) {
+    Version updateVersion(Version version) {
         this.version = version
     }
 }

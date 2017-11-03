@@ -181,7 +181,7 @@ class PrefixConfig {
      *
      * @return validated prefix for feature branches
      */
-    public String getHotfixPrefix() {
+    String getHotfixPrefix() {
         return validatePrefix('hotfix branches', hotfixPrefix)
     }
 
@@ -191,7 +191,7 @@ class PrefixConfig {
      *
      * @return validated prefix for feature branches
      */
-    public String getBugfixPrefix() {
+    String getBugfixPrefix() {
         return validatePrefix('bugfix branches', bugfixPrefix)
     }
 
