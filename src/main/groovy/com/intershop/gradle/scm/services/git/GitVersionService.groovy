@@ -111,7 +111,6 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                     tagObject = tags[commit.id.name()]
                     if(! (versionExt.branchWithVersion || tagObject)) {
                         tagObject = simpleTags[commit.id.name]
-                        println "Hier ${tagObject}"
                     }
                     if (tagObject) {
                         // commit is a tag
