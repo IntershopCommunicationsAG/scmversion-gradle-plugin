@@ -15,7 +15,7 @@ plugins {
     id 'maven-publish'
 
     // plugin for publishing to Gradle Portal
-    id 'com.gradle.plugin-publish' version '0.9.7'
+    id 'com.gradle.plugin-publish' version '0.9.9'
 
     // plugin for publishing to jcenter
     id 'com.jfrog.bintray' version '1.7.3'
@@ -24,7 +24,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '3.1.0'
+version = '3.2.0'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -62,7 +62,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '4.1'
+    systemProperty 'intershop.gradle.versions', '4.3'
     //working dir for tests
     systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
 }
