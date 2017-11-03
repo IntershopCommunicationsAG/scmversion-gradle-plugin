@@ -143,6 +143,7 @@ class GitRemoteService {
         } catch(InvalidRemoteException nrex) {
             log.warn('No remote repository is available! {}', nrex.getMessage())
         } catch(TransportException tex) {
+            tex.printStackTrace()
             log.warn('It was not possible to fetch all tags. Please check your credential configuration.', tex)
         }
     }

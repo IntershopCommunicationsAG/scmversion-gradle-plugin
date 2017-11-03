@@ -109,7 +109,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             // version from tag, if tag is available
             if (!(tags.isEmpty() && simpleTags.isEmpty())) {
                 walk.markStart(head)
-                for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
+                for (RevCommit commit = walk.next(); commit; commit = walk.next()) {
                     tagObject = tags[commit.id.name()]
                     if(! (versionExt.branchWithVersion || tagObject)) {
                         tagObject = simpleTags[commit.id.name]

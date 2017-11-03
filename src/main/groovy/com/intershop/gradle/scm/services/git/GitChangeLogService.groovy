@@ -24,6 +24,7 @@ import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.VersionTag
+import com.intershop.release.version.Version
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
@@ -61,14 +62,23 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
 
     void createLog() {
         VersionTag pvt = null
+        String preVersionStr  = ''
+
         try {
             pvt = versionExt.getPreviousVersionTag(getTargetVersion())
         } catch(Exception ex) {
-            log.warn(ex.getMessage())
+            log.debug(ex.getMessage())
+        }
+
+        try {
+            Version pv = versionExt.getVersionService().getPreVersion()
+            preVersionStr = pv ? pv.toString() : 'not available'
+        } catch(Exception ex) {
+            log.debug(ex.getMessage())
         }
 
         if(pvt) {
-            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), pvt.ver.toString()))
+            this.changelogFile.append(getHeader(preVersionStr, pvt.ver.toString()))
 
             Iterable<RevCommit> refs = localService.client.log().addRange(getObjectId(pvt.branchObject.id), getObjectId(localService.getRevID())).call()
             refs.findAll().each { RevCommit rc ->
@@ -76,7 +86,7 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
                 getFilesInCommit(rc)
             }
         } else {
-            this.changelogFile.append(getHeader(versionExt.getVersionService().getPreVersion().toString(), 'not available'))
+            this.changelogFile.append(getHeader(preVersionStr, 'not available'))
         }
         this.changelogFile.append(getFooter())
     }
