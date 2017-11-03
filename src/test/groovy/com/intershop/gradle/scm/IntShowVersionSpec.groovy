@@ -1205,6 +1205,89 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    def 'test showVersion task with git bugfix branch and without version - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'BB_JIRA-4712' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        scm {
+            prefixes {
+                bugfixPrefix = 'BB'
+                tagPrefix = 'SBRELEASE'
+            }
+            version {
+                branchWithVersion = false
+            }
+        }
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
+        result.output.contains('branchname: BB_JIRA-4712')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git bugfix branch and without version and increased major version - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'BB_JIRA-4712' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        scm {
+            prefixes {
+                bugfixPrefix = 'BB'
+                tagPrefix = 'SBRELEASE'
+            }
+            version {
+                branchWithVersion = false
+                increment = 'MAJOR'
+            }
+        }
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 3.0.0-JIRA-4712-LOCAL')
+        result.output.contains('branchname: BB_JIRA-4712')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
     def 'test showVersion task with git hotfix branch - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'HB_2.0-JIRA-4711' )

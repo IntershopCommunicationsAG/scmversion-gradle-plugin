@@ -149,6 +149,25 @@ class VersionExtension extends AbstractExtension {
     boolean useBuildExtension = false
 
     /**
+     * This property affects only GIT based repositories.
+     *
+     * If this property is true the version of feature branches
+     * is calculated from any tag on the branch.
+     * Therefore it is not necessary to specify
+     * a version in the branch name.
+     */
+    boolean branchWithVersion = true
+
+    /** This property affects only GIT based repositories.
+     *
+     * If this property is true and branchWithVersion is false,
+     * the version is always only the major version.
+     * if the increment property is always configure for MAJOR
+     * the version will be increased.
+     */
+    boolean majorVersionOnly = true
+
+    /**
      * If this property is true, the initial
      * version is always used and the SCM usage
      * is disabled.

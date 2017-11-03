@@ -86,17 +86,18 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         ObjectId headId = ((GitLocalService)localService).repository.resolve(this.localService.getRevID())
 
         if(headId) {
-            ScmBranchFilter tagFilter = getBranchFilter(BranchType.tag)
-            ScmBranchFilter branchFilter = getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch)
+            Map<String, BranchObject> tags = getTagMap(getBranchFilter(BranchType.tag))
+            Map<String, BranchObject> simpleTags = getTagMap(new ScmBranchFilter(BranchType.tag, localService.prefixes, '', BranchType.tag))
 
-            Map<String, BranchObject> tags = getTagMap(tagFilter)
-            Map<String, BranchObject> branches = getBranchMap(branchFilter)
+            Map<String, BranchObject> branches = [:]
+            if(versionExt.branchWithVersion) {
+                branches = getBranchMap(getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch))
+            }
 
             int pos = 0
 
             BranchObject tagObject
             BranchObject branchObject
-
 
             String version = null
 
@@ -110,6 +111,9 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
                 for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
                     tagObject = tags[commit.id.name()]
+                    if(! (versionExt.branchWithVersion || tagObject)) {
+                        tagObject = simpleTags[commit.id.name]
+                    }
                     if (tagObject) {
                         // commit is a tag
                         version = tagObject.version
@@ -127,6 +131,20 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                         log.debug('Next step in walk to tag from {}', commit.id.name)
                     }
                 }
+            }
+
+            if(localService.branchType != BranchType.tag && ! versionExt.branchWithVersion && rv) {
+
+                if (versionExt.majorVersionOnly) {
+                    rv.updateVersion(rv.version.forIntegers(rv.version.majorVersion, versionExt.versionType))
+                }
+                if (versionExt.increment == 'MAJOR') {
+                    rv.updateVersion(rv.version.incrementMajorVersion())
+                }
+
+                rv.changed = (pos != 0) || localService.changed
+                rv.fromBranchName = true
+                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
             }
 
             // version from branch, if branch is available

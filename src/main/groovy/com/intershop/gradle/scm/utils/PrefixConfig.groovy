@@ -124,35 +124,35 @@ class PrefixConfig {
      *
      * @return Search pattern for feature branches.
      */
-    String getFeatureBranchPattern() {
+    String getFeatureBranchPattern(boolean withVersion = true) {
         if(branchPrefixSeperator) {
-            return "${featurePrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
+            return "${featurePrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
         }
-        return "${featurePrefix}${prefixSeperator}${extraBranchPatternSuffix}"
+        return "${featurePrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
     }
 
     /**
-     * Creates a search pattern for feature branches.
+     * Creates a search pattern for hotfix branches.
      *
-     * @return Search pattern for feature branches.
+     * @return Search pattern for hotfix branches.
      */
-    public String getHotfixBranchPattern() {
+    String getHotfixBranchPattern(boolean withVersion = true) {
         if(branchPrefixSeperator) {
-            return "${hotfixPrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
+            return "${hotfixPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
         }
-        return "${hotfixPrefix}${prefixSeperator}${extraBranchPatternSuffix}"
+        return "${hotfixPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
     }
 
     /**
-     * Creates a search pattern for feature branches.
+     * Creates a search pattern for bugfix branches.
      *
-     * @return Search pattern for feature branches.
+     * @return Search pattern for bugfix branches.
      */
-    public String getBugfixBranchPattern() {
+     String getBugfixBranchPattern(boolean withVersion = true ) {
         if(branchPrefixSeperator) {
-            return "${bugfixPrefix}${branchPrefixSeperator}${extraBranchPatternSuffix}"
+            return "${bugfixPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
         }
-        return "${bugfixPrefix}${prefixSeperator}${extraBranchPatternSuffix}"
+        return "${bugfixPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
     }
 
     /**
