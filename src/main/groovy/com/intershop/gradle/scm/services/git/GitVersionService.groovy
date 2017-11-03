@@ -107,7 +107,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             RevCommit head = walk.parseCommit(headId)
 
             // version from tag, if tag is available
-            if (!tags.isEmpty()) {
+            if (!(tags.isEmpty() && simpleTags.isEmpty())) {
                 walk.markStart(head)
                 for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
                     tagObject = tags[commit.id.name()]

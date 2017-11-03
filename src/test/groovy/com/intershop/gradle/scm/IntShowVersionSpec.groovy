@@ -1195,7 +1195,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.1-JIRA-4712-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
         result.output.contains('branchname: BB_2.0-JIRA-4712')
 
         where:
@@ -1315,7 +1315,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.1-JIRA-4711-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4711-LOCAL')
         result.output.contains('branchname: HB_2.0-JIRA-4711')
 
         where:
