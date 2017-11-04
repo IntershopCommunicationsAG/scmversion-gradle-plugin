@@ -33,7 +33,7 @@ import org.gradle.api.tasks.TaskAction
 @CompileStatic
 class PrepareRelease extends DefaultTask {
 
-    public PrepareRelease() {
+    PrepareRelease() {
         this.outputs.upToDateWhen { false }
     }
 

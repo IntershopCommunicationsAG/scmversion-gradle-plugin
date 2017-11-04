@@ -116,7 +116,7 @@ trait ScmVersionService {
      * and the latest version branch on the CI server.</p>
      * @return  version string with extension if necessary
      */
-    public String getVersion() {
+    String getVersion() {
         if(! versionExt.disableSCM) {
             // store version object
             if (!versionObject) {
@@ -173,7 +173,7 @@ trait ScmVersionService {
      *
      * @return version object
      */
-    public Version getPreVersion() {
+    Version getPreVersion() {
         // store version object
         if(! versionObject) {
             versionObject = getVersionObject()
@@ -187,7 +187,7 @@ trait ScmVersionService {
             return versionObject.version
         }
 
-        if(localService.branchType != BranchType.featureBranch) {
+        if(localService.branchType != BranchType.featureBranch && localService.branchType != BranchType.bugfixBranch && localService.branchType != BranchType.hotfixbBranch) {
             if(versionObject.changed) {
                 if (! versionExt.increment && localService.branchType != BranchType.trunk) {
                     return versionObject.version.incrementVersion()
@@ -232,7 +232,7 @@ trait ScmVersionService {
      * If no release tag is available, the return value is null
      * @return previous version from the scm repository
      */
-    public Version getPreviousVersion() {
+    Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
         Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
@@ -244,7 +244,7 @@ trait ScmVersionService {
      * @param targetVersion
      * @return
      */
-    public VersionTag getPreviousVersionTag(String previousVersion) {
+    VersionTag getPreviousVersionTag(String previousVersion) {
 
         Version previousVersionObj = null
         VersionTag versionTag = null
@@ -296,7 +296,7 @@ trait ScmVersionService {
      * @param type Version branch type, default is the value of the initialization method
      * @return Branch filter for the specified type.
      */
-    public ScmBranchFilter getBranchFilter(BranchType type) {
+    ScmBranchFilter getBranchFilter(BranchType type) {
         BranchType bt = type != null ? type : versionExt.getVersionBranchType()
         return new ScmBranchFilter(bt, localService.prefixes, localService.branchName, localService.branchType, localService.featureBranchName, versionExt.getPatternDigits())
     }

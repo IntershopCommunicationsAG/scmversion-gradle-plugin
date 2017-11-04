@@ -24,7 +24,7 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ScmVersionObject {
 
-    private final Version version
+    private Version version
     private final String scmpath
 
     boolean changed
@@ -38,11 +38,15 @@ class ScmVersionObject {
         this.changed = changed
     }
 
-    public String getScmPath() {
+    String getScmPath() {
         return scmpath
     }
 
-    public Version getVersion() {
+    Version getVersion() {
         return version
+    }
+
+    Version updateVersion(Version version) {
+        this.version = version
     }
 }

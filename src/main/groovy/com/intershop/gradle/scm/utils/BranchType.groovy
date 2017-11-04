@@ -28,37 +28,37 @@ import groovy.transform.CompileStatic
 enum BranchType {
     trunk {
         @Override
-        public String toString() {
+        String toString() {
             return 'trunk'
         }
     },
     branch {
         @Override
-        public String toString() {
+        String toString() {
             return 'branch'
         }
     },
     featureBranch {
         @Override
-        public String toString() {
+        String toString() {
             return 'featureBranch'
         }
     },
     hotfixbBranch {
         @Override
-        public String toString() {
+        String toString() {
             return 'hotfixBranch'
         }
     },
     bugfixBranch {
         @Override
-        public String toString() {
+        String toString() {
             return 'bugfixBranch'
         }
     },
     tag {
         @Override
-        public String toString() {
+        String toString() {
             return 'tag'
         }
     }

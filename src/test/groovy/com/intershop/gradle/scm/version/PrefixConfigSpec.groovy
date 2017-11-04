@@ -35,7 +35,7 @@ class PrefixConfigSpec extends Specification{
         mfb.matches()
 
         then:
-        mfb.hasGroup() == true
+        mfb.hasGroup()
         mfb.size() == size
         mfb.matches() == match
         if(mfb.size() == 1) {
