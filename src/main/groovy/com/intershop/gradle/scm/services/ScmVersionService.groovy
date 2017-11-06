@@ -207,7 +207,7 @@ trait ScmVersionService {
                 Version tv = versionObject.version
                 int mv = tv.normalVersion.getMajor()
 
-                if((tv.normalVersion.getHotfix() > 0 || tv.normalVersion.getMinor() > 0 || tv.normalVersion.getPatch() > 0) && versionExt.increment == 'MAJOR') {
+                if(versionExt.increment == 'MAJOR') {
                     ++mv
                 }
                 return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata())
