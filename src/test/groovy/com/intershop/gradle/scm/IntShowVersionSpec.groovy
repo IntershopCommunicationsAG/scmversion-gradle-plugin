@@ -1257,7 +1257,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         scm {
             prefixes {
                 bugfixPrefix = 'BB'
-                tagPrefix = 'SBRELEASE'
+                tagPrefix = 'TRELEASE'
             }
             version {
                 branchWithVersion = false
@@ -1279,6 +1279,48 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 3.0.0-JIRA-4712-LOCAL')
+        result.output.contains('branchname: BB_JIRA-4712')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git bugfix branch and without version and not increased major version - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'BB_JIRA-4712' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        scm {
+            prefixes {
+                bugfixPrefix = 'BB'
+                tagPrefix = 'TRELEASE'
+            }
+            version {
+                branchWithVersion = false
+                increment = 'HOTFIX'
+            }
+        }
+        version = scm.version.version
+
+        println "branchname: \${scm.version.branchName}"
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
         result.output.contains('branchname: BB_JIRA-4712')
 
         where:

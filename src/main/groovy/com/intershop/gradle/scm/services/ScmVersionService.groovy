@@ -187,21 +187,31 @@ trait ScmVersionService {
             return versionObject.version
         }
 
+        println localService.branchType
+
         if(localService.branchType != BranchType.featureBranch && localService.branchType != BranchType.bugfixBranch && localService.branchType != BranchType.hotfixbBranch) {
             if(versionObject.changed) {
-                if (! versionExt.increment && localService.branchType != BranchType.trunk) {
+                if (!versionExt.increment && localService.branchType != BranchType.trunk) {
                     return versionObject.version.incrementVersion()
                 }
-                if (! versionExt.increment && localService.branchType == BranchType.trunk) {
+                if (!versionExt.increment && localService.branchType == BranchType.trunk) {
                     return versionObject.version.incrementLatest()
                 }
-                if(versionExt.increment) {
+                if (versionExt.increment) {
                     DigitPos pos = Enum.valueOf(DigitPos, versionExt.increment)
                     return versionObject.version.incrementVersion(pos)
                 }
             }
         } else {
-            if (versionObject.changed) {
+            if(versionExt.majorVersionOnly) {
+                Version tv = versionObject.version
+                int mv = tv.normalVersion.getMajor()
+
+                if((tv.normalVersion.getHotfix() > 0 || tv.normalVersion.getMinor() > 0 || tv.normalVersion.getPatch() > 0) && versionExt.increment == 'MAJOR') {
+                    ++mv
+                }
+                return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata())
+            } else if (versionObject.changed) {
                 if (versionObject.version.buildMetadata) {
                     return versionObject.version.incrementBuildMetadata()
                 } else {
