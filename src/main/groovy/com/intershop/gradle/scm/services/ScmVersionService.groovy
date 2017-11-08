@@ -201,7 +201,15 @@ trait ScmVersionService {
                 }
             }
         } else {
-            if (versionObject.changed) {
+            if(versionExt.majorVersionOnly) {
+                Version tv = versionObject.version
+                int mv = tv.normalVersion.getMajor()
+
+                if(versionExt.increment == 'MAJOR') {
+                    ++mv
+                }
+                return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata())
+            } else if (versionObject.changed) {
                 if (versionObject.version.buildMetadata) {
                     return versionObject.version.incrementBuildMetadata()
                 } else {

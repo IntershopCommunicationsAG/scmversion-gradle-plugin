@@ -71,7 +71,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                       ScmUser user = null,
                       ScmKey key = null) {
         super(sls, user, key)
-        localService = (GitLocalService)sls
+        localService = sls
     }
 
     /**
@@ -79,7 +79,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      *
      * @return version object from scm
      */
-    ScmVersionObject getVersionObject() {
+    public ScmVersionObject getVersionObject() {
         ScmVersionObject rv = null
 
         // identify headId of the working copy
@@ -87,7 +87,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
 
         if(headId) {
             Map<String, BranchObject> tags = getTagMap(getBranchFilter(BranchType.tag))
-            Map<String, BranchObject> simpleTags = getTagMap(new ScmBranchFilter(BranchType.tag, localService.prefixes, '', BranchType.tag))
+            Map<String, BranchObject> simpleTags = getTagMap(new ScmBranchFilter(localService.prefixes))
 
             Map<String, BranchObject> branches = [:]
             if(versionExt.branchWithVersion) {
@@ -134,14 +134,6 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             }
 
             if(localService.branchType != BranchType.tag && ! versionExt.branchWithVersion && rv) {
-
-                if (versionExt.majorVersionOnly) {
-                    rv.updateVersion(rv.version.forIntegers(rv.version.majorVersion, versionExt.versionType))
-                }
-                if (versionExt.increment == 'MAJOR') {
-                    rv.updateVersion(rv.version.incrementMajorVersion())
-                }
-
                 rv.changed = (pos != 0) || localService.changed
                 rv.fromBranchName = true
                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
