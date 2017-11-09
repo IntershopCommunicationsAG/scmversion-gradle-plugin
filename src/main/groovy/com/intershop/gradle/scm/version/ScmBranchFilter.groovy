@@ -40,7 +40,31 @@ class ScmBranchFilter extends AbstractBranchFilter {
     private PrefixConfig prefixes
 
     /**
-     * Contstructs thre version branch filter.
+     * Contstructs a version branch filter for real tags only.
+     */
+    ScmBranchFilter(PrefixConfig prefixes) {
+        String[] vdata = new String[4]
+        this.prefixes = prefixes
+
+        log.debug("Create filter for release tags only")
+
+        List dp = ['\\d+', '(\\.\\d+)?', '(\\.\\d+)?', '(\\.\\d+)?' ]
+        for(int i = 0; i < 3; i++) {
+            if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}".toString() }
+        }
+
+        String patternString = "^${this.prefixes.getPrefix(BranchType.tag)}"
+        patternString += "${prefixes.getPrefixSeperator()}("
+        patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
+        patternString += ')'
+
+        log.debug('Branch filter is {}', patternString)
+
+        regexPattern = /${patternString}/
+    }
+
+    /**
+     * Contstructs a version branch filter.
      *
      * @param versionBranchtype which version branch is used for version calculation
      * @param prefixes prefix configuration

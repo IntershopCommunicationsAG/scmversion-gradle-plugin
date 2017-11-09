@@ -159,7 +159,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitRepo Object
      * @return
      */
-    Repository getRepository() {
+    public Repository getRepository() {
         return gitRepo
     }
 
@@ -167,7 +167,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitClient Object
      * @return
      */
-    Git getClient() {
+    public Git getClient() {
         return gitClient
     }
 
@@ -177,7 +177,7 @@ class GitLocalService extends ScmLocalService{
      * @return remote url
      */
     @Override
-    String getRemoteUrl() {
+    public String getRemoteUrl() {
         return remoteUrl
     }
 
@@ -187,7 +187,7 @@ class GitLocalService extends ScmLocalService{
      * @return revision id
      */
     @Override
-    String getRevID() {
+    public String getRevID() {
         ObjectId id = gitRepo.resolve(Constants.HEAD)
         String rv = ''
 

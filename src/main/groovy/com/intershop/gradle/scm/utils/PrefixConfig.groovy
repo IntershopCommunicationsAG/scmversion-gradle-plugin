@@ -124,7 +124,7 @@ class PrefixConfig {
      *
      * @return Search pattern for feature branches.
      */
-    String getFeatureBranchPattern(boolean withVersion = true) {
+    public String getFeatureBranchPattern(boolean withVersion = true) {
         if(branchPrefixSeperator) {
             return "${featurePrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
         }
@@ -239,7 +239,7 @@ class PrefixConfig {
      * @return the branch type for the specified prefix
      * @throws com.intershop.gradle.scm.utils.ScmException if the prefix is not configured.
      */
-    BranchType getBranchType(String prefix) {
+    public BranchType getBranchType(String prefix) {
         if(prefix == stabilizationPrefix) {
             return BranchType.branch
         }
