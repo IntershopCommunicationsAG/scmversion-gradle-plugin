@@ -71,7 +71,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                       ScmUser user = null,
                       ScmKey key = null) {
         super(sls, user, key)
-        localService = sls
+        localService = (GitLocalService)sls
     }
 
     /**

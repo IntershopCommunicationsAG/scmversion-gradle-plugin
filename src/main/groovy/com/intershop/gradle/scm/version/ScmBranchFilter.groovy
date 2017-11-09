@@ -50,7 +50,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         List dp = ['\\d+', '(\\.\\d+)?', '(\\.\\d+)?', '(\\.\\d+)?' ]
         for(int i = 0; i < 3; i++) {
-            if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}" }
+            if(vdata[i]) { dp[i] = "${i==0 ? '' : '.'}${vdata[i]}".toString() }
         }
 
         String patternString = "^${this.prefixes.getPrefix(BranchType.tag)}"
