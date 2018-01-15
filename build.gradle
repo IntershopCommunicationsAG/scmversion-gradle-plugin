@@ -18,13 +18,13 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.9'
 
     // plugin for publishing to jcenter
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.jfrog.bintray' version '1.8.0'
 }
 
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '3.2.0'
+version = '3.3.0'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
