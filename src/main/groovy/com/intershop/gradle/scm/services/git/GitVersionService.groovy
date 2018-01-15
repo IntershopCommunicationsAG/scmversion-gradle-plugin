@@ -118,7 +118,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                         // commit is a tag
                         version = tagObject.version
                         if((pos == 0 && versionExt.getVersionBranchType() != BranchType.tag) || versionExt.getVersionBranchType() == BranchType.tag) {
-                            log.debug('Version from tag {}', tagObject.name)
+                            log.info('Version from tag {}', tagObject.name)
                             // commit is a tag with version information
                             rv = new ScmVersionObject(tagObject.name, Version.forString(version, versionExt.getVersionType()), false)
                             break
@@ -128,13 +128,21 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                         }
                     } else {
                         ++pos
-                        log.debug('Next step in walk to tag from {}', commit.id.name)
+                        log.info('Next step in walk to tag from {}', commit.id.name)
                     }
                 }
             }
 
             if(localService.branchType != BranchType.tag && ! versionExt.branchWithVersion && rv) {
                 rv.changed = (pos != 0) || localService.changed
+                if(rv.changed && log.isInfoEnabled()) {
+                    if(pos > 0) {
+                        log.info('There are {} commits after the last tag.', pos)
+                    }
+                    if(localService.changed) {
+                        log.info('There are local changes in the repository.')
+                    }
+                }
                 rv.fromBranchName = true
                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
             }

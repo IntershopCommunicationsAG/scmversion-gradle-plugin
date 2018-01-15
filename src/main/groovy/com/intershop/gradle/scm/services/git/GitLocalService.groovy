@@ -120,6 +120,7 @@ class GitLocalService extends ScmLocalService{
         changed = status.untracked.size() > 0 || status.uncommittedChanges.size() > 0 || status.removed.size() > 0 || status.added.size() > 0 || status.changed.size() > 0 || status.modified.size() > 0
 
         if(log.infoEnabled && changed) {
+            log.info('There are local changes on the repository.')
             if(status.untracked.size() > 0) {
                 status.untracked.each {
                     log.info('GIT: This file is not indexed {}', it)
