@@ -24,10 +24,23 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '3.3.0'
+version = '3.4.0-dev1'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+ext {
+    labels = ['intershop', 'gradle', 'plugin', 'version', 'release']
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+gradlePlugin {
+    plugins {
+        scmversionPlugin {
+            id = 'com.intershop.gradle.scmversion'
+            implementationClass = 'com.intershop.gradle.scm.ScmVersionPlugin'
+        }
+    }
+}
 
 // set correct project status
 if (project.version.endsWith('-SNAPSHOT')) {
@@ -62,7 +75,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '4.3'
+    systemProperty 'intershop.gradle.versions', '4.4.1'
     //working dir for tests
     systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
 }
@@ -189,7 +202,7 @@ bintray {
         websiteUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
         issueTrackerUrl = "https://github.com/IntershopCommunicationsAG/${project.name}/issues"
 
-        labels = ['intershop', 'gradle', 'plugin', 'test']
+        labels = project.ext.labels
         publicDownloadNumbers = true
 
         version {
@@ -209,11 +222,11 @@ pluginBundle {
     website = "https://github.com/IntershopCommunicationsAG/${project.name}"
     vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
     description = project.description
-    tags = ['intershop', 'gradle', 'plugin', 'test']
+    tags = project.ext.labels
 
     plugins {
-        gradleTestPlugin {
-            id = 'com.intershop.gradle.scmversion'
+        scmversionPlugin {
+            id = gradlePlugin.plugins.scmversionPlugin.id
             displayName = project.description
         }
     }

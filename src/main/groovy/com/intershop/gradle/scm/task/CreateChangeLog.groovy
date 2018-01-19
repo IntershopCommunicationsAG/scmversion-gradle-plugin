@@ -21,6 +21,8 @@ import com.intershop.gradle.scm.utils.ScmType
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -38,20 +40,20 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class CreateChangeLog extends DefaultTask {
 
-    final Property<File> changelogFile = project.getObjects().property(File)
+    final RegularFileProperty changelogFile = project.layout.fileProperty()
     final Property<String> targetVersion = project.getObjects().property(String)
     final Property<Boolean> filterProject = project.getObjects().property(Boolean)
 
     @OutputFile
     File getChangelogFile() {
-        changelogFile.get()
+        changelogFile.get().getAsFile()
     }
 
     void setChangelogFile(File changelogFile) {
         this.changelogFile.set(changelogFile)
     }
 
-    void setChangelogFile(Provider<File> changelogFile) {
+    void setChangelogFile(Provider<RegularFile> changelogFile) {
         this.changelogFile.set(changelogFile)
     }
 
