@@ -19,6 +19,9 @@ package com.intershop.gradle.scm.extension
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 
@@ -54,13 +57,13 @@ class ChangeLogExtension extends AbstractExtension {
     // block for targetVersion - lazy evaluation - end
 
     // block for changelogFile - lazy evaluation - start
-    private final Property<File> changelogFile
+    private final RegularFileProperty changelogFile
 
-    Provider<File> getChangelogFileProvider() {
+    Provider<RegularFile> getChangelogFileProvider() {
         changelogFile
     }
 
-    File getChangelogFile() {
+    RegularFile getChangelogFile() {
         changelogFile.get()
     }
 
@@ -95,9 +98,9 @@ class ChangeLogExtension extends AbstractExtension {
     ChangeLogExtension(Project project) {
         super(project)
 
-        targetVersion = project.getObjects().property(String)
-        changelogFile = project.getObjects().property(File)
-        filterProject = project.getObjects().property(Boolean)
+        targetVersion = project.objects.property(String)
+        changelogFile = project.layout.fileProperty()
+        filterProject = project.objects.property(Boolean)
     }
 
 
