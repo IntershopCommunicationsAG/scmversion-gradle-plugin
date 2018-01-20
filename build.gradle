@@ -24,11 +24,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '3.4.0-dev1'
-
-ext {
-    labels = ['intershop', 'gradle', 'plugin', 'version', 'release']
-}
+version = '3.4.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -202,7 +198,7 @@ bintray {
         websiteUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
         issueTrackerUrl = "https://github.com/IntershopCommunicationsAG/${project.name}/issues"
 
-        labels = project.ext.labels
+        labels = ['intershop', 'gradle', 'plugin', 'version', 'release']
         publicDownloadNumbers = true
 
         version {
@@ -222,7 +218,7 @@ pluginBundle {
     website = "https://github.com/IntershopCommunicationsAG/${project.name}"
     vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
     description = project.description
-    tags = project.ext.labels
+    tags = ['intershop', 'gradle', 'plugin', 'version', 'release']
 
     plugins {
         scmversionPlugin {
