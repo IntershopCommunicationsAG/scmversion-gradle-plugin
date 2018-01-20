@@ -84,7 +84,6 @@ class CreateChangeLog extends DefaultTask {
     }
 
     CreateChangeLog() {
-        this.outputs.upToDateWhen { false }
         this.setDescription('Creates a changelog based on SCM information in ASCIIDoc format')
     }
 
