@@ -16,6 +16,7 @@
 package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.extension.VersionExtension
+import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.version.ScmBranchFilter
 import com.intershop.gradle.scm.version.ScmVersionObject
@@ -126,12 +127,19 @@ trait ScmVersionService {
             Version version = getPreVersion()
 
             if (versionObject.isChanged() && versionExt.runOnCI) {
+                String revIDExtension = getSCMRevExtension()
+
                 if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with SNAPSHOT', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
                 } else {
-                    log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+                    if(versionExt.continuousRelease && ! revIDExtension.isEmpty()) {
+                        log.info('Version {} will be extended with revID', version)
+                        version.setBuildMetadata(revIDExtension)
+                    } else {
+                        log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
+                        return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+                    }
                 }
             } else if (!versionObject.isChanged() && versionExt.runOnCI) {
                 log.info('Version {} will be used without extension (No changes detected!).', version)
@@ -141,7 +149,7 @@ trait ScmVersionService {
                     log.info('Version {} will be extended with LOCAL', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.LOCAL}"
                 } else {
-                    log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
+                    log.info('Version {} will be extended with LOCAL', version.normalVersion)
                     return version.setBuildMetadata(com.intershop.release.version.VersionExtension.LOCAL.toString())
                 }
             }
@@ -164,6 +172,20 @@ trait ScmVersionService {
                 return "${versionExt.initialVersion}-${com.intershop.release.version.VersionExtension.LOCAL}"
             }
         }
+    }
+
+    String getSCMRevExtension() {
+        if(localService.getBranchType() == BranchType.trunk ||
+                versionExt.continuousReleaseBranches.contains(localService.getBranchName())) {
+            if(localService instanceof GitLocalService) {
+                return localService.getRevID().substring(0,7)
+            } else {
+                return localService.getRevID()
+            }
+
+        }
+
+        return ""
     }
 
     /**

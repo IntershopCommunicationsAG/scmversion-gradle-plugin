@@ -185,6 +185,25 @@ class VersionExtension extends AbstractExtension {
     boolean disableSCM = false
 
     /**
+     * For continuous releases it is helpful to use an
+     * version extension with an relation to the
+     * source control.
+     * This property can be configured for this cases
+     * to true.
+     */
+    boolean continuousRelease = false
+
+    /**
+     * In combination with continuousRelease it should
+     * be possible to specify the branches for this
+     * kind of version extension.
+     * Continuous releases will be also used for the master or trunk.
+     * If you want extend the list of branches, it is possible to
+     * extend the list.
+     */
+    List<String> continuousReleaseBranches = []
+
+    /**
      * Initialize this extension and set default values
      * If environment values are set for some keys this
      * values will be used.
