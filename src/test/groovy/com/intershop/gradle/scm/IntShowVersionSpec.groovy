@@ -1759,4 +1759,75 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     }
 
 
+    @Requires({ System.properties['svnurl'] &&
+            System.properties['svnuser'] &&
+            System.properties['svnpasswd'] })
+    def 'test showVersion task with svn trunk - continuousRelease - #gradleVersion'(gradleVersion) {
+        given:
+        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version {
+                continuousRelease = true
+            }
+        }
+        
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true')
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-fb-123-5025')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git master - continuousRelease - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm {
+            version {
+                continuousRelease = true
+            }
+        }
+        
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true')
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.1.0-54c5e77')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
 }
