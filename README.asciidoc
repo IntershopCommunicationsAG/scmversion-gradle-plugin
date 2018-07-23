@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 3.5.0
+:latestRevision: 3.5.1
 :toc:
 
 NOTE: Version 3.4 of this plugin will only work with JDK 8, Gradle 4.4 and later. Version 3.3 can be used for Gradle 4.4 and previous version of Gradle 4.
@@ -341,7 +341,7 @@ On a local developer machine `'LOCAL'` will be added to the version.
 |*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
 |*previousVersionTag* | `VersionTag` | `null` | *read only* | Returns an object with the previous version and the associated release tag.
 |*continuousRelease* | `boolean` | `false` | - | If this value is true and the publishing runs on a CI server the revision id or
-the hash string will attached to the version instead of SNAPSHOTS.
+the hash string with the prefix "rev.id." will attached to the version instead of SNAPSHOTS.
 |*continuousReleaseBranches* | `List<String>` | `[]` | - | *continuousRelease* is always used if the active branch is master or trunk. If continuous releases should be
 done from other branches, it is possible to extend the list of branches with this property.
 |===

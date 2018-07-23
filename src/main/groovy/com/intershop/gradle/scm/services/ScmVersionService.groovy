@@ -127,14 +127,14 @@ trait ScmVersionService {
             Version version = getPreVersion()
 
             if (versionObject.isChanged() && versionExt.runOnCI) {
-                String revIDExtension = getSCMRevExtension()
+                String revIDExtension = "rev.id." + getSCMRevExtension()
 
                 if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with SNAPSHOT', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
                 } else {
                     if(versionExt.continuousRelease && ! revIDExtension.isEmpty()) {
-                        log.info('Version {} will be extended with revID', version)
+                        log.info('Version {} will be extended with revID "{}"', version, revIDExtension)
                         version.setBuildMetadata(revIDExtension)
                     } else {
                         log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
