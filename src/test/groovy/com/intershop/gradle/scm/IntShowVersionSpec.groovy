@@ -1825,7 +1825,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-rev.id.754c5e7')
+        result.output.contains('Project version: 2.1.0-rev.id.')
 
         where:
         gradleVersion << supportedGradleVersions
