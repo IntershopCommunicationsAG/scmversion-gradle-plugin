@@ -127,7 +127,7 @@ trait ScmVersionService {
             Version version = getPreVersion()
 
             if (versionObject.isChanged() && versionExt.runOnCI) {
-                String revIDExtension = "rev.id." + getSCMRevExtension()
+                String revIDExtension = getSCMRevExtension()
 
                 if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with SNAPSHOT', version)
@@ -178,9 +178,9 @@ trait ScmVersionService {
         if(localService.getBranchType() == BranchType.trunk ||
                 versionExt.continuousReleaseBranches.contains(localService.getBranchName())) {
             if(localService instanceof GitLocalService) {
-                return localService.getRevID().substring(0,7)
+                return "rev.id." + localService.getRevID().substring(0,7)
             } else {
-                return localService.getRevID()
+                return "rev.id." + localService.getRevID()
             }
 
         }
