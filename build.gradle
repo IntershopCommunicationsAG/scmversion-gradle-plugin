@@ -9,7 +9,7 @@ plugins {
     id 'idea'
 
     // plugin for documentation
-    id 'org.asciidoctor.convert' version '1.5.7'
+    id 'org.asciidoctor.convert' version '1.5.8.1'
 
     // publish plugin
     id 'maven-publish'
@@ -18,13 +18,13 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.10'
 
     // plugin for publishing to jcenter
-    id 'com.jfrog.bintray' version '1.8.2'
+    id 'com.jfrog.bintray' version '1.8.4'
 }
 
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '3.5.2'
+version = '3.6.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -71,7 +71,7 @@ test {
     //Change directory for gradle tests
     systemProperty 'org.gradle.native.dir', '.gradle'
     //Set supported Gradle version
-    systemProperty 'intershop.gradle.versions', '4.4.1'
+    systemProperty 'intershop.gradle.versions', '4.4.1,4.9'
     //working dir for tests
     systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
 }
@@ -233,21 +233,21 @@ dependencies {
 
     //svn
     // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
-    compile('org.tmatesoft.svnkit:svnkit:1.8.15') {
+    compile('org.tmatesoft.svnkit:svnkit:1.9.3') {
         exclude group: 'net.java.dev.jna'
         exclude group: 'com.trilead', module: 'trilead-ssh2'
     }
-    compile 'com.trilead:trilead-ssh2:1.0.0-build220'
-    runtime 'net.java.dev.jna:jna:3.2.7'
+    compile 'com.trilead:trilead-ssh2:1.0.0-build221'
+    runtime 'net.java.dev.jna:jna:4.1.0'
 
     //jgit
-    compile('org.eclipse.jgit:org.eclipse.jgit:4.8.0.201706111038-r') {
+    compile('org.eclipse.jgit:org.eclipse.jgit:5.0.1.201806211838-r') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
 
-    runtime 'org.apache.httpcomponents:httpclient:4.4.1'
-    runtime 'org.slf4j:slf4j-api:1.7.10'
+    runtime 'org.apache.httpcomponents:httpclient:4.5.5'
+    runtime 'org.slf4j:slf4j-api:1.7.16'
 
     testCompile 'com.intershop.gradle.test:test-gradle-plugin:3.0.0'
     testCompile gradleTestKit()
