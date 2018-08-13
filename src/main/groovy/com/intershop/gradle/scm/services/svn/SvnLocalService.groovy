@@ -109,6 +109,12 @@ class SvnLocalService extends ScmLocalService {
                             def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
                             def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
 
+                            println "--- ${prefixes.getStabilizationBranchPattern()}"
+
+                            println "--- ${msb.matches()}"
+                            println "--- ${msb.count}"
+                            println "--- ${msb[0].size()}"
+
                             if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
                                 branchType = BranchType.featureBranch
                                 featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
