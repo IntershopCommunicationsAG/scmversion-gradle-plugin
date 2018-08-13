@@ -156,6 +156,18 @@ class PrefixConfig {
     }
 
     /**
+     * Creates a search pattern for bugfix branches.
+     *
+     * @return Search pattern for bugfix branches.
+     */
+    String getStabilizationBranchPattern(boolean withVersion = true ) {
+        if(branchPrefixSeperator) {
+            return "${stabilizationPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+        }
+        return "${stabilizationPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+    }
+
+    /**
      * Checks the prefix. An empty prefix for stabilization branches
      * is not allowed.
      *

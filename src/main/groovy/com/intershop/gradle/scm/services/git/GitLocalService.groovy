@@ -73,6 +73,7 @@ class GitLocalService extends ScmLocalService{
             def mfb = branchName =~ /${prefixes.getFeatureBranchPattern(scmExtension.version.getBranchWithVersion())}/
             def mhb = branchName =~ /${prefixes.getHotfixBranchPattern(scmExtension.version.getBranchWithVersion())}/
             def mbb = branchName =~ /${prefixes.getBugfixBranchPattern(scmExtension.version.getBranchWithVersion())}/
+            def msb = branchName =~ /${prefixes.getStabilizationBranchPattern(scmExtension.version.getBranchWithVersion())}/
 
             if(mfb.matches() && mfb.count == 1 && ((mfb[0] as List).size() == 5 || (mfb[0] as List).size() == 6 || (! scmExtension.version.branchWithVersion && (mfb[0] as List).size() == 2))) {
                 branchType = BranchType.featureBranch
@@ -86,13 +87,19 @@ class GitLocalService extends ScmLocalService{
                 branchType = BranchType.bugfixBranch
                 featureBranchName = (mbb[0] as List)[(mbb[0] as List).size() - 1]
 
-            } else {
+            }
+            else {
                 String tn = checkHeadForTag()
                 if(tn) {
                     branchType = BranchType.tag
                     branchName = tn
                 } else {
-                    branchType = BranchType.branch
+                    if(msb.matches() && msb.count == 1 && ((msb[0] as List).size() == 5 || (msb[0] as List).size() == 6 || (! scmExtension.version.branchWithVersion && (msb[0] as List).size() == 2))) {
+                        branchType = BranchType.branch
+                    } else {
+                        branchType = BranchType.featureBranch
+                        featureBranchName = branchName
+                    }
                 }
             }
         }
