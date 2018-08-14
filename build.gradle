@@ -74,6 +74,11 @@ test {
     systemProperty 'intershop.gradle.versions', '4.4.1,4.9'
     //working dir for tests
     systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
+
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+    }
 }
 
 task copyAsciiDoc {
