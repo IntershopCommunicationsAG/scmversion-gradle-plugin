@@ -30,6 +30,7 @@ class PrefixConfig {
      * Search pattern for branches with version information.
      */
     protected final static String extraBranchPatternSuffix = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)-(.+)"
+    protected final static String stabilizationBranchPattern = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)"
 
     /**
      * Prefix for stabilization branches
@@ -153,6 +154,18 @@ class PrefixConfig {
             return "${bugfixPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
         }
         return "${bugfixPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+    }
+
+    /**
+     * Creates a search pattern for bugfix branches.
+     *
+     * @return Search pattern for bugfix branches.
+     */
+    String getStabilizationBranchPattern(boolean withVersion = true ) {
+        if(branchPrefixSeperator) {
+            return "${stabilizationPrefix}${branchPrefixSeperator}${stabilizationBranchPattern}"
+        }
+        return "${stabilizationPrefix}${prefixSeperator}${stabilizationBranchPattern}"
     }
 
     /**

@@ -107,6 +107,13 @@ class SvnLocalService extends ScmLocalService {
                             def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
                             def mhb = branchName =~ /${prefixes.getHotfixBranchPattern()}/
                             def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
+                            def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
+
+                            println "--- ${prefixes.getStabilizationBranchPattern()}"
+
+                            println "--- ${msb.matches()}"
+                            println "--- ${msb.count}"
+                            println "--- ${msb[0].size()}"
 
                             if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
                                 branchType = BranchType.featureBranch
@@ -120,8 +127,12 @@ class SvnLocalService extends ScmLocalService {
                                 branchType = BranchType.bugfixBranch
                                 featureBranchName = (mbb[0] as List)[(mbb[0] as List).size() - 1]
 
-                            } else {
+                            } else if(msb.matches() && msb.count == 1 && (msb[0].size() == 5 || msb[0].size() == 6)) {
                                 branchType = BranchType.branch
+
+                            }  else {
+                                branchType = BranchType.featureBranch
+                                featureBranchName = branchName
                             }
                             break
                         case 2:
