@@ -1232,6 +1232,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         def result = getPreparedGradleRunner()
                 .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
+                .withDebug(true)
                 .build()
 
         then:
@@ -1847,6 +1848,9 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             prefixes {
                 tagPrefix = 'BRELEASE'
             }
+            version {
+                branchWithVersion = false
+            }
         }
         
         version = scm.version.version
@@ -1863,6 +1867,43 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.0.0-IS-2177-testbranch-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git and unspecified branch and no version on branch - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'IS-2177-testbranch' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        
+        scm {
+            version {
+                branchWithVersion = false
+            }
+        }
+        
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', '-i')
+                .withDebug(true)
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-IS-2177-testbranch-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions

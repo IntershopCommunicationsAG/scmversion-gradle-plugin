@@ -111,7 +111,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
                 for (RevCommit commit = walk.next(); commit; commit = walk.next()) {
                     tagObject = tags[commit.id.name()]
-                    if(versionExt.branchWithVersion && tagObject == null) {
+                    if(! versionExt.branchWithVersion && tagObject == null) {
                         tagObject = simpleTags[commit.id.name]
                     }
                     if (tagObject) {
@@ -213,6 +213,9 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         if(! rv) {
             // check branch name
             rv = getFallbackVersion()
+            if(localService.branchType != BranchType.trunk && localService.branchType != BranchType.branch && localService.branchType != BranchType.tag) {
+                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
+            }
         }
 
         return rv
