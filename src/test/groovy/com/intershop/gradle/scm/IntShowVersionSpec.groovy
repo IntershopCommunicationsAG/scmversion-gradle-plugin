@@ -1830,4 +1830,41 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         where:
         gradleVersion << supportedGradleVersions
     }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'test showVersion task with git and unspecified branch - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'IS-2177-testbranch' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        
+        scm {
+            prefixes {
+                tagPrefix = 'BRELEASE'
+            }
+        }
+        
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', '-i')
+                .withDebug(true)
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.0.0-IS-2177-testbranch-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
 }
