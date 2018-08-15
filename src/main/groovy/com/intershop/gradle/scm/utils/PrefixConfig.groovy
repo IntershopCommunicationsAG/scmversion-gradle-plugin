@@ -125,11 +125,11 @@ class PrefixConfig {
      *
      * @return Search pattern for feature branches.
      */
-    public String getFeatureBranchPattern(boolean withVersion = true) {
+    String getFeatureBranchPattern() {
         if(branchPrefixSeperator) {
-            return "${featurePrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+            return "${featurePrefix}${branchPrefixSeperator}(.*)"
         }
-        return "${featurePrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+        return "${featurePrefix}${prefixSeperator}(.*)"
     }
 
     /**
@@ -139,9 +139,9 @@ class PrefixConfig {
      */
     String getHotfixBranchPattern(boolean withVersion = true) {
         if(branchPrefixSeperator) {
-            return "${hotfixPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+            return "${hotfixPrefix}${branchPrefixSeperator}(.*)"
         }
-        return "${hotfixPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+        return "${hotfixPrefix}${prefixSeperator}(.*)"
     }
 
     /**
@@ -151,9 +151,9 @@ class PrefixConfig {
      */
      String getBugfixBranchPattern(boolean withVersion = true ) {
         if(branchPrefixSeperator) {
-            return "${bugfixPrefix}${branchPrefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+            return "${bugfixPrefix}${branchPrefixSeperator}(.*)"
         }
-        return "${bugfixPrefix}${prefixSeperator}${withVersion ? extraBranchPatternSuffix : '(.*)'}"
+        return "${bugfixPrefix}${prefixSeperator}(.*)"
     }
 
     /**
@@ -163,9 +163,9 @@ class PrefixConfig {
      */
     String getStabilizationBranchPattern(boolean withVersion = true ) {
         if(branchPrefixSeperator) {
-            return "${stabilizationPrefix}${branchPrefixSeperator}${stabilizationBranchPattern}"
+            return "${stabilizationPrefix}${branchPrefixSeperator}(.*)"
         }
-        return "${stabilizationPrefix}${prefixSeperator}${stabilizationBranchPattern}"
+        return "${stabilizationPrefix}${prefixSeperator}(.*)"
     }
 
     /**

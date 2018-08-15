@@ -1097,6 +1097,40 @@ class IntShowVersionSpec extends AbstractTaskSpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    def 'test showVersion task with git master and tag - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes {
+            tagPrefix = 'TRELEASE'
+        }
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-d', '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 2.3.4')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
     def 'test showVersion task with git trunk on CI without user name and password - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
@@ -1218,9 +1252,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
                 bugfixPrefix = 'BB'
                 tagPrefix = 'SBRELEASE'
             }
-            version {
-                branchWithVersion = false
-            }
         }
         version = scm.version.version
 
@@ -1261,7 +1292,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
                 tagPrefix = 'SBRELEASE'
             }
             version {
-                branchWithVersion = false
                 increment = 'MAJOR'
             }
         }
@@ -1303,7 +1333,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
                 tagPrefix = 'TRELEASE'
             }
             version {
-                branchWithVersion = false
                 increment = 'HOTFIX'
             }
         }
@@ -1809,6 +1838,9 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         }
 
         scm {
+            prefixes {
+                tagPrefix = 'CTRELEASE'
+            }
             version {
                 continuousRelease = true
             }
@@ -1826,7 +1858,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-rev.id.')
+        result.output.contains('Project version: 2.2.0-rev.id.')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -1848,9 +1880,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
             prefixes {
                 tagPrefix = 'BRELEASE'
             }
-            version {
-                branchWithVersion = false
-            }
         }
         
         version = scm.version.version
@@ -1860,7 +1889,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         when:
         def result = getPreparedGradleRunner()
                 .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', '-i')
-                .withDebug(true)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -1882,12 +1910,6 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         buildFile << """
         plugins {
             id 'com.intershop.gradle.scmversion'
-        }
-        
-        scm {
-            version {
-                branchWithVersion = false
-            }
         }
         
         version = scm.version.version

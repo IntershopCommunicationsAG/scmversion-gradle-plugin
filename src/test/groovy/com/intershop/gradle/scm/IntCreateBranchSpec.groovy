@@ -87,7 +87,13 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
         plugins {
             id 'com.intershop.gradle.scmversion'
         }
-
+        
+        scm {
+            prefixes {
+                tagPrefix = 'CBRELEASE'
+            }
+        }
+        
         version = scm.version.version
 
         """.stripIndent()
@@ -100,7 +106,7 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('Project version: 2.2.0-SNAPSHOT')
 
         when:
         def createResult = getPreparedGradleRunner()
@@ -110,10 +116,10 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         then:
         createResult.task(":branch").outcome == SUCCESS
-        createResult.output.contains('Branch created: 2.1.0')
+        createResult.output.contains('Branch created: 2.2.0')
 
         cleanup:
-        gitBranchRemove(testProjectDir, 'SB_2.1')
+        gitBranchRemove(testProjectDir, 'SB_2.2')
 
         where:
         gradleVersion << supportedGradleVersions
