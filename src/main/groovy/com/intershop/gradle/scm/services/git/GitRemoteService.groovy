@@ -29,7 +29,9 @@ import org.eclipse.jgit.api.TransportCommand
 import org.eclipse.jgit.api.TransportConfigCallback
 import org.eclipse.jgit.api.errors.InvalidRemoteException
 import org.eclipse.jgit.api.errors.TransportException
+import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.ObjectId
+import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevObject
 import org.eclipse.jgit.revwalk.RevWalk
@@ -116,13 +118,15 @@ class GitRemoteService {
         final RevWalk walk = new RevWalk(localService.getClient().repository)
 
         //check tags and calculate
-        localService.repository.getTags().each { tagName, rev ->
+        localService.repository.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).each { Ref ref ->
+            String tagName = ref.name.substring(Constants.R_TAGS.length())
             String version = branchFilter.getVersionStr(tagName)
             if(version) {
-                RevCommit rc = walk.parseCommit(rev.objectId)
+                RevCommit rc = walk.parseCommit(ref.objectId)
                 rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, tagName))
             }
         }
+
         walk.dispose()
         return rv
     }

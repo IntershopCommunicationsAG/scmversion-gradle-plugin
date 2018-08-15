@@ -45,6 +45,8 @@ if (project.version.endsWith('-SNAPSHOT')) {
 
 // test configuration
 test {
+    systemProperty 'IDE_TEST_DEBUG_SUPPORT', 'true'
+
     if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD') && System.getenv('SVNURL')) {
         systemProperty 'svnurl', System.getenv('SVNURL')
         systemProperty 'svnuser', System.getenv('SVNUSER')
@@ -74,11 +76,6 @@ test {
     systemProperty 'intershop.gradle.versions', '4.4.1,4.9'
     //working dir for tests
     systemProperty 'intershop.test.base.dir', (new File(project.buildDir, 'test-working')).absolutePath
-
-    testLogging {
-        events "failed"
-        exceptionFormat "short"
-    }
 }
 
 task copyAsciiDoc {
@@ -254,7 +251,7 @@ dependencies {
     runtime 'org.apache.httpcomponents:httpclient:4.5.5'
     runtime 'org.slf4j:slf4j-api:1.7.16'
 
-    testCompile 'com.intershop.gradle.test:test-gradle-plugin:3.0.0'
+    testCompile 'com.intershop.gradle.test:test-gradle-plugin:3.2.0'
     testCompile gradleTestKit()
 
     testCompile 'commons-io:commons-io:2.2'

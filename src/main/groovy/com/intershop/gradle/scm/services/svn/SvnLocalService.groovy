@@ -109,30 +109,24 @@ class SvnLocalService extends ScmLocalService {
                             def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
                             def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
 
-                            println "--- ${prefixes.getStabilizationBranchPattern()}"
-
-                            println "--- ${msb.matches()}"
-                            println "--- ${msb.count}"
-                            println "--- ${msb[0].size()}"
-
-                            if(mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6)) {
+                            if(mfb.matches() && mfb.count == 1) {
                                 branchType = BranchType.featureBranch
-                                featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
+                                setFeatureBranchName((mfb[0] as List)[(mfb[0] as List).size() - 1].toString())
 
-                            } else if(mhb.matches() && mhb.count == 1 && (mhb[0].size() == 5 || mhb[0].size() == 6)) {
+                            } else if(mhb.matches() && mhb.count == 1) {
                                 branchType = BranchType.hotfixbBranch
-                                featureBranchName = (mhb[0] as List)[(mhb[0] as List).size() - 1]
+                                setFeatureBranchName((mhb[0] as List)[(mhb[0] as List).size() - 1].toString())
 
-                            } else if(mbb.matches() && mbb.count == 1 && (mbb[0].size() == 5 || mbb[0].size() == 6)) {
+                            } else if(mbb.matches() && mbb.count == 1) {
                                 branchType = BranchType.bugfixBranch
-                                featureBranchName = (mbb[0] as List)[(mbb[0] as List).size() - 1]
+                                setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
 
-                            } else if(msb.matches() && msb.count == 1 && (msb[0].size() == 5 || msb[0].size() == 6)) {
+                            } else if(msb.matches() && msb.count == 1) {
                                 branchType = BranchType.branch
 
                             }  else {
                                 branchType = BranchType.featureBranch
-                                featureBranchName = branchName
+                                setFeatureBranchName(branchName)
                             }
                             break
                         case 2:

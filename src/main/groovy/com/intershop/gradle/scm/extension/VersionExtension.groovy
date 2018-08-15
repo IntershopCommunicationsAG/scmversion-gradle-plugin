@@ -147,17 +147,7 @@ class VersionExtension extends AbstractExtension {
      * SNAPSHOT extensions if this property is false
      */
     boolean useBuildExtension = false
-
-    /**
-     * This property affects only GIT based repositories.
-     *
-     * If this property is true the version of feature branches
-     * is calculated from any tag on the branch.
-     * Therefore it is not necessary to specify
-     * a version in the branch name.
-     */
-    boolean branchWithVersion = true
-
+    
     /** This property affects only GIT based repositories.
      *
      * If this property is true and branchWithVersion is false,

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.services.git
 
 import com.intershop.gradle.scm.extension.ScmExtension
@@ -70,23 +68,22 @@ class GitLocalService extends ScmLocalService{
         if(branchName == 'master') {
             branchType = BranchType.trunk
         } else {
-            def mfb = branchName =~ /${prefixes.getFeatureBranchPattern(scmExtension.version.getBranchWithVersion())}/
-            def mhb = branchName =~ /${prefixes.getHotfixBranchPattern(scmExtension.version.getBranchWithVersion())}/
-            def mbb = branchName =~ /${prefixes.getBugfixBranchPattern(scmExtension.version.getBranchWithVersion())}/
+            def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
+            def mhb = branchName =~ /${prefixes.getHotfixBranchPattern()}/
+            def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
             def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
 
-            if(mfb.matches() && mfb.count == 1 && ((mfb[0] as List).size() == 5 || (mfb[0] as List).size() == 6 || (! scmExtension.version.branchWithVersion && (mfb[0] as List).size() == 2))) {
+            if(mfb.matches() && mfb.count == 1) {
                 branchType = BranchType.featureBranch
-                featureBranchName = (mfb[0] as List)[(mfb[0] as List).size() - 1]
+                setFeatureBranchName((mfb[0] as List)[(mfb[0] as List).size() - 1].toString())
 
-            } else if(mhb.matches() && mhb.count == 1 && ((mhb[0] as List).size() == 5 || (mhb[0] as List).size() == 6 || (! scmExtension.version.branchWithVersion && (mhb[0] as List).size() == 2))) {
+            } else if(mhb.matches() && mhb.count == 1) {
                 branchType = BranchType.hotfixbBranch
-                featureBranchName = (mhb[0] as List)[(mhb[0] as List).size() - 1]
+                setFeatureBranchName((mhb[0] as List)[(mhb[0] as List).size() - 1].toString())
 
-            } else if(mbb.matches() && mbb.count == 1 && ((mbb[0] as List).size() == 5 || (mbb[0] as List).size() == 6 || (! scmExtension.version.branchWithVersion && (mbb[0] as List).size() == 2))) {
+            } else if(mbb.matches() && mbb.count == 1) {
                 branchType = BranchType.bugfixBranch
-                featureBranchName = (mbb[0] as List)[(mbb[0] as List).size() - 1]
-
+                setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
             }
             else {
                 String tn = checkHeadForTag()
@@ -94,11 +91,11 @@ class GitLocalService extends ScmLocalService{
                     branchType = BranchType.tag
                     branchName = tn
                 } else {
-                    if(msb.matches() && msb.count == 1 && ((msb[0] as List).size() == 5 || (msb[0] as List).size() == 6)) {
+                    if(msb.matches() && msb.count == 1) {
                         branchType = BranchType.branch
                     } else {
                         branchType = BranchType.featureBranch
-                        featureBranchName = branchName
+                        setFeatureBranchName(branchName)
                     }
                 }
             }
@@ -154,9 +151,10 @@ class GitLocalService extends ScmLocalService{
     private String checkHeadForTag() {
         String rvTagName = ''
         RevWalk rw = new RevWalk(repository)
-        gitRepo.getTags().each {tagName, rev ->
-            if(ObjectId.toString(rw.parseCommit(rev.objectId).id) == getRevID()) {
-                rvTagName = tagName
+
+        gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).each {Ref ref ->
+            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == getRevID()) {
+                rvTagName = ref.name.substring(Constants.R_TAGS.length())
             }
         }
         rw.dispose()
