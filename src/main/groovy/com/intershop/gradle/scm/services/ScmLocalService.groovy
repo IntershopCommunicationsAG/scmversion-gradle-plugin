@@ -47,12 +47,17 @@ abstract class ScmLocalService {
     /**
      * This is true, if the local working copy changed.
      */
-    protected boolean changed = false
+    boolean changed = false
 
     /**
      * The directory of the working copy.
      */
     protected final File projectDir
+
+    /**
+     * This is true, if the feature branch contains a version.
+     */
+    boolean withVersion = false
 
     /**
      * The configuration of all prefixes.
@@ -83,7 +88,7 @@ abstract class ScmLocalService {
      *
      * @return directory of the working copy.
      */
-    public File getProjectDir() {
+    File getProjectDir() {
         return projectDir
     }
 
@@ -92,7 +97,7 @@ abstract class ScmLocalService {
      *
      * @return true if the working copy was changed.
      */
-    public BranchType getBranchType() {
+    BranchType getBranchType() {
         return branchType
     }
 
@@ -101,7 +106,7 @@ abstract class ScmLocalService {
      *
      * @return branch name of the working copy.
      */
-    public String getBranchName() {
+    String getBranchName() {
         return branchName
     }
 
@@ -110,16 +115,41 @@ abstract class ScmLocalService {
      *
      * @return branch name of the working copy.
      */
-    public String getFeatureBranchName() {
+    String getFeatureBranchName() {
         return featureBranchName
     }
 
+    /**
+     * Parses the input to see if a version is part of the string.
+     *
+     * @param branch complete branch name without prefix
+     * @return the branch name without version
+     */
+    void setFeatureBranchName(String branch) {
+        def branchCheck = branch =~ /^\d+(\.\d+)?(\.\d+)?(\.\d+)?(-.*)?/
+        if (branchCheck.matches() && branchCheck.groupCount() > 3) {
+            featureBranchName = ((branchCheck[0] as List)[(branchCheck[0] as List).size() - 1].toString().substring(1))
+        } else {
+            featureBranchName = branch
+        }
+        withVersion = featureBranchName != branch
+    }
+
+    /**
+     * If the feature branch contains a valid version
+     * ist returns true otherwise false.
+     *
+     * @return true if feature branch contains version
+     */
+    boolean isBranchWithVersion() {
+        return withVersion
+    }
     /**
      * The information if the working copy was changed before (read only).
      *
      * @return true if the working copy was changed.
      */
-    public boolean isChanged() {
+    boolean isChanged() {
         return changed
     }
 

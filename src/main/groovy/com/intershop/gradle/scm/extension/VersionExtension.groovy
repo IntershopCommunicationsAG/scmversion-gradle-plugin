@@ -185,6 +185,25 @@ class VersionExtension extends AbstractExtension {
     boolean disableSCM = false
 
     /**
+     * For continuous releases it is helpful to use an
+     * version extension with an relation to the
+     * source control.
+     * This property can be configured for this cases
+     * to true.
+     */
+    boolean continuousRelease = false
+
+    /**
+     * In combination with continuousRelease it should
+     * be possible to specify the branches for this
+     * kind of version extension.
+     * Continuous releases will be also used for the master or trunk.
+     * If you want extend the list of branches, it is possible to
+     * extend the list.
+     */
+    List<String> continuousReleaseBranches = []
+
+    /**
      * Initialize this extension and set default values
      * If environment values are set for some keys this
      * values will be used.
@@ -295,7 +314,7 @@ class VersionExtension extends AbstractExtension {
      *
      * @return version string
      */
-    public String getVersion() {
+    String getVersion() {
         if(offlineVersion) {
             return offlineVersion
         }
@@ -313,7 +332,7 @@ class VersionExtension extends AbstractExtension {
      * @param target
      * @return information with Version and Tag information
      */
-    public String getPreviousVersion() {
+    String getPreviousVersion() {
         if(! internalPreviousVersion) {
             Version prevVersion = this.getVersionService().getPreviousVersion()
             internalPreviousVersion = prevVersion ? prevVersion.toString() : ''
@@ -325,7 +344,7 @@ class VersionExtension extends AbstractExtension {
      * Returns the branch name
      * @return short branch name
      */
-    public String getBranchName() {
+    String getBranchName() {
         if(! internalBranchName) {
             String bname = this.getVersionService().getLocalService().branchName
             internalBranchName = bname.lastIndexOf('/') + 1 < bname.length() ? bname.substring(bname.lastIndexOf('/') + 1) : bname
@@ -338,7 +357,7 @@ class VersionExtension extends AbstractExtension {
      * @param target
      * @return information with Version and Tag information
      */
-    public VersionTag getPreviousVersionTag(String target = '') {
+    VersionTag getPreviousVersionTag(String target = '') {
         this.getVersionService().getPreviousVersionTag(target)
     }
 
@@ -347,14 +366,14 @@ class VersionExtension extends AbstractExtension {
      *
      * @return version service based on the SCM
      */
-    public ScmVersionService getVersionService() {
+    ScmVersionService getVersionService() {
         if(! versionService) {
             versionService = ScmBuilder.getScmVersionService(project, this)
         }
         return versionService
     }
 
-    public ScmVersionService updateVersionService() {
+    ScmVersionService updateVersionService() {
         versionService = ScmBuilder.getScmVersionService(project, this)
         return versionService
     }

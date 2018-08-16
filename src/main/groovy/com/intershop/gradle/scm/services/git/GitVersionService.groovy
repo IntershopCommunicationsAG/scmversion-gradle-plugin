@@ -17,19 +17,10 @@ package com.intershop.gradle.scm.services.git
 
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.services.ScmVersionService
-import com.intershop.gradle.scm.utils.BranchObject
-import com.intershop.gradle.scm.utils.BranchType
-import com.intershop.gradle.scm.utils.PrefixConfig
-import com.intershop.gradle.scm.utils.ScmException
-import com.intershop.gradle.scm.utils.ScmKey
-import com.intershop.gradle.scm.utils.ScmUser
-import com.intershop.gradle.scm.version.AbstractBranchFilter
-import com.intershop.gradle.scm.version.ReleaseFilter
-import com.intershop.gradle.scm.version.ScmBranchFilter
-import com.intershop.gradle.scm.version.ScmVersionObject
-import com.intershop.gradle.scm.version.VersionTag
+import com.intershop.gradle.scm.utils.*
+import com.intershop.gradle.scm.version.*
 import com.intershop.release.version.Version
-import com.intershop.release.version.VersionParser
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.api.errors.GitAPIException
@@ -37,14 +28,9 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException
 import org.eclipse.jgit.api.errors.TransportException
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
-import org.eclipse.jgit.revplot.PlotCommitList
-import org.eclipse.jgit.revplot.PlotLane
-import org.eclipse.jgit.revplot.PlotWalk
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
-import org.eclipse.jgit.revwalk.filter.AndRevFilter
-import org.eclipse.jgit.revwalk.filter.RevFilter
 
 /**
  * This is the container for the remote access to the used SCM of a project.
@@ -52,6 +38,7 @@ import org.eclipse.jgit.revwalk.filter.RevFilter
  * move the working copy to a special version.
  * This is the implementation for the remote access to the Git remote project.
  */
+@CompileStatic
 @Slf4j
 class GitVersionService extends GitRemoteService implements ScmVersionService{
 
@@ -68,7 +55,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                       ScmUser user = null,
                       ScmKey key = null) {
         super(sls, user, key)
-        localService = sls
+        localService = (GitLocalService)sls
     }
 
     /**
@@ -76,7 +63,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      *
      * @return version object from scm
      */
-    public ScmVersionObject getVersionObject() {
+    ScmVersionObject getVersionObject() {
         ScmVersionObject rv = null
 
         // identify headId of the working copy
@@ -87,13 +74,12 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             Map<String, BranchObject> simpleTags = getTagMap(new ScmBranchFilter(localService.prefixes))
 
             Map<String, BranchObject> branches = [:]
-            if(versionExt.branchWithVersion) {
+            if(localService.isBranchWithVersion()) {
                 branches = getBranchMap(getBranchFilter(localService.featureBranchName ? localService.getBranchType() : BranchType.branch))
             }
 
             int pos = 0
 
-            RevCommit commit
             BranchObject tagObject
             BranchObject branchObject
 
@@ -107,18 +93,26 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             // version from tag, if tag is available
             if (!(tags.isEmpty() && simpleTags.isEmpty())) {
                 walk.markStart(head)
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (RevCommit commit = walk.next(); commit; commit = walk.next()) {
                     tagObject = tags[commit.id.name()]
-                    if(! (versionExt.branchWithVersion || tagObject)) {
+                    if(! localService.isBranchWithVersion() && tagObject == null) {
                         tagObject = simpleTags[commit.id.name]
                     }
                     if (tagObject) {
                         // commit is a tag
                         version = tagObject.version
-                        if((pos == 0 && versionExt.getVersionBranchType() != BranchType.tag) || versionExt.getVersionBranchType() == BranchType.tag) {
-                            log.debug('Version from tag {}', tagObject.name)
+                        if(pos == 0) {
+                            log.info('Version from tag {}', tagObject.name)
                             // commit is a tag with version information
                             rv = new ScmVersionObject(tagObject.name, Version.forString(version, versionExt.getVersionType()), false)
+                            break
+                        }
+                        if(pos != 0 && versionExt.getVersionBranchType() == BranchType.tag) {
+                            log.info('Version from tag {}, but there are {} changes.', tagObject.name, pos)
+                            rv = new ScmVersionObject(localService.branchName, Version.forString(version, versionExt.getVersionType()), false)
+                            if(localService.branchType != BranchType.trunk && localService.branchType != BranchType.branch && localService.branchType != BranchType.tag) {
+                                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
+                            }
                             break
                         }
                         if(pos != 0 && versionExt.getVersionBranchType() != BranchType.tag) {
@@ -126,13 +120,21 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                         }
                     } else {
                         ++pos
-                        log.debug('Next step in walk to tag from {}', commit.id.name)
+                        log.info('Next step in walk to tag from {}', commit.id.name)
                     }
                 }
             }
 
-            if(localService.branchType != BranchType.tag && ! versionExt.branchWithVersion && rv) {
+            if(localService.branchType != BranchType.tag && ! localService.isBranchWithVersion() && rv) {
                 rv.changed = (pos != 0) || localService.changed
+                if(rv.changed && log.isInfoEnabled()) {
+                    if(pos > 0) {
+                        log.info('There are {} commits after the last tag.', pos)
+                    }
+                    if(localService.changed) {
+                        log.info('There are local changes in the repository.')
+                    }
+                }
                 rv.fromBranchName = true
                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
             }
@@ -144,7 +146,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
 
                 pos = 0
-                for (commit = walk.next(); commit != null; commit = walk.next()) {
+                for (RevCommit commit = walk.next(); commit != (Object) null; commit = walk.next()) {
 
                     branchObject = branches[commit.id.name()]
                     if (branchObject) {
@@ -195,12 +197,15 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
         if(! rv) {
             // check branch name
             rv = getFallbackVersion()
+            if(localService.branchType != BranchType.trunk && localService.branchType != BranchType.branch && localService.branchType != BranchType.tag) {
+                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
+            }
         }
 
         return rv
     }
 
-    public Map<Version, VersionTag> getVersionTagMap() {
+    Map<Version, VersionTag> getVersionTagMap() {
         Map<String, BranchObject> branchMap = this.getTagMap(new ReleaseFilter(localService.prefixes, getPreVersion()))
 
         Map<Version, VersionTag> versionTags = [:]
@@ -219,12 +224,12 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param type Branchtype of the target branch
      * @return the revision id of the working after the move
      */
-    public String moveTo(String version, BranchType type = BranchType.branch) {
+     String moveTo(String version, BranchType type = BranchType.branch) {
         //checkout branch, wc is detached
         log.debug('git checkout {}', version)
 
         String branchName = ''
-        Map<String, String> versionMap = null
+        Map<String, BranchObject> versionMap = null
         String path = ''
 
         if(checkBranch(BranchType.tag, version)) {
@@ -268,7 +273,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param version
      * @return the revision id of the tag
      */
-    public String createTag(String version, String revid = this.localService.getRevID()) {
+    String createTag(String version, String revid = this.localService.getRevID()) {
         if(remoteConfigAvailable) {
             // check if tag exits
             if (checkBranch(BranchType.tag, version)) {
@@ -304,7 +309,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the branch
      */
-    public String createBranch(String version, boolean featureBranch, String revid = this.localService.getRevID()) {
+    String createBranch(String version, boolean featureBranch, String revid = this.localService.getRevID()) {
         if(remoteConfigAvailable) {
             // check if branch exits
             if (checkBranch(featureBranch ? localService.getBranchType() : BranchType.branch, version) ) {
@@ -336,7 +341,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      * @param version
      * @return true, if the specified release version is available
      */
-    public boolean isReleaseVersionAvailable(String version) {
+    boolean isReleaseVersionAvailable(String version) {
         return checkBranch(BranchType.tag, version)
     }
 
@@ -387,7 +392,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      */
     private Map<String, BranchObject> getBranchMap(AbstractBranchFilter branchFilter) {
         //specify return value
-        Map<String, Ref> rv = [:]
+        Map<String, BranchObject> rv = [:]
 
         if(remoteConfigAvailable) {
             fetchAllCmd()
@@ -408,8 +413,6 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             if(branchName != 'master') {
                 String version = branchFilter.getVersionStr(branchName)
                 if(version) {
-                    Iterable<RevCommit> commits = ((GitLocalService)localService).client.log().add(((GitLocalService)localService).repository.resolve(name)).call();
-                    List<RevCommit> commitsList = commits.iterator().toList()
                     rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, name.substring(name.lastIndexOf('/') + 1)))
                 }
             }
@@ -432,7 +435,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             addCredentialsToCmd(cmd)
             cmd.call()
         } catch(InvalidRemoteException nrex) {
-            log.warn('No remote repository is available!')
+            log.warn('No remote repository is available! {}', nrex.getMessage())
         } catch(TransportException tex) {
             log.warn('It was not possible to fetch all. Please check your credential configuration.', tex)
         }

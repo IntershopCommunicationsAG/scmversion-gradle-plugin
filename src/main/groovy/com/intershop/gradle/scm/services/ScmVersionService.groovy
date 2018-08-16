@@ -16,6 +16,7 @@
 package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.extension.VersionExtension
+import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.version.ScmBranchFilter
 import com.intershop.gradle.scm.version.ScmVersionObject
@@ -116,7 +117,7 @@ trait ScmVersionService {
      * and the latest version branch on the CI server.</p>
      * @return  version string with extension if necessary
      */
-    public String getVersion() {
+    String getVersion() {
         if(! versionExt.disableSCM) {
             // store version object
             if (!versionObject) {
@@ -126,12 +127,19 @@ trait ScmVersionService {
             Version version = getPreVersion()
 
             if (versionObject.isChanged() && versionExt.runOnCI) {
+                String revIDExtension = getSCMRevExtension()
+
                 if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with SNAPSHOT', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
                 } else {
-                    log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+                    if(versionExt.continuousRelease && ! revIDExtension.isEmpty()) {
+                        log.info('Version {} will be extended with revID "{}"', version, revIDExtension)
+                        version.setBuildMetadata(revIDExtension)
+                    } else {
+                        log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
+                        return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+                    }
                 }
             } else if (!versionObject.isChanged() && versionExt.runOnCI) {
                 log.info('Version {} will be used without extension (No changes detected!).', version)
@@ -141,7 +149,7 @@ trait ScmVersionService {
                     log.info('Version {} will be extended with LOCAL', version)
                     return "${version}-${com.intershop.release.version.VersionExtension.LOCAL}"
                 } else {
-                    log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
+                    log.info('Version {} will be extended with LOCAL', version.normalVersion)
                     return version.setBuildMetadata(com.intershop.release.version.VersionExtension.LOCAL.toString())
                 }
             }
@@ -166,6 +174,20 @@ trait ScmVersionService {
         }
     }
 
+    String getSCMRevExtension() {
+        if(localService.getBranchType() == BranchType.trunk ||
+                versionExt.continuousReleaseBranches.contains(localService.getBranchName())) {
+            if(localService instanceof GitLocalService) {
+                return "rev.id." + localService.getRevID().substring(0,7)
+            } else {
+                return "rev.id." + localService.getRevID()
+            }
+
+        }
+
+        return ""
+    }
+
     /**
      * <p>Calculated version from the SCM. The specified digit is
      * incremented when the code was changed after the latest
@@ -173,7 +195,7 @@ trait ScmVersionService {
      *
      * @return version object
      */
-    public Version getPreVersion() {
+    Version getPreVersion() {
         // store version object
         if(! versionObject) {
             versionObject = getVersionObject()
@@ -187,17 +209,15 @@ trait ScmVersionService {
             return versionObject.version
         }
 
-        println localService.branchType
-
         if(localService.branchType != BranchType.featureBranch && localService.branchType != BranchType.bugfixBranch && localService.branchType != BranchType.hotfixbBranch) {
             if(versionObject.changed) {
-                if (!versionExt.increment && localService.branchType != BranchType.trunk) {
+                if (! versionExt.increment && localService.branchType != BranchType.trunk) {
                     return versionObject.version.incrementVersion()
                 }
-                if (!versionExt.increment && localService.branchType == BranchType.trunk) {
+                if (! versionExt.increment && localService.branchType == BranchType.trunk) {
                     return versionObject.version.incrementLatest()
                 }
-                if (versionExt.increment) {
+                if(versionExt.increment) {
                     DigitPos pos = Enum.valueOf(DigitPos, versionExt.increment)
                     return versionObject.version.incrementVersion(pos)
                 }
@@ -242,7 +262,7 @@ trait ScmVersionService {
      * If no release tag is available, the return value is null
      * @return previous version from the scm repository
      */
-    public Version getPreviousVersion() {
+    Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
         Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
@@ -254,7 +274,7 @@ trait ScmVersionService {
      * @param targetVersion
      * @return
      */
-    public VersionTag getPreviousVersionTag(String previousVersion) {
+    VersionTag getPreviousVersionTag(String previousVersion) {
 
         Version previousVersionObj = null
         VersionTag versionTag = null
@@ -306,7 +326,7 @@ trait ScmVersionService {
      * @param type Version branch type, default is the value of the initialization method
      * @return Branch filter for the specified type.
      */
-    public ScmBranchFilter getBranchFilter(BranchType type) {
+    ScmBranchFilter getBranchFilter(BranchType type) {
         BranchType bt = type != null ? type : versionExt.getVersionBranchType()
         return new ScmBranchFilter(bt, localService.prefixes, localService.branchName, localService.branchType, localService.featureBranchName, versionExt.getPatternDigits())
     }
