@@ -252,7 +252,7 @@ class PrefixConfig {
      * @return the branch type for the specified prefix
      * @throws com.intershop.gradle.scm.utils.ScmException if the prefix is not configured.
      */
-    public BranchType getBranchType(String prefix) {
+    BranchType getBranchType(String prefix) {
         if(prefix == stabilizationPrefix) {
             return BranchType.branch
         }
