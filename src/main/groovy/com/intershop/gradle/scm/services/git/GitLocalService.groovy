@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.services.git
 
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.BranchType
 import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.LogCommand
@@ -30,7 +29,7 @@ import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 
 @Slf4j
-@CompileDynamic
+@CompileStatic
 class GitLocalService extends ScmLocalService{
 
     /*
@@ -55,7 +54,6 @@ class GitLocalService extends ScmLocalService{
      * @param projectDir
      * @param prefixes
      */
-    @CompileDynamic
     GitLocalService(File projectDir, ScmExtension scmExtension) {
         super(projectDir, scmExtension)
 
@@ -70,28 +68,37 @@ class GitLocalService extends ScmLocalService{
         if(branchName == 'master') {
             branchType = BranchType.trunk
         } else {
-                def mfb = branchName =~ /${prefixes.getFeatureBranchPattern(scmExtension.version.branchWithVersion)}/
-                def mhb = branchName =~ /${prefixes.getHotfixBranchPattern(scmExtension.version.branchWithVersion)}/
-                def mbb = branchName =~ /${prefixes.getBugfixBranchPattern(scmExtension.version.branchWithVersion)}/
+            def mfb = branchName =~ /${prefixes.getFeatureBranchPattern()}/
+            def mhb = branchName =~ /${prefixes.getHotfixBranchPattern()}/
+            def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
+            def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
 
-                if (mfb.matches() && mfb.count == 1 && (mfb[0].size() == 5 || mfb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mfb[0].size() == 2) )) {
-                    branchType = BranchType.featureBranch
-                    featureBranchName = mfb[0][mfb[0].size() - 1]
-                } else if (mhb.matches() && mhb.count == 1 && (mhb[0].size() == 5 || mhb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mfb[0].size() == 2) )) {
-                    branchType = BranchType.hotfixbBranch
-                    featureBranchName = mhb[0][mhb[0].size() - 1]
-                } else if (mbb.matches() && mbb.count == 1 && (mbb[0].size() == 5 || mbb[0].size() == 6 || (!scmExtension.version.branchWithVersion && mbb[0].size() == 2) )) {
-                    branchType = BranchType.bugfixBranch
-                    featureBranchName = mbb[0][mbb[0].size() - 1]
+            if(mfb.matches() && mfb.count == 1) {
+                branchType = BranchType.featureBranch
+                setFeatureBranchName((mfb[0] as List)[(mfb[0] as List).size() - 1].toString())
+
+            } else if(mhb.matches() && mhb.count == 1) {
+                branchType = BranchType.hotfixbBranch
+                setFeatureBranchName((mhb[0] as List)[(mhb[0] as List).size() - 1].toString())
+
+            } else if(mbb.matches() && mbb.count == 1) {
+                branchType = BranchType.bugfixBranch
+                setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
+            }
+            else {
+                String tn = checkHeadForTag()
+                if(tn) {
+                    branchType = BranchType.tag
+                    branchName = tn
                 } else {
-                    String tn = checkHeadForTag()
-                    if (tn) {
-                        branchType = BranchType.tag
-                        branchName = tn
-                    } else {
+                    if(msb.matches() && msb.count == 1) {
                         branchType = BranchType.branch
+                    } else {
+                        branchType = BranchType.featureBranch
+                        setFeatureBranchName(branchName)
                     }
                 }
+            }
         }
 
         log.info('Branch name is {}', branchName)
@@ -108,8 +115,8 @@ class GitLocalService extends ScmLocalService{
             logsLocal.each { RevCommit rev ->
                 revsLocal.add(rev.toString())
             }
-        }catch (Exception ex) {
-            log.warn('No repo info available!')
+        } catch (Exception ex) {
+            log.warn('No repo info available! {}', ex.getMessage())
         }
 
         Status status = gitClient.status().call()
@@ -117,6 +124,7 @@ class GitLocalService extends ScmLocalService{
         changed = status.untracked.size() > 0 || status.uncommittedChanges.size() > 0 || status.removed.size() > 0 || status.added.size() > 0 || status.changed.size() > 0 || status.modified.size() > 0
 
         if(log.infoEnabled && changed) {
+            log.info('There are local changes on the repository.')
             if(status.untracked.size() > 0) {
                 status.untracked.each {
                     log.info('GIT: This file is not indexed {}', it)
@@ -156,7 +164,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitRepo Object
      * @return
      */
-    public Repository getRepository() {
+    Repository getRepository() {
         return gitRepo
     }
 
@@ -164,7 +172,7 @@ class GitLocalService extends ScmLocalService{
      * Access for the GitClient Object
      * @return
      */
-    public Git getClient() {
+    Git getClient() {
         return gitClient
     }
 
@@ -174,7 +182,7 @@ class GitLocalService extends ScmLocalService{
      * @return remote url
      */
     @Override
-    public String getRemoteUrl() {
+    String getRemoteUrl() {
         return remoteUrl
     }
 
@@ -184,7 +192,7 @@ class GitLocalService extends ScmLocalService{
      * @return revision id
      */
     @Override
-    public String getRevID() {
+    String getRevID() {
         ObjectId id = gitRepo.resolve(Constants.HEAD)
         String rv = ''
 
