@@ -161,7 +161,7 @@ publishing {
             }
 
             pom.withXml {
-                def Node root = asNode()
+                Node root = asNode()
                 root.appendNode('name', project.name)
                 root.appendNode('description', project.description)
                 root.appendNode('url', "https:/gitlab.intershop.de/IntershopGradlePlugins/${project.name}")

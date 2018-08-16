@@ -42,7 +42,7 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
 
     protected static void svnCheckOut(File target, String source) {
         final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()
-        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'], System.properties['svnpasswd'].toCharArray())
+        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toCharArray())
         try {
             svnOperationFactory.setAuthenticationManager(authenticationManager)
             final SvnCheckout checkout = svnOperationFactory.createCheckout()

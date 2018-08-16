@@ -79,7 +79,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
      *
      * @return version object from scm
      */
-    public ScmVersionObject getVersionObject() {
+    ScmVersionObject getVersionObject() {
         ScmVersionObject rv = null
 
         // identify headId of the working copy
@@ -162,7 +162,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                 walk.markStart(head)
 
                 pos = 0
-                for (RevCommit commit = walk.next(); ! commit.equals((Object)null); commit = walk.next()) {
+                for (RevCommit commit = walk.next(); commit != (Object) null; commit = walk.next()) {
 
                     branchObject = branches[commit.id.name()]
                     if (branchObject) {
@@ -429,7 +429,6 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
             if(branchName != 'master') {
                 String version = branchFilter.getVersionStr(branchName)
                 if(version) {
-                    Iterable<RevCommit> commits = ((GitLocalService)localService).client.log().add(((GitLocalService)localService).repository.resolve(name)).call()
                     rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, name.substring(name.lastIndexOf('/') + 1)))
                 }
             }

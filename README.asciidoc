@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 3.6.0
+:latestRevision: 4.0.0
 :toc:
 
 NOTE: Version 3.4 (and later) of this plugin will only work with JDK 8, Gradle 4.4 and later. Version 3.3 can be used for Gradle 4.4 and previous version of Gradle 4.
@@ -101,6 +101,8 @@ For parsing, calculation and sorting a library for an extended version object is
 
 Therefore branch names must comply with the following patterns. All examples use the default configuration.
 Depending on a special environment configuration (RUNONCI) the build extension is empty or SNAPSHOT, if this setting is true, otherwise it is LOCAL.
+If no prefix is specified the plugin assumes that the branch is a feature branch. If the version is not part of the branch name,
+the version is taken from the last tag.
 
 ==== Feature Branches, Hotfix Branches and Bugfix Branches
 [source]
@@ -322,10 +324,8 @@ _This can be overwritten by the system or environment variable `RUNONCI` or proj
 |*defaultMetadata* |`String`     |''  | | This is used for releases of feature branches.
 |*useBuildExtension*|`boolean`   |`false`|`false` +
 `true` |Build extension will be removed for SNAPSHOT extensions if this property is false.
-|*branchWithVersion*|`boolean`   |`true`| | This property affects only GIT based repositories. +
-If this property is false the version of feature branches is calculated from any tag on the branch. Therefore it is not necessary to specify a version in the branch name.
 |*majorVersionOnly*|`boolean`   |`true`| | This property affects only GIT based repositories. +
-If this property is true and branchWithVersion is false, the version is always only the major version. If the increment property is always configure for MAJOR the version will be increased.
+If this property is true, the version is always only the major version. If the increment property is always configure for MAJOR the version will be increased.
 |*disableSCM*             |`boolean`   |`false`|`false` +
 `true` |If this property is `true`, the initial version is always used and the SCM usage is disabled.
 The environment variable `'SCMVERSIONEXT'` or the project variable `'scmVersionExt'` will be used on the CI server for special extensions. +

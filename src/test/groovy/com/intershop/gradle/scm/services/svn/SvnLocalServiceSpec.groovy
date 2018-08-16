@@ -69,7 +69,7 @@ class SvnLocalServiceSpec extends AbstractScmSpec {
         SvnLocalService infoService = new SvnLocalService(projectDir, scmConfig)
 
         then:
-        infoService.getProjectDir().equals(projectDir)
+        infoService.getProjectDir() == projectDir
         infoService.getRemoteUrl() == "${System.properties['svnurl']}/branches/SB_1.1".toString()
         infoService.getProjectRootSvnUrl().toString() == System.properties['svnurl']
         infoService.getRevision() > 0
