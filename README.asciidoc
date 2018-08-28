@@ -209,8 +209,8 @@ scm {
     }
 
     changelog {
-        previousVersion = '1.0.0'
-        changeLogFile = new File(project.buildDir, 'changelog/changelogset.asciidoc')
+        targetVersion = '1.0.0'
+        changelogFile = new File(project.buildDir, 'changelog/changelogset.asciidoc')
         filterProject = true
     }
 }
@@ -236,7 +236,7 @@ This version must be specified in a project property `*targetVersion*`. It is al
 feature in a property `*feature*` and the kind of branch in the property `*branchType*`, that should be used. The default value for the type is `*branch*`. Possible values are `*featureBranch*`,  `*hotfixBranch*`, `*bugfixBranch*`, `*tag*`. It changes the working copy.
 |release    |PrepareRelease   |This task creates a tag, if necessary, and move the the working copy to the version. +
 It changes the working copy.
-|createChangelog |CreateChangeLog   | This task creates a change log with all changes between the latest commit of the current working copy and the tag of the previous version. It is possible to specify another 'previous' version. +
+|changelog |CreateChangeLog   | This task creates a change log with all changes between the latest commit of the current working copy and the tag of the previous version. It is possible to specify another 'previous' version. +
 The tag for this version is mandatory.
 |===
 
