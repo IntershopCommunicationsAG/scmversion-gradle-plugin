@@ -15,6 +15,7 @@
  */
 package com.intershop.gradle.scm.test.utils
 
+import com.intershop.gradle.test.AbstractIntegrationGroovySpec
 import com.intershop.gradle.test.AbstractIntegrationSpec
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.CheckoutCommand
@@ -38,7 +39,7 @@ import org.tmatesoft.svn.core.wc2.SvnRemoteDelete
 import org.tmatesoft.svn.core.wc2.SvnTarget
 
 @Slf4j
-class AbstractScmSpec extends AbstractIntegrationSpec {
+class AbstractScmSpec extends AbstractIntegrationGroovySpec {
 
     protected static void svnCheckOut(File target, String source) {
         final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()

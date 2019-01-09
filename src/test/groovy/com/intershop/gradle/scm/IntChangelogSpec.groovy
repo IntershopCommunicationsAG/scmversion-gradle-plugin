@@ -156,22 +156,17 @@ class IntChangelogSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
-        task copyDoc {
-            inputs.file changelog
-            doLast{
-                copy {
-                    // Copy the output of copyTask
-                    from changelog
-                    into project.buildDir
-                }
-            }
+        task copy(type: Copy) {
+            // Copy the output of changelog
+            from changelog.outputs.files
+            into project.buildDir
         }
 
         """.stripIndent()
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copyDoc', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnuserpwd']}")
+                .withArguments('copy', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnuserpwd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -203,22 +198,17 @@ class IntChangelogSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
-        task copyDoc {
-            inputs.file changelog
-            doLast{
-                copy {
-                    // Copy the output of copyTask
-                    from changelog
-                    into project.buildDir
-                }
-            }
+        task copy(type: Copy) {
+            // Copy the output of changelog
+            from changelog.outputs.files
+            into project.buildDir
         }
 
         """.stripIndent()
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copyDoc', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnuserpwd']}")
+                .withArguments('copy', '--stacktrace', '-i', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnuserpwd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/testlog/testlog.asciidoc')
@@ -353,22 +343,17 @@ class IntChangelogSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
-        task copyDoc {
-            inputs.file changelog
-            doLast{
-                copy {
-                    // Copy the output of copyTask
-                    from changelog
-                    into project.buildDir
-                }
-            }
+        task copy(type: Copy) {
+            // Copy the output of changelog
+            from changelog.outputs.files
+            into project.buildDir
         }
 
         """.stripIndent()
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copyDoc', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('copy', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -400,22 +385,17 @@ class IntChangelogSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
-        task copyDoc {
-            inputs.file changelog
-            doLast{
-                copy {
-                    // Copy the output of copyTask
-                    from changelog
-                    into project.buildDir
-                }
-            }
+        task copy(type: Copy) {
+            // Copy the output of changelog
+            from changelog.outputs.files
+            into project.buildDir
         }
 
         """.stripIndent()
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copyDoc', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('copy', '--stacktrace', '-i', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/testlog/testlog.asciidoc')

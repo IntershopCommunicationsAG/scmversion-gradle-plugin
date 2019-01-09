@@ -228,7 +228,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-LOCAL')
+        result.output.contains('Project version: 2.3.0-LOCAL')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -264,7 +264,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('Project version: 2.3.0-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -798,7 +798,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         version = scm.version.version
 
-        println "***previuous version is \${scm.version.previousVersion}***"
+        println "***previuous version is \${scm.version.getPreviousVersion()} ***"
 
         println "branchname: \${scm.version.branchName}"
         """.stripIndent()
@@ -807,12 +807,13 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         def result = getPreparedGradleRunner()
                 .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
+                .withDebug(true)
                 .build()
 
         then:
         result.task(":showVersion").outcome == SUCCESS
         result.output.contains('Project version: 2.0.0')
-        result.output.contains('***previuous version is 1.5.0***')
+        result.output.contains('***previuous version is 1.5.0 ***')
         result.output.contains('branchname: CLRELEASE_2.0.0')
 
         where:
@@ -1122,7 +1123,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.3.4')
+        result.output.contains('Project version: 2.4.0-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -1819,7 +1820,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.0.0-fb-123-rev.id.5025')
+        result.output.contains('Project version: 1.0.0-fb-123-rev.id.')
 
         where:
         gradleVersion << supportedGradleVersions

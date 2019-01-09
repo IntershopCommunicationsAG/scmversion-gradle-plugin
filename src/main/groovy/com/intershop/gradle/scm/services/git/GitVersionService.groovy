@@ -393,9 +393,11 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
 
         // check if tag or branch is available
         Collection<Ref> refs = cmd.call()
-        List rv = refs.collect { Ref r ->
+
+        List rv = []
+        refs.each {Ref r ->
             if("${path}${name}".toString().equals(r.getName())) {
-                return r.getName()
+                rv.add(r.getName())
             }
         }
 

@@ -148,6 +148,9 @@ class GitChangeLogSpec extends AbstractScmSpec {
         File buildFile = new File(projectDir, 'build.gradle')
         buildFile.delete()
 
+        projectDir.deleteDir()
+        projectDir.mkdir()
+
         if(tag) {
             gitTagCheckOut(projectDir, System.properties['giturl'].toString(), branch, tag)
         } else {

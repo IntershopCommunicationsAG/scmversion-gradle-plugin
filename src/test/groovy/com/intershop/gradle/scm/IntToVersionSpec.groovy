@@ -34,6 +34,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
         given:
         svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
 
+        initSettingsFile()
         buildFile << """
         plugins {
             id 'com.intershop.gradle.scmversion'
@@ -94,6 +95,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
     def 'test toVersion task with git master - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'].toString(), 'master' )
+        initSettingsFile()
 
         buildFile << """
         plugins {
@@ -158,6 +160,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'].toString(), 'master' )
 
+        initSettingsFile()
         buildFile << """
         plugins {
             id 'com.intershop.gradle.scmversion'

@@ -56,7 +56,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('Project version: 2.3.0-SNAPSHOT')
 
         when:
         def createResult = getPreparedGradleRunner()
@@ -66,10 +66,10 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         then:
         createResult.task(":release").outcome
-        createResult.output.contains('Version is 2.1.0')
+        createResult.output.contains('Version is 2.3.0')
 
         cleanup:
-        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.1.0")
+        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.3.0")
 
         where:
         gradleVersion << supportedGradleVersions
@@ -105,7 +105,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('Project version: 2.3.0-SNAPSHOT')
 
         when:
         def createResult = getPreparedGradleRunner()
@@ -115,7 +115,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         then:
         createResult.task(":tag").outcome
-        createResult.output.contains('Tag created: 2.1.0')
+        createResult.output.contains('Tag created: 2.3.0')
 
         when:
         def prepareResult = getPreparedGradleRunner()
@@ -125,10 +125,10 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         then:
         prepareResult.task(":release").outcome
-        prepareResult.output.contains('Project version: 2.1.0')
+        prepareResult.output.contains('Project version: 2.3.0')
 
         cleanup:
-        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.1.0")
+        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.3.0")
 
         where:
         gradleVersion << supportedGradleVersions

@@ -57,7 +57,7 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-SNAPSHOT')
+        result.output.contains('Project version: 2.3.0-SNAPSHOT')
 
         when:
         def createResult = getPreparedGradleRunner()
@@ -67,10 +67,10 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         then:
         createResult.task(":branch").outcome == SUCCESS
-        createResult.output.contains('Branch created: 2.1.0')
+        createResult.output.contains('Branch created: 2.3.0')
 
         cleanup:
-        svnRemove("${System.properties['svnurl']}/branches/SB_2.1")
+        svnRemove("${System.properties['svnurl']}/branches/SB_2.3")
 
         where:
         gradleVersion << supportedGradleVersions
