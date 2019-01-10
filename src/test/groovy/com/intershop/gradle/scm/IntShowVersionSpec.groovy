@@ -1933,4 +1933,32 @@ class IntShowVersionSpec extends AbstractTaskSpec {
         where:
         gradleVersion << supportedGradleVersions
     }
+
+    def 'test showVersion task with git - checkout commit - #gradleVersion'(gradleVersion) {
+        given:
+        prepareGitCommitCheckout(testProjectDir, System.properties['giturl'], 'ad73b690ccfbc5d59eec6597073bd6c24aee6519')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+        
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL)
+                .withDebug(true)
+                .withGradleVersion(gradleVersion)
+                .build()
+
+        then:
+        result.task(":showVersion").outcome == SUCCESS
+        result.output.contains('Project version: 1.0.0-rev.id.ad73b69-SNAPSHOT')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
 }

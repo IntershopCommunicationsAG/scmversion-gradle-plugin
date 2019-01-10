@@ -64,11 +64,13 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
         def createResult = getPreparedGradleRunner()
                 .withArguments('release', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
+                .withDebug(true)
                 .build()
 
         then:
         createResult.task(":release").outcome
-        createResult.output.contains('Version is 2.3.0')
+        createResult.output.contains('Version 2.3.0 will be used without extension')
+        createResult.output.contains('Project version: 2.3.0')
 
         cleanup:
         svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.3.0")
