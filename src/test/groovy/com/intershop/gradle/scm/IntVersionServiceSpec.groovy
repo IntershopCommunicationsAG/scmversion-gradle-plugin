@@ -26,6 +26,8 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 @Unroll
 class IntVersionServiceSpec extends AbstractTaskSpec {
 
+    final static String LOGLEVEL = "-i"
+
     @Requires({ System.properties['svnurl'] &&
             System.properties['svnuser'] &&
             System.properties['svnpasswd'] })
@@ -52,7 +54,7 @@ class IntVersionServiceSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-d', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -91,7 +93,7 @@ class IntVersionServiceSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-d', '-PrunOnCI=true', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

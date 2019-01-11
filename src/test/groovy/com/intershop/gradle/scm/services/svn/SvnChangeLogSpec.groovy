@@ -82,7 +82,7 @@ class SvnChangeLogSpec extends AbstractScmSpec{
         then:
         testLog.exists()
         testLog.text.contains('This list contains changes since version 1.5.0.')
-        testLog.text.contains('JIRA-12346: add test property to file')
+        testLog.text.contains('JIRA-12345: add test property to file')
         testLog.text.contains('| M | /trunk/test.properties')
     }
 
@@ -106,7 +106,7 @@ class SvnChangeLogSpec extends AbstractScmSpec{
         then:
         testLog.exists()
         testLog.text.contains('This list contains changes since version 1.0.0.')
-        testLog.text.contains('JIRA-12346: add test property to file')
+        testLog.text.contains('JIRA-12345: add test property to file')
         testLog.text.contains('| M | /trunk/test.properties')
     }
 

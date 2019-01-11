@@ -63,6 +63,8 @@ class ScmVersionPlugin implements Plugin<Project> {
     void apply(Project project) {
         //disable gnome-keyring, because this is currently not working with gradle and jna
         System.setProperty('svnkit.library.gnome-keyring.enabled', 'false')
+        System.setProperty('javax.xml.parsers.DocumentBuilderFactory', 'com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl')
+        System.setProperty('javax.xml.parsers.SAXParserFactory', 'com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl')
 
         // Create Extension
         scmExtension = project.extensions.findByType(ScmExtension) ?: project.extensions.create(SCM_EXTENSION, ScmExtension, project)
@@ -94,6 +96,8 @@ class ScmVersionPlugin implements Plugin<Project> {
         task.conventionMapping.changelogFile = { scmExtension.changelog.getChangelogFile() }
         task.conventionMapping.targetVersion = { scmExtension.changelog.getTargetVersion() }
         task.conventionMapping.filterProject = { scmExtension.changelog.getFilterProject() }
+
+
     }
 
 }

@@ -375,6 +375,11 @@ class VersionExtension extends AbstractExtension {
 
     ScmVersionService updateVersionService() {
         versionService = ScmBuilder.getScmVersionService(project, this)
+
+        internalVersion = null
+        internalBranchName = null
+        internalPreviousVersion = null
+
         return versionService
     }
 }
