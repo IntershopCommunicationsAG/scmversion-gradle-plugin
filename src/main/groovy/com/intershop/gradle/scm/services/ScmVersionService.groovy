@@ -27,6 +27,9 @@ import com.intershop.release.version.Version
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
 
+import static com.intershop.release.version.VersionExtension.SNAPSHOT
+import static com.intershop.release.version.VersionExtension.LOCAL
+
 /**
  * This is the container for the remote access to the used SCM of a project.
  * It calculates the version and has methods to create a branch, a tag or
@@ -154,7 +157,7 @@ trait ScmVersionService {
                     return "${version}-${SNAPSHOT.toString()}"
                 } else {
                     log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+                    return version.setBuildMetadata(SNAPSHOT.toString())
                 }
 
             } else if (!versionObject.isChanged() && versionExt.runOnCI) {
@@ -163,10 +166,10 @@ trait ScmVersionService {
             } else {
                 if (versionExt.useBuildExtension) {
                     log.info('Version {} will be extended with LOCAL', version)
-                    return "${version}-${com.intershop.release.version.VersionExtension.LOCAL}"
+                    return "${version}-${LOCAL.toString()}"
                 } else {
                     log.info('Version {} will be extended with LOCAL', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.LOCAL.toString())
+                    return version.setBuildMetadata(LOCAL.toString())
                 }
             }
         } else {
@@ -174,7 +177,7 @@ trait ScmVersionService {
                 String baseVer = versionExt.initialVersion
                 switch (versionExt.getVersionExt()) {
                     case 'SNAPSHOT':
-                        return "${baseVer}-${com.intershop.release.version.VersionExtension.SNAPSHOT}"
+                        return "${baseVer}-${SNAPSHOT.toString()}"
                         break
                     case 'RELEASE':
                         return baseVer
@@ -185,14 +188,15 @@ trait ScmVersionService {
                         break
                 }
             } else {
-                return "${versionExt.initialVersion}-${com.intershop.release.version.VersionExtension.LOCAL}"
+                return "${versionExt.initialVersion}-${LOCAL.toString()}"
             }
         }
     }
 
     String getSCMRevExtension() {
         if(localService.getBranchType() == BranchType.trunk ||
-                versionExt.continuousReleaseBranches.contains(localService.getBranchName())) {
+                versionExt.continuousReleaseBranches.contains(localService.getBranchName()) ||
+                localService.getBranchType() == BranchType.detachedHead) {
             if(localService instanceof GitLocalService) {
                 return "rev.id." + localService.getRevID().substring(0,7)
             } else {

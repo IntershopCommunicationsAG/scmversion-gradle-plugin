@@ -150,7 +150,6 @@ class GitLocalService extends ScmLocalService{
         }
 
         if(! changed && branchType == BranchType.detachedHead) {
-            changed = true
             log.info('Repo is in detached mode! Create a tag on {}.', branchName)
         }
     }
