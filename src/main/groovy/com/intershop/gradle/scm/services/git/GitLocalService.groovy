@@ -91,7 +91,9 @@ class GitLocalService extends ScmLocalService{
                     branchType = BranchType.tag
                     branchName = tn
                 } else {
-                    if(msb.matches() && msb.count == 1) {
+                    if(branchName.equals(getRevID())) {
+                        branchType = BranchType.detachedHead
+                    } else if(msb.matches() && msb.count == 1) {
                         branchType = BranchType.branch
                     } else {
                         branchType = BranchType.featureBranch
@@ -146,14 +148,20 @@ class GitLocalService extends ScmLocalService{
                 }
             }
         }
+
+        if(! changed && branchType == BranchType.detachedHead) {
+            changed = true
+            log.info('Repo is in detached mode! Create a tag on {}.', branchName)
+        }
     }
 
     private String checkHeadForTag() {
         String rvTagName = ''
         RevWalk rw = new RevWalk(repository)
-        gitRepo.getTags().each {tagName, rev ->
-            if(ObjectId.toString(rw.parseCommit(rev.objectId).id) == getRevID()) {
-                rvTagName = tagName
+
+        gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).each {Ref ref ->
+            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == getRevID()) {
+                rvTagName = ref.name.substring(Constants.R_TAGS.length())
             }
         }
         rw.dispose()

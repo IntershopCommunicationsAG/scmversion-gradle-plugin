@@ -61,5 +61,11 @@ enum BranchType {
         public String toString() {
             return 'tag'
         }
+    },
+    detachedHead {
+        @Override
+        String toString() {
+            return 'detachedHead'
+        }
     }
 }
