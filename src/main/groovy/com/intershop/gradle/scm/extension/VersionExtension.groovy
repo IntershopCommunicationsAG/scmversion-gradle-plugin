@@ -65,6 +65,10 @@ class VersionExtension extends AbstractExtension {
     public final static String SCMVERSIONEXT_ENV = 'SCMVERSIONEXT'
     public final static String SCMVERSIONEXT_PRJ = 'scmVersionExt'
 
+    //CONTINUOUSRELEASE
+    public final static String CONTINUOUSRELEASE_ENV = 'CONTINUOUSRELEASE'
+    public final static String CONTINUOUSRELEASE_PRJ = 'continuousRelease'
+
     // variable for version which is used if the
     // system is offline without any connection to
     // the remote repository
@@ -234,6 +238,9 @@ class VersionExtension extends AbstractExtension {
         if(! type) {
             type = 'threeDigits'
         }
+
+        // set continuous release from environment configuration
+        continuousRelease = Boolean.parseBoolean(getVariable(CONTINUOUSRELEASE_ENV, CONTINUOUSRELEASE_PRJ, 'false'))
 
         // default value depends on the SCM
         if(! increment) {
