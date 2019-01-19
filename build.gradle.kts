@@ -33,7 +33,7 @@ plugins {
 group = "com.intershop.gradle.scm"
 description = "Gradle SCM version plugin - SCM based version handling for Gradle"
 
-version = "4.0.0"
+version = "4.1.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
