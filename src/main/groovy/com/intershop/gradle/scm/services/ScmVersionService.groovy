@@ -134,10 +134,11 @@ trait ScmVersionService {
                     log.info('Version {} will be extended with revID "{}"', version, revIDExtension)
                     return version.setBuildMetadata(revIDExtension)
                 }
+
                 if (localService.branchType == BranchType.detachedHead) {
                     Version versionForDetachedHead = version.setBuildMetadata(revIDExtension)
 
-                    if(! localService.changed) {
+                    if(versionExt.isContinuousRelease() && ! localService.changed ) {
                         log.info('Version {} will be extended with revID for detached head "{}"', version, revIDExtension)
                         return versionForDetachedHead.toString()
                     } else {
@@ -145,6 +146,7 @@ trait ScmVersionService {
                         return "${versionForDetachedHead}-${SNAPSHOT}"
                     }
                 }
+
                 if(!versionObject.isChanged()) {
                     log.info('Version {} will be used without extension (No changes detected!).', version)
                     return version
