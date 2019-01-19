@@ -159,6 +159,10 @@ The plugin is looking for a tag on the branch. If there is no valid tag on the b
 * Tags +
 Without local changes the plugin tries to calculate the name from the tag name.
 
+A checkout of a single commit (detached head) without a tag name will be specially treated. The last found version is
+used for the version string. This is extended by the short hash value and 'SNAPSHOT', e.g. 2.0.0-rev.id.ad73b69-SNAPSHOT.
+If the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'` is set, the extension SNAPSHOT is not added.
+
 ==== Version Calculation on Subversion
 * Trunk +
 The plugin is looking for a tag that matches the specified criteria. In the most cases, the version is calculated from branches and will be extended with `SNAPSHOT`. This behavior can be configured.
@@ -321,7 +325,7 @@ _This can be overwritten by the system or environment variable `RUNONCI` or proj
 `true` |Build extension will be removed for SNAPSHOT extensions if this property is false.
 |*branchWithVersion*|`boolean`   |`true`| | This property affects only GIT based repositories. +
 If this property is false the version of feature branches is calculated from any tag on the branch. Therefore it is not necessary to specify a version in the branch name.
-|*majorVersionOnly*|`boolean`   |`true`| | This property affects only GIT based repositories. +
+|*majorVersionOnly*| `boolean`   |`true`| | This property affects only GIT based repositories. +
 If this property is true and branchWithVersion is false, the version is always only the major version. If the increment property is always configure for MAJOR the version will be increased.
 |*disableSCM*             |`boolean`   |`false`|`false` +
 `true` |If this property is `true`, the initial version is always used and the SCM usage is disabled.
@@ -337,6 +341,12 @@ On a local developer machine `'LOCAL'` will be added to the version.
 |*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment variable `SCMVERSIONEXT` or the project variable `scmVersionExt` is used for the return value.
 |*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
 |*previousVersionTag* | `VersionTag` | `null` | *read only* | Returns an object with the previous version and the associated release tag.
+|*continuousRelease* | `boolean` | `false` | `false` +
+`true` | For continuous releases it is helpful to use an version extension with an relation to the source control.
+It is possible to enable this configuration also over the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'`.
+|*continuousReleaseBranches* | `List<String>` | `[]` | Branchnames | In combination with continuousRelease it should be possible to specify the branches for this
+kind of version extension. Continuous releases will be also used for the master or trunk.
+If you want extend the list of branches, it is possible to extend the list.
 |===
 
 ==== Changelog Object 'changeLog' (`ScmChangeLog`)[[scmchangelog]]

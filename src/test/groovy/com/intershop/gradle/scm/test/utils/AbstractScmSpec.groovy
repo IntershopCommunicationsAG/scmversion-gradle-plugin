@@ -40,9 +40,9 @@ import org.tmatesoft.svn.core.wc2.SvnTarget
 @Slf4j
 class AbstractScmSpec extends AbstractIntegrationSpec {
 
-    protected void svnCheckOut(File target, String source) {
+    protected static void svnCheckOut(File target, String source) {
         final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()
-        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'], System.properties['svnpasswd'].toCharArray())
+        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toCharArray())
         try {
             svnOperationFactory.setAuthenticationManager(authenticationManager)
             final SvnCheckout checkout = svnOperationFactory.createCheckout()
@@ -50,11 +50,11 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
             checkout.setSource(SvnTarget.fromURL(SVNURL.parseURIEncoded(source)))
             checkout.run()
         } finally {
-            svnOperationFactory.dispose();
+            svnOperationFactory.dispose()
         }
     }
 
-    protected void svnChangeTestFile(File target) {
+    protected static void svnChangeTestFile(File target) {
         File propertyFile = new File(target, 'test.properties')
         def fileText = propertyFile.text
         fileText = (fileText =~ /testproperty *= *\S*/).replaceFirst("testproperty = ${(new Date()).toString()}")
@@ -64,32 +64,64 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
         newFile.write("changed")
     }
 
-    protected void gitCheckOut(File target, String source, String branch) {
+    protected static void gitCheckOut(File target, String source, String branch) {
         CloneCommand cmd = Git.cloneRepository()
                 .setURI(source)
                 .setBranch(branch)
                 .setDirectory(target)
-                .setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'], System.properties['gitpasswd']) )
+                .setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
         cmd.call()
     }
 
-    protected void gitTagCheckOut(File target, String source, String branch, String tag) {
+
+    protected static Git gitFetch(File target, String source, String branch) {
         gitCheckOut(target, source, branch)
         Git git = getGit(target)
 
         FetchCommand fetch = git.fetch()
         fetch.remote = 'origin'
         fetch.setCheckFetchedObjects(true)
-        fetch.setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'], System.properties['gitpasswd']) )
+        fetch.setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
         fetch.call()
 
+        return git
+    }
+
+    protected static void gitCheckOut(File target, String source, String branch, String name) {
+        Git git = gitFetch(target, source, branch)
+
         CheckoutCommand checkout = git.checkout()
-        checkout.setName("tags/${tag}")
-        checkout.setStartPoint("tags/${tag}")
+        checkout.setName(name)
+        checkout.setStartPoint(name)
         checkout.call()
     }
 
-    protected void gitChangeTestFile(File target) {
+    protected static void gitTagCheckOut(File target, String source, String branch, String tag) {
+        gitCheckOut(target, source, branch, "tags/${tag}")
+    }
+
+    protected static void gitCommitCheckout(File target, String source, String revid) {
+        CloneCommand cmd = Git.cloneRepository()
+                .setURI(source)
+                .setDirectory(target)
+                .setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
+        cmd.call()
+
+        Git git = getGit(target)
+
+        FetchCommand fetch = git.fetch()
+        fetch.remote = 'origin'
+        fetch.setCheckFetchedObjects(true)
+        fetch.setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
+        fetch.call()
+
+        CheckoutCommand checkout = git.checkout()
+        checkout.setName(revid)
+        checkout.setStartPoint(revid)
+        checkout.call()
+    }
+
+    protected static void gitChangeTestFile(File target) {
         File propertyFile = new File(target, 'test.properties')
         def fileText = propertyFile.text
         fileText = (fileText =~ /testproperty *= *\S*/).replaceFirst("testproperty = ${(new Date()).toString()}")
@@ -99,10 +131,8 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
         newFile.write("changed")
     }
 
-    protected void svnRemove(String source) {
-        SVNURL svnURL = null
-
-        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'], System.properties['svnpasswd'].toCharArray())
+    protected static void svnRemove(String source) {
+        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toString().toCharArray())
         final SVNRepository repo = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(source), null)
         repo.setAuthenticationManager(authenticationManager)
         SVNNodeKind nodeKind = repo.checkPath( "" ,  -1 )
@@ -118,16 +148,16 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
                 remoteDelete.setCommitMessage('Remove after test')
                 final SVNCommitInfo commitInfo = remoteDelete.run()
                 if (commitInfo) {
-                    final long newRevision = commitInfo.getNewRevision();
+                    final long newRevision = commitInfo.getNewRevision()
                     log.info('{} removed, revision {} created', source, newRevision)
                 }
             } finally {
-                svnOperationFactory.dispose();
+                svnOperationFactory.dispose()
             }
         }
     }
 
-    protected void gitTagRemove(File projectDir, String tag) {
+    protected static void gitTagRemove(File projectDir, String tag) {
         Git git = getGit(projectDir)
         try {
 
@@ -137,16 +167,16 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
             //delete btag on remote 'origin'
             RefSpec refSpec = new RefSpec()
                     .setSource(null)
-                    .setDestination("refs/tags/${tag}");
+                    .setDestination("refs/tags/${tag}")
             git.push()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.properties['gituser'], System.properties['gitpasswd']))
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()))
                     .setRefSpecs(refSpec).setRemote('origin').call()
         } catch(Exception ex) {
             ex.printStackTrace()
         }
     }
 
-    protected void gitBranchRemove(File projectDir, String branch) {
+    protected static void gitBranchRemove(File projectDir, String branch) {
         Git git = getGit(projectDir)
         try {
 
@@ -156,20 +186,20 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
             //delete btag on remote 'origin'
             RefSpec refSpec = new RefSpec()
                     .setSource(null)
-                    .setDestination("refs/heads/${branch}");
+                    .setDestination("refs/heads/${branch}")
             git.push()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.properties['gituser'], System.properties['gitpasswd']))
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()))
                     .setRefSpecs(refSpec).setRemote('origin').call()
         } catch(Exception ex) {
             ex.printStackTrace()
         }
     }
 
-    private Git getGit(File dir) {
+    private static Git getGit(File dir) {
         Repository repo = new RepositoryBuilder()
                 .readEnvironment()
                 .findGitDir(dir)
                 .build()
-        Git git = new Git(repo)
+        return new Git(repo)
     }
 }

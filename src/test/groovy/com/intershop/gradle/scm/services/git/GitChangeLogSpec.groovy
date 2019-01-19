@@ -95,7 +95,7 @@ class GitChangeLogSpec extends AbstractScmSpec {
 
         ScmChangeLogService scls = ScmBuilder.getScmChangeLogService(project)
         scls.changelogFile = testLog
-        scls.targetVersion = '1.0.0'
+        scls.setTargetVersion('1.0.0')
 
         when:
         scls.createLog()
@@ -147,6 +147,9 @@ class GitChangeLogSpec extends AbstractScmSpec {
     private Project prepareProject(String branch, String tag) {
         File buildFile = new File(projectDir, 'build.gradle')
         buildFile.delete()
+
+        projectDir.deleteDir()
+        projectDir.mkdir()
 
         if(tag) {
             gitTagCheckOut(projectDir, System.properties['giturl'].toString(), branch, tag)

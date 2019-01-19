@@ -30,11 +30,26 @@ import org.junit.rules.TemporaryFolder
 class AbstractTaskSpec extends AbstractScmSpec {
 
     @Rule
-    TemporaryFolder tempFolder = new TemporaryFolder();
+    TemporaryFolder tempFolder = new TemporaryFolder()
 
     protected void prepareGitCheckout(File testProject, String source, String branch) {
         File tempDir = tempFolder.newFolder()
         gitCheckOut(tempDir, source, branch)
+
+        tempDir.listFiles().each {File src ->
+            if(src.isDirectory()) {
+                FileUtils.copyDirectory(src, new File(testProject, src.getName()))
+            } else {
+                if(src.name != 'build.gradle' && src.name != 'settings.gradle') {
+                    FileUtils.moveFileToDirectory(src, testProject, true)
+                }
+            }
+        }
+    }
+
+    protected void prepareGitCommitCheckout(File testProject, String source, String commitid) {
+        File tempDir = tempFolder.newFolder()
+        gitCommitCheckout(tempDir, source, commitid)
 
         tempDir.listFiles().each {File src ->
             if(src.isDirectory()) {
@@ -54,7 +69,7 @@ class AbstractTaskSpec extends AbstractScmSpec {
                 .setBranch(branch)
                 .setDirectory(tempDir)
                 .setTransportConfigCallback(new TransportConfigCallback() {
-                    public void configure(Transport transport) {
+                    void configure(Transport transport) {
                         SshTransport sshTransport = (SshTransport) transport
                         sshTransport.setSshSessionFactory(new SshConnector(keyFile, ''))
                     }
