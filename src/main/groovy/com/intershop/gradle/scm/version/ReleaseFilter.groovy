@@ -41,7 +41,7 @@ class ReleaseFilter extends AbstractBranchFilter {
             patternString += fourDigitsFilter
         }
 
-        if(sourceVersion.branchMetadata) {
+        if(sourceVersion.branchMetadata != null && ! sourceVersion.branchMetadata.isEmpty()) {
             patternString += "-${sourceVersion.branchMetadata}"
         }
         patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"

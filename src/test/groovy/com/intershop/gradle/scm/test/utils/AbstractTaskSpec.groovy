@@ -47,6 +47,21 @@ class AbstractTaskSpec extends AbstractScmSpec {
         }
     }
 
+    protected void prepareGitCommitCheckout(File testProject, String source, String commitid) {
+        File tempDir = tempFolder.newFolder()
+        gitCommitCheckout(tempDir, source, commitid)
+
+        tempDir.listFiles().each {File src ->
+            if(src.isDirectory()) {
+                FileUtils.copyDirectory(src, new File(testProject, src.getName()))
+            } else {
+                if(src.name != 'build.gradle' && src.name != 'settings.gradle') {
+                    FileUtils.moveFileToDirectory(src, testProject, true)
+                }
+            }
+        }
+    }
+
     protected void prepareGitSSHCheckout(File testProject, String source, String branch, File keyFile) {
         File tempDir = tempFolder.newFolder()
         CloneCommand cmd = Git.cloneRepository()

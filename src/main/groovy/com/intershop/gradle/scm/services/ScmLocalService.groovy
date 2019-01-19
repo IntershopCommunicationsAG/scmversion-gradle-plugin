@@ -50,6 +50,12 @@ abstract class ScmLocalService {
     boolean changed = false
 
     /**
+     * This is true, if the local working copy is a commit wihtout other changes.
+     * It is only used with a Git repository.
+     */
+    boolean commitOnly = true
+
+    /**
      * The directory of the working copy.
      */
     protected final File projectDir

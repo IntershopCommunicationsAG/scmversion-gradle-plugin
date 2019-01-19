@@ -22,6 +22,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.ListBranchCommand
 import org.eclipse.jgit.api.LogCommand
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.lib.*
@@ -87,11 +88,14 @@ class GitLocalService extends ScmLocalService{
             }
             else {
                 String tn = checkHeadForTag()
+
                 if(tn) {
                     branchType = BranchType.tag
                     branchName = tn
                 } else {
-                    if(msb.matches() && msb.count == 1) {
+                    if(branchName.equals(getRevID())) {
+                        branchType = BranchType.detachedHead
+                    } else if(msb.matches() && msb.count == 1) {
                         branchType = BranchType.branch
                     } else {
                         branchType = BranchType.featureBranch
@@ -145,6 +149,10 @@ class GitLocalService extends ScmLocalService{
                     log.info('GIT: This file is uncommitted {}', it)
                 }
             }
+        }
+
+        if(! changed && branchType == BranchType.detachedHead) {
+            log.info('Repo is in detached mode! Create a tag on {}.', branchName)
         }
     }
 

@@ -15,6 +15,7 @@
  */
 package com.intershop.gradle.scm.test.utils
 
+import com.intershop.gradle.test.AbstractIntegrationGroovySpec
 import com.intershop.gradle.test.AbstractIntegrationSpec
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.CheckoutCommand
@@ -38,7 +39,7 @@ import org.tmatesoft.svn.core.wc2.SvnRemoteDelete
 import org.tmatesoft.svn.core.wc2.SvnTarget
 
 @Slf4j
-class AbstractScmSpec extends AbstractIntegrationSpec {
+class AbstractScmSpec extends AbstractIntegrationGroovySpec {
 
     protected static void svnCheckOut(File target, String source) {
         final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()
@@ -73,7 +74,8 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
         cmd.call()
     }
 
-    protected static void gitTagCheckOut(File target, String source, String branch, String tag) {
+
+    protected static Git gitFetch(File target, String source, String branch) {
         gitCheckOut(target, source, branch)
         Git git = getGit(target)
 
@@ -83,9 +85,40 @@ class AbstractScmSpec extends AbstractIntegrationSpec {
         fetch.setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
         fetch.call()
 
+        return git
+    }
+
+    protected static void gitCheckOut(File target, String source, String branch, String name) {
+        Git git = gitFetch(target, source, branch)
+
         CheckoutCommand checkout = git.checkout()
-        checkout.setName("tags/${tag}")
-        checkout.setStartPoint("tags/${tag}")
+        checkout.setName(name)
+        checkout.setStartPoint(name)
+        checkout.call()
+    }
+
+    protected static void gitTagCheckOut(File target, String source, String branch, String tag) {
+        gitCheckOut(target, source, branch, "tags/${tag}")
+    }
+
+    protected static void gitCommitCheckout(File target, String source, String revid) {
+        CloneCommand cmd = Git.cloneRepository()
+                .setURI(source)
+                .setDirectory(target)
+                .setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
+        cmd.call()
+
+        Git git = getGit(target)
+
+        FetchCommand fetch = git.fetch()
+        fetch.remote = 'origin'
+        fetch.setCheckFetchedObjects(true)
+        fetch.setCredentialsProvider( new UsernamePasswordCredentialsProvider( System.properties['gituser'].toString(), System.properties['gitpasswd'].toString()) )
+        fetch.call()
+
+        CheckoutCommand checkout = git.checkout()
+        checkout.setName(revid)
+        checkout.setStartPoint(revid)
         checkout.call()
     }
 

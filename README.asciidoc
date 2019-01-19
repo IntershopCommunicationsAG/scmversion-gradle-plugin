@@ -1,5 +1,5 @@
 = SCM Version Plugin
-:latestRevision: 4.0.0
+:latestRevision: 4.1.0
 :toc:
 
 NOTE: Version 3.4 (and later) of this plugin will only work with JDK 8, Gradle 4.4 and later. Version 3.3 can be used for Gradle 4.4 and previous version of Gradle 4.
@@ -163,6 +163,10 @@ The plugin is looking for a tag on the branch. If there is no valid tag on the b
 
 * Tags +
 Without local changes the plugin tries to calculate the name from the tag name.
+
+A checkout of a single commit (detached head) without a tag name will be specially treated. The last found version is
+used for the version string. This is extended by the short hash value and 'SNAPSHOT', e.g. 2.0.0-rev.id.ad73b69-SNAPSHOT.
+If the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'` is set, the extension SNAPSHOT is not added.
 
 ==== Version Calculation on Subversion
 * Trunk +
@@ -340,10 +344,12 @@ On a local developer machine `'LOCAL'` will be added to the version.
 |*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment variable `SCMVERSIONEXT` or the project variable `scmVersionExt` is used for the return value.
 |*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
 |*previousVersionTag* | `VersionTag` | `null` | *read only* | Returns an object with the previous version and the associated release tag.
-|*continuousRelease* | `boolean` | `false` | - | If this value is true and the publishing runs on a CI server the revision id or
-the hash string with the prefix "rev.id." will attached to the version instead of SNAPSHOTS.
-|*continuousReleaseBranches* | `List<String>` | `[]` | - | *continuousRelease* is always used if the active branch is master or trunk. If continuous releases should be
-done from other branches, it is possible to extend the list of branches with this property.
+|*continuousRelease* | `boolean` | `false` | `false` +
+`true` | For continuous releases it is helpful to use an version extension with an relation to the source control.
+It is possible to enable this configuration also over the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'`.
+|*continuousReleaseBranches* | `List<String>` | `[]` | Branchnames | In combination with continuousRelease it should be possible to specify the branches for this
+kind of version extension. Continuous releases will be also used for the master or trunk.
+If you want extend the list of branches, it is possible to extend the list.
 |===
 
 ==== Changelog Object 'changeLog' (`ScmChangeLog`)[[scmchangelog]]
