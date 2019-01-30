@@ -23,6 +23,7 @@ import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.ScmUser
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.gradle.api.Action
 import org.gradle.api.Project
 /**
  * Extension for all SCM based plugins.
@@ -171,12 +172,30 @@ class ScmExtension extends AbstractExtension{
     }
 
     /**
+     * Prefix configuration for branches and tags for Java/Kotlin
+     *
+     * @param prefix configuration (see PrefixConfig)
+     */
+    void prefixes(Action<? super PrefixConfig> prefixconfig) {
+        prefixconfig.execute(prefixes)
+    }
+
+    /**
      * SCM user for authentication
      *
      * @param scm user (see ScmUser)
      */
     void user(Closure c) {
         project.configure(user, c)
+    }
+
+    /**
+     * SCM user for authentication for Java/Kotlin
+     *
+     * @param scm user (see ScmUser)
+     */
+    void user(Action<? super ScmUser> userconfig) {
+        userconfig.execute(user)
     }
 
     /**
@@ -189,6 +208,15 @@ class ScmExtension extends AbstractExtension{
     }
 
     /**
+     * SCM key configuration for authentication for Java/Kotlin
+     *
+     * @param scm user (see ScmKey)
+     */
+    void key(Action<? super ScmKey> keyconfig) {
+        keyconfig.execute(key)
+    }
+
+    /**
      * Version extenions with configuration
      *
      * @param version extension (VersionExtension)
@@ -198,12 +226,30 @@ class ScmExtension extends AbstractExtension{
     }
 
     /**
+     * Version extenions with configuration for Java/Kotlin
+     *
+     * @param version extension (VersionExtension)
+     */
+    void version(Action<? super VersionExtension> versionconfig) {
+        versionconfig.execute(version)
+    }
+
+    /**
      * Changelog extenions with configuration
      *
      * @param changelog extension (ChangelogExtension)
      */
     void changelog(Closure c) {
         project.configure(changelog, c)
+    }
+
+    /**
+     * Changelog extenions with configuration for Java/Kotlin
+     *
+     * @param changelog extension (ChangelogExtension)
+     */
+    void changelog(Action<? super ChangeLogExtension> changelogconfig) {
+        changelogconfig.execute(changelog)
     }
 
     /**
