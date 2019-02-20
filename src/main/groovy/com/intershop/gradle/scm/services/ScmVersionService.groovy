@@ -193,7 +193,7 @@ trait ScmVersionService {
             return ""
         }
 
-        if(localService.getBranchType() == BranchType.trunk &&
+        if(localService.getBranchType() == BranchType.trunk ||
                 versionExt.continuousReleaseBranches.contains(localService.getBranchName()) ||
                 localService.getBranchType() == BranchType.detachedHead) {
             if(localService instanceof GitLocalService) {
