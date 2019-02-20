@@ -189,7 +189,10 @@ trait ScmVersionService {
     }
 
     String getSCMRevExtension() {
-        if(localService.getBranchType() == BranchType.trunk ||
+        if(localService.getBranchType() != BranchType.tag) {
+            return ""
+        }
+        if(localService.getBranchType() == BranchType.trunk &&
                 versionExt.continuousReleaseBranches.contains(localService.getBranchName()) ||
                 localService.getBranchType() == BranchType.detachedHead) {
             if(localService instanceof GitLocalService) {
