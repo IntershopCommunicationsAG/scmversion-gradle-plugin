@@ -1855,7 +1855,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true')
+                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', "-i")
                 .withGradleVersion(gradleVersion)
                 .build()
 

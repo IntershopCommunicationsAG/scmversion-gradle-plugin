@@ -66,7 +66,7 @@ if (project.version.toString().endsWith("-SNAPSHOT")) {
 
 // test configuration
 tasks.withType<Test>().configureEach {
-    testLogging.showStandardStreams = true
+    testLogging.showStandardStreams = false
 
     systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
 

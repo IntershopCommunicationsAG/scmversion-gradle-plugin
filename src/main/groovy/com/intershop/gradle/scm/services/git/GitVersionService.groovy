@@ -151,7 +151,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                         log.info('There are local changes in the repository.')
                     }
                 }
-                rv.fromBranchName = true
+                rv.fromBranchName = localService.branchType != BranchType.trunk
                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
             }
 
