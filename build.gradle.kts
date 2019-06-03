@@ -33,7 +33,7 @@ plugins {
 group = "com.intershop.gradle.scm"
 description = "Gradle SCM version plugin - SCM based version handling for Gradle"
 
-version = "4.1.1"
+version = "5.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -105,7 +105,7 @@ tasks.withType<Test>().configureEach {
     //Change directory for gradle tests
     systemProperty("org.gradle.native.dir", ".gradle")
     //Set supported Gradle version
-    systemProperty("intershop.gradle.versions", "4.9,5.1")
+    systemProperty("intershop.gradle.versions", "5.4")
     //working dir for tests
     systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
 }

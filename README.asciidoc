@@ -1,8 +1,10 @@
 = SCM Version Plugin
-:latestRevision: 4.1.0
+:latestRevision: 5.0.0
 :toc:
 
 NOTE: Version 3.4 (and later) of this plugin will only work with JDK 8, Gradle 4.4 and later. Version 3.3 can be used for Gradle 4.4 and previous version of Gradle 4.
+
+NOTE: Version 5.0 (and later) of this plugin will only work with JDK 8, Gradle 5.X and later.
 
 
 == Summary
