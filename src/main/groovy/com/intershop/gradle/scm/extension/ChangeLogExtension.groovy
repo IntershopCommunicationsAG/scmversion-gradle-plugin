@@ -99,7 +99,7 @@ class ChangeLogExtension extends AbstractExtension {
         super(project)
 
         targetVersion = project.objects.property(String)
-        changelogFile = project.layout.fileProperty()
+        changelogFile = project.objects.fileProperty()
         filterProject = project.objects.property(Boolean)
     }
 
