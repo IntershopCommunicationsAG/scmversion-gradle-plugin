@@ -105,7 +105,7 @@ tasks.withType<Test>().configureEach {
     //Change directory for gradle tests
     systemProperty("org.gradle.native.dir", ".gradle")
     //Set supported Gradle version
-    systemProperty("intershop.gradle.versions", "5.4")
+    systemProperty("intershop.gradle.versions", "5.4, 5.5, 5.6")
     //working dir for tests
     systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
 }
