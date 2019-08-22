@@ -73,34 +73,29 @@ class GitLocalService extends ScmLocalService{
             def mbb = branchName =~ /${prefixes.getBugfixBranchPattern()}/
             def msb = branchName =~ /${prefixes.getStabilizationBranchPattern()}/
 
-            if(mfb.matches() && mfb.count == 1) {
+            if(branchName.equals(getRevID())) {
+                branchType = BranchType.detachedHead
+            } else if(mfb.matches() && mfb.count == 1) {
                 branchType = BranchType.featureBranch
                 setFeatureBranchName((mfb[0] as List)[(mfb[0] as List).size() - 1].toString())
-
             } else if(mhb.matches() && mhb.count == 1) {
                 branchType = BranchType.hotfixbBranch
                 setFeatureBranchName((mhb[0] as List)[(mhb[0] as List).size() - 1].toString())
-
             } else if(mbb.matches() && mbb.count == 1) {
                 branchType = BranchType.bugfixBranch
                 setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
+            } else if(msb.matches() && msb.count == 1) {
+                branchType = BranchType.branch
+            } else {
+                branchType = BranchType.featureBranch
+                setFeatureBranchName(branchName)
             }
-            else {
-                String tn = checkHeadForTag()
-                if(tn) {
-                    branchType = BranchType.tag
-                    branchName = tn
-                } else {
-                    if(branchName.equals(getRevID())) {
-                        branchType = BranchType.detachedHead
-                    } else if(msb.matches() && msb.count == 1) {
-                        branchType = BranchType.branch
-                    } else {
-                        branchType = BranchType.featureBranch
-                        setFeatureBranchName(branchName)
-                    }
-                }
-            }
+        }
+
+        String tn = checkHeadForTag()
+        if(tn) {
+            branchType = BranchType.tag
+            branchName = tn
         }
 
         log.info('Branch name is {}', branchName)
