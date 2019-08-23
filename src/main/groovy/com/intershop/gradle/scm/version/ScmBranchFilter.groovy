@@ -80,9 +80,9 @@ class ScmBranchFilter extends AbstractBranchFilter {
         if(branchFilterName) {
             String branchFilterNamePattern = ''
 
-            branchFilterNamePattern += branchFilterType == BranchType.branch && prefixes.getBranchPrefixSeperator().replace("/", "\\/") ? prefixes.getBranchPrefixSeperator().replace("/", "\\/") : ''
-            branchFilterNamePattern += branchFilterType == BranchType.tag && prefixes.getTagPrefixSeperator().replace("/", "\\/") ? prefixes.getTagPrefixSeperator().replace("/", "\\/") : ''
-            branchFilterNamePattern += !prefixes.getTagPrefixSeperator() && !prefixes.getBranchPrefixSeperator().replace("/", "\\/") ? prefixes.getPrefixSeperator().replace("/", "\\/") : ''
+            branchFilterNamePattern += branchFilterType == BranchType.branch && prefixes.getBranchPrefixSeperator() ? prefixes.getBranchPrefixSeperator().replace("/", "\\/") : ''
+            branchFilterNamePattern += branchFilterType == BranchType.tag && prefixes.getTagPrefixSeperator() ? prefixes.getTagPrefixSeperator().replace("/", "\\/") : ''
+            branchFilterNamePattern += !prefixes.getTagPrefixSeperator() && !prefixes.getBranchPrefixSeperator() ? prefixes.getPrefixSeperator().replace("/", "\\/") : ''
 
             branchFilterNamePattern += versionregex
             def m = branchFilterName =~ /${branchFilterNamePattern}/
