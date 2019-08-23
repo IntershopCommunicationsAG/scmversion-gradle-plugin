@@ -128,7 +128,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
                 break
         }
 
-        if(featureBranch && (versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.bugfixBranch || versionBranchtype == BranchType.hotfixbBranch)) {
+        if(featureBranch && (versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.bugfixBranch || versionBranchtype == BranchType.hotfixbBranch || versionBranchtype == BranchType.tag)) {
             patternString += "${Version.METADATA_SEPARATOR}${featureBranch}"
         }
         if(! featureBranch && versionBranchtype == BranchType.tag) {
