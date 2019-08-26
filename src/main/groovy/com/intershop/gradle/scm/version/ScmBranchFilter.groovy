@@ -54,9 +54,9 @@ class ScmBranchFilter extends AbstractBranchFilter {
         }
 
         String patternString = "^${this.prefixes.getPrefix(BranchType.tag)}"
-        patternString += "${prefixes.getPrefixSeperator()}("
+        patternString += "${prefixes.getPrefixSeperator().replace("/", "\\/")}("
         patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
-        patternString += ')'
+        patternString += ")(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
 
         log.debug('Branch filter is {}', patternString)
 
@@ -83,9 +83,9 @@ class ScmBranchFilter extends AbstractBranchFilter {
         if(branchFilterName) {
             String branchFilterNamePattern = ''
 
-            branchFilterNamePattern += branchFilterType == BranchType.branch && prefixes.getBranchPrefixSeperator() ? prefixes.getBranchPrefixSeperator() : ''
-            branchFilterNamePattern += branchFilterType == BranchType.tag && prefixes.getTagPrefixSeperator() ? prefixes.getTagPrefixSeperator() : ''
-            branchFilterNamePattern += !prefixes.getTagPrefixSeperator() && !prefixes.getBranchPrefixSeperator() ? prefixes.getPrefixSeperator() : ''
+            branchFilterNamePattern += branchFilterType == BranchType.branch && prefixes.getBranchPrefixSeperator() ? prefixes.getBranchPrefixSeperator().replace("/", "\\/") : ''
+            branchFilterNamePattern += branchFilterType == BranchType.tag && prefixes.getTagPrefixSeperator() ? prefixes.getTagPrefixSeperator().replace("/", "\\/") : ''
+            branchFilterNamePattern += !prefixes.getTagPrefixSeperator() && !prefixes.getBranchPrefixSeperator() ? prefixes.getPrefixSeperator().replace("/", "\\/") : ''
 
             branchFilterNamePattern += versionregex
             def m = branchFilterName =~ /${branchFilterNamePattern}/
@@ -103,11 +103,11 @@ class ScmBranchFilter extends AbstractBranchFilter {
         String patternString = "^${this.prefixes.getPrefix(versionBranchtype)}"
 
         if((versionBranchtype == BranchType.branch || versionBranchtype == BranchType.featureBranch || versionBranchtype == BranchType.hotfixbBranch || versionBranchtype == BranchType.bugfixBranch) && prefixes.getBranchPrefixSeperator()) {
-            patternString += "${prefixes.getBranchPrefixSeperator()}("
+            patternString += "${prefixes.getBranchPrefixSeperator().replace("/", "\\/")}("
         } else if(versionBranchtype == BranchType.tag && prefixes.getTagPrefixSeperator()) {
-            patternString += "${prefixes.getTagPrefixSeperator()}("
+            patternString += "${prefixes.getTagPrefixSeperator().replace("/", "\\/")}("
         } else {
-            patternString += "${prefixes.getPrefixSeperator()}("
+            patternString += "${prefixes.getPrefixSeperator().replace("/", "\\/")}("
         }
 
         patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
