@@ -304,7 +304,7 @@ class IntCreateTagSpec extends AbstractTaskSpec {
 
         then:
         changeResult.task(":showVersion").outcome == SUCCESS
-        changeResult.output.contains('Project version: 2.2.0-SNAPSHOT')
+        changeResult.output.contains('Project version: 2.1.1-SNAPSHOT')
 
         cleanup:
         gitTagRemove(testProjectDir, 'SBRELEASE_2.1.0')
