@@ -40,7 +40,7 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class CreateChangeLog extends DefaultTask {
 
-    final RegularFileProperty changelogFile = project.layout.fileProperty()
+    final RegularFileProperty changelogFile = project.getObjects().fileProperty()
     final Property<String> targetVersion = project.getObjects().property(String)
     final Property<Boolean> filterProject = project.getObjects().property(Boolean)
 

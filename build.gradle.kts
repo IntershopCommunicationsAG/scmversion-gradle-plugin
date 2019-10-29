@@ -70,28 +70,12 @@ tasks.withType<Test>().configureEach {
 
     systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
 
-    if(! System.getenv("SVNUSER").isNullOrBlank() &&
-            ! System.getenv("SVNPASSWD").isNullOrBlank() &&
-            ! System.getenv("SVNURL").isNullOrBlank()) {
-        systemProperty("svnurl", System.getenv("SVNURL"))
-        systemProperty("svnuser", System.getenv("SVNUSER"))
-        systemProperty("svnpasswd", System.getenv("SVNPASSWD"))
-    }
-
     if(! System.getenv("GITUSER").isNullOrBlank() &&
             ! System.getenv("GITPASSWD").isNullOrBlank() &&
             ! System.getenv("GITURL").isNullOrBlank()) {
         systemProperty("giturl", System.getenv("GITURL"))
         systemProperty("gituser", System.getenv("GITUSER"))
         systemProperty("gitpasswd", System.getenv("GITPASSWD"))
-    }
-
-    if(! System.getProperty("SVNUSER").isNullOrBlank() &&
-            ! System.getProperty("SVNPASSWD").isNullOrBlank() &&
-            ! System.getProperty("SVNURL").isNullOrBlank()) {
-        systemProperty("svnurl", System.getProperty("SVNURL"))
-        systemProperty("svnuser", System.getProperty("SVNUSER"))
-        systemProperty("svnpasswd", System.getProperty("SVNPASSWD"))
     }
 
     if(! System.getProperty("GITUSER").isNullOrBlank() &&
@@ -105,7 +89,7 @@ tasks.withType<Test>().configureEach {
     //Change directory for gradle tests
     systemProperty("org.gradle.native.dir", ".gradle")
     //Set supported Gradle version
-    systemProperty("intershop.gradle.versions", "5.4, 5.5, 5.6")
+    systemProperty("intershop.gradle.versions", "5.6.3")
     //working dir for tests
     systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
 }
@@ -263,17 +247,8 @@ bintray {
 dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.0.1")
 
-    //svn
-    // replace svnkit's JNA 4.x with 3.2.7, which is used by Gradle itself
-    implementation("org.tmatesoft.svnkit:svnkit:1.9.3") {
-        exclude(group = "net.java.dev.jna")
-        exclude(group = "com.trilead", module = "trilead-ssh2")
-    }
-    implementation("com.trilead:trilead-ssh2:1.0.0-build221")
-    testRuntimeOnly("net.java.dev.jna:jna:4.1.0")
-
     //jgit
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.1.3.201810200350-r") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {
         exclude(group = "org.apache.httpcomponents", module = "httpclient")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }

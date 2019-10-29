@@ -26,36 +26,11 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.eclipse.jgit.transport.RefSpec
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
-import org.tmatesoft.svn.core.SVNCommitInfo
-import org.tmatesoft.svn.core.SVNNodeKind
-import org.tmatesoft.svn.core.SVNURL
-import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager
-import org.tmatesoft.svn.core.io.SVNRepository
-import org.tmatesoft.svn.core.io.SVNRepositoryFactory
-import org.tmatesoft.svn.core.wc.SVNWCUtil
-import org.tmatesoft.svn.core.wc2.SvnCheckout
-import org.tmatesoft.svn.core.wc2.SvnOperationFactory
-import org.tmatesoft.svn.core.wc2.SvnRemoteDelete
-import org.tmatesoft.svn.core.wc2.SvnTarget
 
 @Slf4j
 class AbstractScmSpec extends AbstractIntegrationGroovySpec {
 
-    protected static void svnCheckOut(File target, String source) {
-        final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()
-        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toCharArray())
-        try {
-            svnOperationFactory.setAuthenticationManager(authenticationManager)
-            final SvnCheckout checkout = svnOperationFactory.createCheckout()
-            checkout.setSingleTarget(SvnTarget.fromFile(target))
-            checkout.setSource(SvnTarget.fromURL(SVNURL.parseURIEncoded(source)))
-            checkout.run()
-        } finally {
-            svnOperationFactory.dispose()
-        }
-    }
-
-    protected static void svnChangeTestFile(File target) {
+    protected static void changeTestFile(File target) {
         File propertyFile = new File(target, 'test.properties')
         def fileText = propertyFile.text
         fileText = (fileText =~ /testproperty *= *\S*/).replaceFirst("testproperty = ${(new Date()).toString()}")
@@ -130,32 +105,6 @@ class AbstractScmSpec extends AbstractIntegrationGroovySpec {
 
         File newFile = new File(target, 'new.properties')
         newFile.write("changed")
-    }
-
-    protected static void svnRemove(String source) {
-        final ISVNAuthenticationManager authenticationManager = SVNWCUtil.createDefaultAuthenticationManager(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toString().toCharArray())
-        final SVNRepository repo = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(source), null)
-        repo.setAuthenticationManager(authenticationManager)
-        SVNNodeKind nodeKind = repo.checkPath( "" ,  -1 )
-
-        if( nodeKind == SVNNodeKind.DIR || nodeKind == SVNNodeKind.FILE) {
-
-            final SvnOperationFactory svnOperationFactory = new SvnOperationFactory()
-            svnOperationFactory.setAuthenticationManager(authenticationManager)
-            try {
-                log.info('Start remote delete for {}', source)
-                final SvnRemoteDelete remoteDelete = svnOperationFactory.createRemoteDelete()
-                remoteDelete.setSingleTarget(SvnTarget.fromURL(SVNURL.parseURIEncoded(source)))
-                remoteDelete.setCommitMessage('Remove after test')
-                final SVNCommitInfo commitInfo = remoteDelete.run()
-                if (commitInfo) {
-                    final long newRevision = commitInfo.getNewRevision()
-                    log.info('{} removed, revision {} created', source, newRevision)
-                }
-            } finally {
-                svnOperationFactory.dispose()
-            }
-        }
     }
 
     protected static void gitTagRemove(File projectDir, String tag) {

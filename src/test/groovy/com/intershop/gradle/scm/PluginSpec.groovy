@@ -71,20 +71,6 @@ class PluginSpec extends AbstractProjectSpec {
         config.scmType == ScmType.git
     }
 
-    def 'extension contains correct SCM type - svn'() {
-        setup:
-        File gitDir = new File(testProjectDir, '.svn')
-        gitDir.mkdirs()
-
-        when:
-        plugin.apply(project)
-        ScmExtension config = project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
-
-        then:
-        config != null
-        config.scmType == ScmType.svn
-    }
-
     def 'extension contains correct SCM type - file'() {
         when:
         plugin.apply(project)

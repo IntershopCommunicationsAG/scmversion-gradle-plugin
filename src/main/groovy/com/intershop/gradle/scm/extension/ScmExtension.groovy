@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.extension
 
 import com.intershop.gradle.scm.utils.PrefixConfig
@@ -142,11 +140,6 @@ class ScmExtension extends AbstractExtension{
         File gitDir = new File(project.rootDir, '.git')
         if (gitDir.exists() && gitDir.isDirectory()) {
             scmType = ScmType.git
-        }
-
-        File svnDir = new File(project.rootDir, '.svn')
-        if (svnDir.exists() && svnDir.isDirectory()) {
-            scmType = ScmType.svn
         }
 
         if (!scmType) {

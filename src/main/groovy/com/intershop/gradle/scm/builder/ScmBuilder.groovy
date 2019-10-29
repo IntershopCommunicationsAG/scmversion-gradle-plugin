@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
 package com.intershop.gradle.scm.builder
 
 import com.intershop.gradle.scm.extension.ScmExtension
@@ -30,9 +28,6 @@ import com.intershop.gradle.scm.services.file.FileVersionService
 import com.intershop.gradle.scm.services.git.GitChangeLogService
 import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.services.git.GitVersionService
-import com.intershop.gradle.scm.services.svn.SvnChangeLogService
-import com.intershop.gradle.scm.services.svn.SvnLocalService
-import com.intershop.gradle.scm.services.svn.SvnVersionService
 import com.intershop.gradle.scm.utils.ScmType
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -57,19 +52,9 @@ class ScmBuilder {
     static ScmLocalService getScmLocalService(Project project) {
         ScmExtension scmExt = getScmExtension(project)
 
-        ScmLocalService service
-
-        switch (scmExt.scmType) {
-            case ScmType.svn:
-                service = new SvnLocalService(project.getRootProject().getRootDir(), scmExt)
-                break
-            case ScmType.git:
-                service = new GitLocalService(project.getRootProject().getRootDir(), scmExt)
-                break
-            default:
-                service = new FileLocalService(project.getRootProject().getRootDir(), scmExt)
-                break
-        }
+        ScmLocalService service = scmExt.scmType == ScmType.git ?
+                new GitLocalService(project.getRootProject().getRootDir(), scmExt) :
+                new FileLocalService(project.getRootProject().getRootDir(), scmExt)
 
         return service
     }
@@ -86,27 +71,19 @@ class ScmBuilder {
         ScmExtension scmExt = getScmExtension(project)
 
         ScmLocalService sls = getScmLocalService(project)
-        ScmVersionService service
 
-        switch (scmExt.scmType) {
-            case ScmType.svn:
-                service = new SvnVersionService(sls, scmExt.user)
-                break
-            case ScmType.git:
-                service = new GitVersionService(sls, scmExt.user, scmExt.key)
-                break
-            default:
-                service = new FileVersionService(sls, scmExt.user)
-                break
-        }
+        ScmVersionService service = scmExt.scmType == ScmType.git ?
+                new GitVersionService(sls, scmExt.user, scmExt.key) :
+                new FileVersionService(sls, scmExt.user)
 
         service.versionExt = versionExt
 
-        if(versionExt.dryRun) {
-            return new DryVersionService(new DryLocalService(project.projectDir , scmExt, sls), service)
-        } else {
-            return service
+        if(versionExt.dryRun == true) {
+            sls = new DryLocalService(project.projectDir , scmExt, sls)
+            return new DryVersionService(sls, service)
         }
+
+        return service
     }
 
     /**
@@ -122,19 +99,10 @@ class ScmBuilder {
 
         ScmLocalService sls = getScmLocalService(project)
 
-        ScmChangeLogService service
+        ScmChangeLogService service = scmExt.scmType == ScmType.git ?
+                new GitChangeLogService(sls, versionExt, scmExt.user, scmExt.key) :
+                new FileChangeLogService(sls, versionExt, scmExt.user, scmExt.key)
 
-        switch (scmExt.scmType) {
-            case ScmType.svn:
-                service = new SvnChangeLogService(sls, versionExt, scmExt.user)
-                break
-            case ScmType.git:
-                service = new GitChangeLogService(sls, versionExt, scmExt.user, scmExt.key)
-                break
-            default:
-                service = new FileChangeLogService(sls, versionExt, scmExt.user, scmExt.key)
-                break
-        }
         return service
     }
 

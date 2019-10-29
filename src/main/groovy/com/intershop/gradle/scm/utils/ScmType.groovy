@@ -33,12 +33,6 @@ enum ScmType {
             return 'git'
         }
     },
-    svn {
-        @Override
-        String toString() {
-            return 'svn'
-        }
-    },
     file {
         @Override
         String toString() {

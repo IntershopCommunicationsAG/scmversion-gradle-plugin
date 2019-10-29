@@ -29,55 +29,6 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
     final static String LOGLEVEL = "-i"
 
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'test branch creation from trunk on SVN #gradleVersion'(gradleVersion) {
-        given:
-        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
-
-        buildFile << """
-        plugins {
-            id 'com.intershop.gradle.scmversion'
-        }
-
-        scm {
-            prefixes {
-                tagPrefix = 'SBRELEASE'
-            }
-        }
-
-        version = scm.version.version
-
-        """.stripIndent()
-
-        when:
-        def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.3.0-SNAPSHOT')
-
-        when:
-        def createResult = getPreparedGradleRunner()
-                .withArguments('branch', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        createResult.task(":branch").outcome == SUCCESS
-        createResult.output.contains('Branch created: 2.3.0')
-
-        cleanup:
-        svnRemove("${System.properties['svnurl']}/branches/SB_2.3")
-
-        where:
-        gradleVersion << supportedGradleVersions
-    }
-
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
