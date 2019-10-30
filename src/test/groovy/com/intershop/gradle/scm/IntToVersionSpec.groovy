@@ -29,67 +29,6 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
     final static String LOGLEVEL = "-i"
 
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'test toVersion task with svn trunk - #gradleVersion'(gradleVersion) {
-        given:
-        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
-
-        initSettingsFile()
-        buildFile << """
-        plugins {
-            id 'com.intershop.gradle.scmversion'
-        }
-
-        scm {
-            prefixes {
-                tagPrefix = 'SBRELEASE'
-            }
-            version {
-                patternDigits = 2
-                versionBranch = 'branch'
-            }
-        }
-        
-        version = scm.version.version
-
-        """.stripIndent()
-
-        when:
-        def preResult = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        preResult.task(":showVersion").outcome == SUCCESS
-        preResult.output.contains('Project version: 2.1.0-SNAPSHOT')
-
-        when:
-        def result = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        result.task(':toVersion').outcome == SUCCESS
-        result.output.contains('Working copy was switched to')
-
-        when:
-        def postResult = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        postResult.task(":showVersion").outcome == SUCCESS
-        postResult.output.contains('Project version: 1.1.0')
-
-        where:
-        gradleVersion << supportedGradleVersions
-    }
-
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
@@ -114,7 +53,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def preResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -124,7 +63,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=1.1.0', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -133,7 +72,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def postResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -143,7 +82,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result02 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=4.1.0', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=4.1.0', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .buildAndFail()
 
@@ -178,7 +117,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def preResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -188,7 +127,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-Pfeature=test', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-Pfeature=test', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

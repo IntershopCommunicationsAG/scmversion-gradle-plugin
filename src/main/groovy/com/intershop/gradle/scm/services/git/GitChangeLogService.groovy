@@ -58,8 +58,6 @@ class GitChangeLogService extends GitRemoteService implements ScmChangeLogServic
 
     ScmType type
 
-    boolean filterProject
-
     void createLog() {
         VersionTag pvt = null
         String preVersionStr  = ''

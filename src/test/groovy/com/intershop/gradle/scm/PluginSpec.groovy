@@ -36,7 +36,6 @@ class PluginSpec extends AbstractProjectSpec {
         then:
         project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
         ! ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.disableSCM
-        ! ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).changelog.filterProject
         ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.patternDigits == 2
 
         task.outputs.files.contains(new File(project.getBuildDir(), 'changelog/changelog.asciidoc'))
@@ -69,20 +68,6 @@ class PluginSpec extends AbstractProjectSpec {
         then:
         config != null
         config.scmType == ScmType.git
-    }
-
-    def 'extension contains correct SCM type - svn'() {
-        setup:
-        File gitDir = new File(testProjectDir, '.svn')
-        gitDir.mkdirs()
-
-        when:
-        plugin.apply(project)
-        ScmExtension config = project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
-
-        then:
-        config != null
-        config.scmType == ScmType.svn
     }
 
     def 'extension contains correct SCM type - file'() {

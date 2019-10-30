@@ -54,7 +54,7 @@ class IntVersionFileSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.0.0-LOCAL')
+        result.output.contains('Project version: 1.0.0-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -92,7 +92,7 @@ class IntVersionFileSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.0.0-LOCAL')
+        result.output.contains('Project version: 1.0.0-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions

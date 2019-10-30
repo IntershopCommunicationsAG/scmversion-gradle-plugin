@@ -128,62 +128,48 @@ trait ScmVersionService {
 
             Version version = getPreVersion()
 
-            if(versionExt.runOnCI) {
-                String revIDExtension = getSCMRevExtension()
-                if (versionExt.continuousRelease && ! revIDExtension.isEmpty() && ! localService.changed) {
-                    log.info('Version {} will be extended with revID "{}"', version, revIDExtension)
-                    return version.setBuildMetadata(revIDExtension)
-                }
+            String revIDExtension = getSCMRevExtension()
+            if (versionExt.continuousRelease && ! revIDExtension.isEmpty() && ! localService.changed) {
+                log.info('Version {} will be extended with revID "{}"', version, revIDExtension)
+                return version.setBuildMetadata(revIDExtension)
+            }
 
-                if (localService.branchType == BranchType.detachedHead) {
-                    Version versionForDetachedHead = version.setBuildMetadata(revIDExtension)
+            if (localService.branchType == BranchType.detachedHead) {
+                Version versionForDetachedHead = version.setBuildMetadata(revIDExtension)
 
-                    if(versionExt.isContinuousRelease() && ! localService.changed ) {
-                        log.info('Version {} will be extended with revID for detached head "{}"', version, revIDExtension)
-                        return versionForDetachedHead.toString()
-                    } else {
-                        log.info('Version {} will be extended with revID for detached head and SNAPSHOT"{}"', version, revIDExtension)
-                        return "${versionForDetachedHead}-${SNAPSHOT}"
-                    }
-                }
-
-                if(!versionObject.isChanged()) {
-                    log.info('Version {} will be used without extension (No changes detected!).', version)
-                    return version
-                }
-                if(versionExt.useBuildExtension) {
-                    log.info('Version {} will be extended with SNAPSHOT', version)
-                    return "${version}-${SNAPSHOT.toString()}"
+                if(versionExt.isContinuousRelease() && ! localService.changed ) {
+                    log.info('Version {} will be extended with revID for detached head "{}"', version, revIDExtension)
+                    return versionForDetachedHead.toString()
                 } else {
-                    log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
-                }
-            } else {
-                if (versionExt.useBuildExtension) {
-                    log.info('Version {} will be extended with LOCAL', version)
-                    return "${version}-${com.intershop.release.version.VersionExtension.LOCAL}"
-                } else {
-                    log.info('Version {} will be extended with LOCAL', version.normalVersion)
-                    return version.setBuildMetadata(com.intershop.release.version.VersionExtension.LOCAL.toString())
+                    log.info('Version {} will be extended with revID for detached head and SNAPSHOT"{}"', version, revIDExtension)
+                    return "${versionForDetachedHead}-${SNAPSHOT}"
                 }
             }
-        } else {
-            if(versionExt.runOnCI) {
-                String baseVer = versionExt.initialVersion
-                switch (versionExt.getVersionExt()) {
-                    case 'SNAPSHOT':
-                        return "${baseVer}-${SNAPSHOT}"
-                        break
-                    case 'RELEASE':
-                        return baseVer
-                        break
-                    default:
-                        Date now = new Date()
-                        return "${baseVer}-${now.format('yyyyMMddHHmmss')}"
-                        break
-                }
+
+            if(!versionObject.isChanged()) {
+                log.info('Version {} will be used without extension (No changes detected!).', version)
+                return version
+            }
+            if(versionExt.useBuildExtension) {
+                log.info('Version {} will be extended with SNAPSHOT', version)
+                return "${version}-${SNAPSHOT.toString()}"
             } else {
-                return "${versionExt.initialVersion}-${com.intershop.release.version.VersionExtension.LOCAL}"
+                log.info('Version {} will be extended with SNAPSHOT', version.normalVersion)
+                return version.setBuildMetadata(com.intershop.release.version.VersionExtension.SNAPSHOT.toString())
+            }
+        } else {
+            String baseVer = versionExt.initialVersion
+            switch (versionExt.getVersionExt()) {
+                case 'SNAPSHOT':
+                    return "${baseVer}-${SNAPSHOT}"
+                    break
+                case 'RELEASE':
+                    return baseVer
+                    break
+                default:
+                    Date now = new Date()
+                    return "${baseVer}-${now.format('yyyyMMddHHmmss')}"
+                    break
             }
         }
     }

@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.intershop.gradle.scm.extension
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
-import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -72,21 +70,6 @@ class ChangeLogExtension extends AbstractExtension {
     }
     // block for changelogFile - lazy evaluation - end
 
-    // block for filterProject - lazy evaluation - start
-    private final Property<Boolean> filterProject
-
-    Provider<Boolean> getFilterProjectProvider() {
-        filterProject
-    }
-
-    Boolean getFilterProject() {
-        filterProject.get()
-    }
-
-    void setFilterProjec(boolean filterProject) {
-        this.filterProject.set(new Boolean(filterProject))
-    }
-    // block for filterProject - lazy evaluation - end
 
     /**
      * Initialize this extension and set default values
@@ -100,7 +83,6 @@ class ChangeLogExtension extends AbstractExtension {
 
         targetVersion = project.objects.property(String)
         changelogFile = project.objects.fileProperty()
-        filterProject = project.objects.property(Boolean)
     }
 
 

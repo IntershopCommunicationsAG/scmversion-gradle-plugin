@@ -1,22 +1,19 @@
 = SCM Version Plugin
-:latestRevision: 5.1.0
+:latestRevision: 6.0.0
 :toc:
 
-NOTE: Version 3.4 (and later) of this plugin will only work with JDK 8, Gradle 4.4 and later. Version 3.3 can be used for Gradle 4.4 and previous version of Gradle 4.
-
-NOTE: Version 5.0 (and later) of this plugin will only work with JDK 8, Gradle 5.X and later.
+NOTE: Version 6.0 (and later) of this plugin will only work with JDK 8, Gradle 5.X and later. Furthermore Subversion will be not longer supported.
 
 
 == Summary
 Based on the used SCM (Source Control Management) this plugin provides project configuration handling and specific tasks regarding the version handling of the project.
-The information of the used SCM is identified by special directories in the project directory (`'.git'`, `'.svn'`).
+The information of the used SCM is identified by special directories in the project directory (`'.git'`).
 The plugin supports the following SCMs:
 
 * git
-* svn
 * file (limited functionality)
 
-Branches and tags are used for the calculation of the project version. The basic functionality for Git and Subversion is the same. +
+Branches and tags are used for the calculation of the project version. +
 
 NOTE: A file-based project does not support the calculation of the version based on previous versions.
 
@@ -25,45 +22,7 @@ It is also possible to identify the changes between the current working copy and
 == Version Information from the SCM
 This plugin adds the possibility to calculate version information of a project from the used SCM structure. It initializes a project property `useSCMVersionConfig`. The value of this property is `true`, if the plugin was applied and can be used by the own build logic and other plugins.
 
-=== Subversion
-This implementation depends on SVNKit 1.8. Therefore an installed SVN client 1.8 for the access to the stored Subversion credentials is required. For a correct calculation of the version, the access to the SVN repository must be available.
-
-[CAUTION]
-====
-. This plugin assumes the standard Subversion structure:
-
-  <project>
-   |
-   +- <code structure of the trunk>
-   |
-   +- branches
-   |  |
-   |  +- <branch name>
-   |      |
-   |      +- <code structure of the branch>
-   |
-   +- tags
-      |
-      +- <tag name>
-          |
-          +- <code structure of the tag>
-
-. SVN version calculation is not working without network access.
-====
-
-=== Configuration Without Remote Access
-==== Configuration with a Project Property
-If there is no access to a remote repository, it is possible to specify a version string as project property `offlineVersion` (see above)
-
-[source]
-----
-gradlew -PofflineVersion=9.9.0.0-LOCAL publish
-----
-This will add the version '9.9.0.0-LOCAL' to your project. It is possible to add this property also to the
-gradle.properties file in the Gradle user home. In this case all projects with this applied
-plugin uses the same version.
-
-==== Configuration with a Static Version
+== Configuration with a Static Version
 This configuration is also working without any remote access, but project specific, because the replacement for
 the version information is stored in the build directory of the project. If
 `<project build dir>/scmversion/static.version` exists and the content is not empty,
@@ -102,7 +61,6 @@ For parsing, calculation and sorting a library for an extended version object is
 ----
 
 Therefore branch names must comply with the following patterns. All examples use the default configuration.
-Depending on a special environment configuration (RUNONCI) the build extension is empty or SNAPSHOT, if this setting is true, otherwise it is LOCAL.
 If no prefix is specified the plugin assumes that the branch is a feature branch. If the version is not part of the branch name,
 the version is taken from the last tag.
 
@@ -217,7 +175,6 @@ scm {
     changelog {
         targetVersion = '1.0.0'
         changelogFile = new File(project.buildDir, 'changelog/changelogset.asciidoc')
-        filterProject = true
     }
 }
 
@@ -312,9 +269,6 @@ _This can be overwritten by the system or environment variable `SCM_KEYPASSPHRAS
 |*dryRun*               |`boolean`   |`false`      | `false` +
 `true` | Tasks will run without changes on the working copy or SCM. +
 _This can be overwritten by the system or environment variable `DRYRUN` or project property `dryRun`._
-|*runOnCI*              |`boolean`   |`false` | `false` +
-`true` | This configuration must be `true`, if the project is used on a CI server. +
-_This can be overwritten by the system or environment variable `RUNONCI` or project property `runOnCI`._
 |*increment*            |`String`    |`null`  | `MAJOR` +
 `MINOR` +
 `PATCH` +
@@ -338,8 +292,7 @@ The environment variable `'SCMVERSIONEXT'` or the project variable `'scmVersionE
 If set to: +
 `'SNAPSHOT'` - `'SNAPSHOT'` will be added to the version. +
 `'RELEASE'` - intial version is used without any extension. +
-If no value is specified a time stamp will be added. +
-On a local developer machine `'LOCAL'` will be added to the version.
+If no value is specified a time stamp will be added.
 
 |*version* | `String`    | *initialVersion* | *read only* | Returns the version of the working copy
 |*branchName* | `String` | '' | *read only* | Returns the branch name only (String after last /)
@@ -363,7 +316,6 @@ If you want extend the list of branches, it is possible to extend the list.
 It is possible to override the value with the enviroment variable `PREV_VERSION`
 |*changelogFile*        |`File`  |`<buildDir>/changelog/ +
 changelog.asciidoc`| The change log will be written to this file. The log file is empty, if the previous version does not exists.
-|*filterProject*        |`boolean`| `false` | Filter changed files for projects (first folder in changed files must be identical to last folder of project svn url)
 |===
 
 == Example Configurations
@@ -442,27 +394,18 @@ On a CI server some properties must be transfered via the command line:
 .snapshot build:
 [source,properties]
 ----
-./gradlew publish -PrunOnCI=true -PscmVersionExt=SNAPSHOT
+./gradlew publish -PscmVersionExt=SNAPSHOT
 ----
 .release build:
 [source,properties]
 ----
-./gradlew publish -PrunOnCI=true -PscmVersionExt=RELEASE
+./gradlew publish -PscmVersionExt=RELEASE
 ----
 
 NOTE: After a release it is necessary to change the version manually.
 
 === Test
 The integration tests use test repositories. Therefore, it is necessary to specify project properties for the test execution.
-
-.Subversion test configuration
-|===
-|Test Property |Description | Value
-
-|*svnurl*    | Root URL of the test project        | Must be specified with environment variable `SVNURL`
-|*svnuser*   | User name of Subversion test user   | Must be specified with environment variable `SVNUSER`
-|*svnpasswd* | Password for Subversion test user   | Must be specified with environment variable `SVNPASSWD`
-|===
 
 .Git test configuration
 |===

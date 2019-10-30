@@ -79,61 +79,6 @@ class DryVersionServiceSpec extends AbstractScmSpec {
         client.getVersionObject().version.toString() == '1.1.0'
     }
 
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'getVersionObject for trunk from branches'() {
-        setup:
-        project = prepareProject('svn', 'trunk', 'SBRELEASE', 'FB', 'SB')
-
-        when:
-        VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
-        versionConfig.versionBranch = BranchType.branch.toString()
-        versionConfig.dryRun = true
-        DryVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
-
-        then:
-        client.getVersionObject().isChanged()
-        client.getVersionObject().version.toString() == '2.0.0'
-    }
-
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'getVersionObject for trunk from branches with changes'() {
-        setup:
-        project = prepareProject('svn', 'trunk', 'SBRELEASE', 'FB', 'TB')
-
-        when:
-        VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
-        versionConfig.versionBranch = BranchType.branch.toString()
-        versionConfig.dryRun = true
-        DryVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
-
-        then:
-        client.getVersionObject().isChanged()
-        client.getVersionObject().version.toString() == '1.0.0'
-    }
-
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'create simple branch from svn'() {
-        setup:
-        project = prepareProject('svn', 'trunk', 'SBRELEASE', 'FB', 'SB')
-        String version = "4.0.0.0"
-
-        when:
-        VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
-        versionConfig.dryRun = true
-        DryVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
-
-        String rev = client.createBranch(version, false)
-
-        then:
-        rev == ''
-    }
-
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })

@@ -28,116 +28,6 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
     final static String LOGLEVEL = "-i"
 
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'test prepare release from trunk on SVN - tag does not exists - #gradleVersion'(gradleVersion) {
-        given:
-        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
-
-        buildFile << """
-        plugins {
-            id 'com.intershop.gradle.scmversion'
-        }
-
-        scm {
-            prefixes {
-                tagPrefix = 'SBRELEASE'
-            }
-        }
-
-        version = scm.version.version
-
-        """.stripIndent()
-
-        when:
-        def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.3.0-SNAPSHOT')
-
-        when:
-        def createResult = getPreparedGradleRunner()
-                .withArguments('release', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .withDebug(true)
-                .build()
-
-        then:
-        createResult.task(":release").outcome
-        createResult.output.contains('Version 2.3.0 will be used without extension')
-        createResult.output.contains('Project version: 2.3.0')
-
-        cleanup:
-        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.3.0")
-
-        where:
-        gradleVersion << supportedGradleVersions
-    }
-
-    @Requires({ System.properties['svnurl'] &&
-            System.properties['svnuser'] &&
-            System.properties['svnpasswd'] })
-    def 'test prepare release from trunk on SVN - tag does exists - #gradleVersion'(gradleVersion) {
-        given:
-        svnCheckOut(testProjectDir, "${System.properties['svnurl']}/trunk")
-
-        buildFile << """
-        plugins {
-            id 'com.intershop.gradle.scmversion'
-        }
-
-        scm {
-            prefixes {
-                tagPrefix = 'SBRELEASE'
-            }
-        }
-
-        version = scm.version.version
-
-        """.stripIndent()
-
-        when:
-        def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.3.0-SNAPSHOT')
-
-        when:
-        def createResult = getPreparedGradleRunner()
-                .withArguments('tag', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        createResult.task(":tag").outcome
-        createResult.output.contains('Tag created: 2.3.0')
-
-        when:
-        def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
-                .withGradleVersion(gradleVersion)
-                .build()
-
-        then:
-        prepareResult.task(":release").outcome
-        prepareResult.output.contains('Project version: 2.3.0')
-
-        cleanup:
-        svnRemove("${System.properties['svnurl']}/tags/SBRELEASE_2.3.0")
-
-        where:
-        gradleVersion << supportedGradleVersions
-    }
-
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
@@ -162,7 +52,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -172,7 +62,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '-PrunOnCI=true', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('release', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -211,7 +101,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -221,7 +111,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def createResult = getPreparedGradleRunner()
-                .withArguments('tag', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('tag', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -231,7 +121,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
 
         when:
         def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('release', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
