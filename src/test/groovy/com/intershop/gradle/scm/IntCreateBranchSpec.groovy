@@ -53,7 +53,7 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -63,7 +63,7 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         when:
         def createResult = getPreparedGradleRunner()
-                .withArguments('branch', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('branch', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -96,7 +96,7 @@ class IntCreateBranchSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('branch', '--stacktrace', '-PrunOnCI=true', LOGLEVEL)
+                .withArguments('branch', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .buildAndFail()
 

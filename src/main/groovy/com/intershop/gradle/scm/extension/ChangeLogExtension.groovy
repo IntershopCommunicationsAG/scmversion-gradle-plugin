@@ -70,21 +70,6 @@ class ChangeLogExtension extends AbstractExtension {
     }
     // block for changelogFile - lazy evaluation - end
 
-    // block for filterProject - lazy evaluation - start
-    private final Property<Boolean> filterProject
-
-    Provider<Boolean> getFilterProjectProvider() {
-        filterProject
-    }
-
-    Boolean getFilterProject() {
-        filterProject.get()
-    }
-
-    void setFilterProjec(boolean filterProject) {
-        this.filterProject.set(new Boolean(filterProject))
-    }
-    // block for filterProject - lazy evaluation - end
 
     /**
      * Initialize this extension and set default values
@@ -98,7 +83,6 @@ class ChangeLogExtension extends AbstractExtension {
 
         targetVersion = project.objects.property(String)
         changelogFile = project.objects.fileProperty()
-        filterProject = project.objects.property(Boolean)
     }
 
 

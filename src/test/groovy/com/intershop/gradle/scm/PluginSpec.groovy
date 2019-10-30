@@ -36,7 +36,6 @@ class PluginSpec extends AbstractProjectSpec {
         then:
         project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
         ! ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.disableSCM
-        ! ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).changelog.filterProject
         ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.patternDigits == 2
 
         task.outputs.files.contains(new File(project.getBuildDir(), 'changelog/changelog.asciidoc'))

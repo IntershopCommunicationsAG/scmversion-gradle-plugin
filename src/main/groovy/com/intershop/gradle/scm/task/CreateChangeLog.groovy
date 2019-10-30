@@ -42,7 +42,6 @@ class CreateChangeLog extends DefaultTask {
 
     final RegularFileProperty changelogFile = project.getObjects().fileProperty()
     final Property<String> targetVersion = project.getObjects().property(String)
-    final Property<Boolean> filterProject = project.getObjects().property(Boolean)
 
     @OutputFile
     File getChangelogFile() {
@@ -70,19 +69,6 @@ class CreateChangeLog extends DefaultTask {
         this.targetVersion.set(targetVersion)
     }
 
-    @Input
-    Boolean getFilterProject() {
-        filterProject.get()
-    }
-
-    void setFilterProject(Boolean filterProject) {
-        this.filterProject.set(filterProject)
-    }
-
-    void setFilterProject(Provider<Boolean> filterProject) {
-        this.filterProject.set(filterProject)
-    }
-
     CreateChangeLog() {
         this.setDescription('Creates a changelog based on SCM information in ASCIIDoc format')
     }
@@ -95,7 +81,6 @@ class CreateChangeLog extends DefaultTask {
             // set configuration parameter
             changeLogService.setTargetVersion(getTargetVersion())
             changeLogService.changelogFile = getChangelogFile()
-            changeLogService.filterProject = getFilterProject().booleanValue()
 
             changeLogService.changelogFile.getParentFile().mkdirs()
             if (changeLogService.changelogFile.exists()) {

@@ -39,9 +39,5 @@ interface ScmChangeLogService {
 
     void setType(ScmType type)
 
-    boolean getFilterProject()
-
-    void setFilterProject(boolean filterProject)
-
     void createLog()
 }

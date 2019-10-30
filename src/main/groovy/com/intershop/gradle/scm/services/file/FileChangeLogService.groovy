@@ -49,5 +49,4 @@ class FileChangeLogService extends FileRemoteService implements ScmChangeLogServ
 
     ScmType type
 
-    boolean filterProject
 }

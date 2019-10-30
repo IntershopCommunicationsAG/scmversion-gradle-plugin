@@ -33,8 +33,6 @@ import org.gradle.api.Project
  *     type = 'threeDigits' | 'fourDigits' (default: 'fourDigits')
  *
  *     dryRun = true | false (default: false)
- *
- *     runOnCI = true | false (default: false)
  * }
  * }
  * </pre>
@@ -53,10 +51,6 @@ class VersionExtension extends AbstractExtension {
     public final static String DRYRUN_ENV = 'DRYRUN'
     public final static String DRYRUN_PRJ = 'dryRun'
 
-    // run on CI server
-    public final static String RUNONCI_ENV = 'RUNONCI'
-    public final static String RUNONCI_PRJ = 'runOnCI'
-
     // increment
     public final static String INCDIGIT_ENV = 'INCREMENT'
     public final static String INCDIGIT_PRJ = 'increment'
@@ -68,11 +62,6 @@ class VersionExtension extends AbstractExtension {
     //CONTINUOUSRELEASE
     public final static String CONTINUOUSRELEASE_ENV = 'CONTINUOUSRELEASE'
     public final static String CONTINUOUSRELEASE_PRJ = 'continuousRelease'
-
-    // variable for version which is used if the
-    // system is offline without any connection to
-    // the remote repository
-    private final String offlineVersion
 
     // variable for a project specific static version
     // this version is taken from a file and without
@@ -101,14 +90,6 @@ class VersionExtension extends AbstractExtension {
      * java environment DRYRUN or project variable dryRun</p>
      */
     boolean dryRun
-
-    /**
-     * <p>Configuration for the execution on the CI server</p>
-     *
-     * <p>Can be configured/overwritten with environment variable RUNONCI;
-     * java environment RUNONCI or project variable runOnCI</p>
-     */
-    boolean runOnCI
 
     /**
      * <p>The name of the digit which will be increased.
@@ -215,14 +196,6 @@ class VersionExtension extends AbstractExtension {
             }
         }
 
-        // init default value for runOnCI
-        if(! runOnCI) {
-            runOnCI = Boolean.parseBoolean(getVariable(RUNONCI_ENV, RUNONCI_PRJ, 'false'))
-            if(runOnCI) {
-                log.warn('All tasks will be executed on a CI build environment.')
-            }
-        }
-
         // initial setting for type
         // default is the Intershop product version
         if(! type) {
@@ -240,11 +213,6 @@ class VersionExtension extends AbstractExtension {
         // default branch for version calculation
         if(!versionBranch) {
             versionBranch = BranchType.tag.toString()
-        }
-
-        // init offline version
-        if(project.hasProperty('offlineVersion')) {
-            offlineVersion = project.property('offlineVersion')
         }
 
         File staticVersionFile = new File(project.buildDir, "${SCMVERSIONDIR}/${STATICVERSIONFILE}")
@@ -312,9 +280,6 @@ class VersionExtension extends AbstractExtension {
      * @return version string
      */
     String getVersion() {
-        if(offlineVersion) {
-            return offlineVersion
-        }
         if(staticVersion) {
             return staticVersion
         }

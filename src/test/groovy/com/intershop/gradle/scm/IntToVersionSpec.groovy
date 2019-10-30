@@ -53,7 +53,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def preResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -63,7 +63,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=1.1.0', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -72,7 +72,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def postResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -82,7 +82,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result02 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=4.1.0', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=4.1.0', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .buildAndFail()
 
@@ -117,7 +117,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def preResult01 = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -127,7 +127,7 @@ class IntToVersionSpec extends AbstractTaskSpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-Pfeature=test', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-Pfeature=test', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

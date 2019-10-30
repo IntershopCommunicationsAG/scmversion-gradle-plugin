@@ -56,7 +56,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-LOCAL')
+        result.output.contains('Project version: 2.0.0-')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -84,7 +84,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL,'-PrunOnCI=true', "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -118,7 +118,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL,'-PrunOnCI=true', "-PscmVersionExt=RELEASE", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=RELEASE", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -153,7 +153,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL,'-PrunOnCI=true', "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -193,7 +193,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: ab.cd.de.00-LOCAL')
+        result.output.contains('Project version: ab.cd.de.00-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -228,7 +228,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-LOCAL')
+        result.output.contains('Project version: 2.1.0-SNAPSHOT')
         result.output.contains('branchname: master')
 
         where:
@@ -263,7 +263,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.1.0-LOCAL')
+        result.output.contains('Project version: 2.1.0-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -291,7 +291,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -325,7 +325,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -359,7 +359,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true')
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -401,7 +401,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('Project version: 1.1.1-SNAPSHOT')
         result.output.contains('branchname: SB_1.1')
 
         where:
@@ -438,7 +438,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4712-SNAPSHOT')
         result.output.contains('branchname: BB_2.0-JIRA-4712')
 
         where:
@@ -477,7 +477,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4712-SNAPSHOT')
         result.output.contains('branchname: BB_JIRA-4712')
 
         where:
@@ -518,7 +518,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 3.0.0-JIRA-4712-LOCAL')
+        result.output.contains('Project version: 3.0.0-JIRA-4712-SNAPSHOT')
         result.output.contains('branchname: BB_JIRA-4712')
 
         where:
@@ -559,7 +559,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-JIRA-4712-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4712-SNAPSHOT')
         result.output.contains('branchname: BB_JIRA-4712')
 
         where:
@@ -596,7 +596,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 2.0.0-JIRA-4711-LOCAL')
+        result.output.contains('Project version: 2.0.0-JIRA-4711-SNAPSHOT')
         result.output.contains('branchname: HB_2.0-JIRA-4711')
 
         where:
@@ -631,7 +631,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('Project version: 1.1.1-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -666,7 +666,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('Project version: 1.1.1-SNAPSHOT')
         result.output.contains('This file is not indexed new.properties')
 
         where:
@@ -702,7 +702,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         then:
         result.task(":showVersion").outcome == SUCCESS
-        result.output.contains('Project version: 1.1.1-LOCAL')
+        result.output.contains('Project version: 1.1.1-SNAPSHOT')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -732,7 +732,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -767,7 +767,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true')
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -802,7 +802,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -842,7 +842,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -879,7 +879,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true', "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -917,7 +917,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '-PrunOnCI=true', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -955,7 +955,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, '-PrunOnCI=true')
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -994,7 +994,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', "-i")
+                .withArguments('showVersion', '--stacktrace', "-i")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -1030,7 +1030,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL)
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -1060,7 +1060,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL)
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withDebug(true)
                 .withGradleVersion(gradleVersion)
                 .build()
@@ -1088,7 +1088,7 @@ class IntShowVersionSpec extends AbstractTaskSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', '-PrunOnCI=true', LOGLEVEL)
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withDebug(true)
                 .withGradleVersion(gradleVersion)
                 .build()
