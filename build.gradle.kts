@@ -1,9 +1,7 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import com.gradle.publish.PluginBundleExtension
-import org.asciidoctor.gradle.AsciidoctorTask
 import org.asciidoctor.gradle.AsciidoctorExtension
-import java.util.Date
+import org.asciidoctor.gradle.AsciidoctorTask
+import java.util.*
 
 plugins {
     // project plugins
@@ -205,7 +203,7 @@ publishing {
                 org.appendNode( "name", "Intershop Communications" )
                 org.appendNode( "url", "http://intershop.com" )
 
-                val license = root.appendNode( "licenses" ).appendNode( "license" );
+                val license = root.appendNode( "licenses" ).appendNode( "license" )
                 license.appendNode( "name", "Apache License, Version 2.0" )
                 license.appendNode( "url", "http://www.apache.org/licenses/LICENSE-2.0" )
                 license.appendNode( "distribution", "repo" )
