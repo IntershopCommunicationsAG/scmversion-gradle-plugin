@@ -1,9 +1,26 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import org.asciidoctor.gradle.AsciidoctorExtension
-import org.asciidoctor.gradle.AsciidoctorTask
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
 import java.util.*
 
+/*
+ * Copyright 2015 Intershop Communications AG.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 plugins {
+    // build performance
+    id("com.gradle.build-scan") version "3.0"
+
     // project plugins
     `java-gradle-plugin`
     groovy
@@ -14,23 +31,27 @@ plugins {
     // ide plugin
     idea
 
-    // plugin for documentation
-    id("org.asciidoctor.convert") version "1.5.9.2"
-
     // publish plugin
     `maven-publish`
 
+    // plugin for documentation
+    id("org.asciidoctor.jvm.convert") version "2.3.0"
+
     // plugin for publishing to Gradle Portal
-    id("com.gradle.plugin-publish") version "0.10.0"
+    id("com.gradle.plugin-publish") version "0.10.1"
 
     // plugin for publishing to jcenter
     id("com.jfrog.bintray") version "1.8.4"
 }
 
+buildScan {
+    termsOfServiceUrl   = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+}
+
 // release configuration
 group = "com.intershop.gradle.scm"
 description = "Gradle SCM version plugin - SCM based version handling for Gradle"
-
 version = "6.0.0"
 
 java {
@@ -63,79 +84,79 @@ if (project.version.toString().endsWith("-SNAPSHOT")) {
 }
 
 // test configuration
-tasks.withType<Test>().configureEach {
-    testLogging.showStandardStreams = false
-
-    systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
-
-    if(! System.getenv("GITUSER").isNullOrBlank() &&
-            ! System.getenv("GITPASSWD").isNullOrBlank() &&
-            ! System.getenv("GITURL").isNullOrBlank()) {
-        systemProperty("giturl", System.getenv("GITURL"))
-        systemProperty("gituser", System.getenv("GITUSER"))
-        systemProperty("gitpasswd", System.getenv("GITPASSWD"))
-    }
-
-    if(! System.getProperty("GITUSER").isNullOrBlank() &&
-            ! System.getProperty("GITPASSWD").isNullOrBlank() &&
-            ! System.getProperty("GITURL").isNullOrBlank() ) {
-        systemProperty("giturl", System.getProperty("GITURL"))
-        systemProperty("gituser", System.getProperty("GITUSER"))
-        systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
-    }
-
-    //Change directory for gradle tests
-    systemProperty("org.gradle.native.dir", ".gradle")
-    //Set supported Gradle version
-    systemProperty("intershop.gradle.versions", "5.6.3")
-    //working dir for tests
-    systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
-}
-
-task("copyAsciiDoc") {
-
-    val outputDir = file("${buildDir}/tmp/asciidoctorSrc")
-    val inputFiles = fileTree(mapOf("dir" to rootDir, "include" to listOf("**/*.asciidoc")))
-
-    inputs.files.plus( inputFiles )
-    outputs.dir( outputDir )
-
-    doLast {
-        outputDir.mkdir()
-
-        project.copy {
-            from(inputFiles)
-            into(outputDir)
-        }
-    }
-}
-
-configure<AsciidoctorExtension> {
-    noDefaultRepositories = true
-}
-
 tasks {
+    withType<Test>().configureEach {
+        testLogging.showStandardStreams = false
+
+        systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
+
+        if (!System.getenv("GITUSER").isNullOrBlank() &&
+                !System.getenv("GITPASSWD").isNullOrBlank() &&
+                !System.getenv("GITURL").isNullOrBlank()) {
+            systemProperty("giturl", System.getenv("GITURL"))
+            systemProperty("gituser", System.getenv("GITUSER"))
+            systemProperty("gitpasswd", System.getenv("GITPASSWD"))
+        }
+
+        if (!System.getProperty("GITUSER").isNullOrBlank() &&
+                !System.getProperty("GITPASSWD").isNullOrBlank() &&
+                !System.getProperty("GITURL").isNullOrBlank()) {
+            systemProperty("giturl", System.getProperty("GITURL"))
+            systemProperty("gituser", System.getProperty("GITUSER"))
+            systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
+        }
+
+        //Change directory for gradle tests
+        systemProperty("org.gradle.native.dir", ".gradle")
+        //Set supported Gradle version
+        systemProperty("intershop.gradle.versions", "5.6.3")
+        //working dir for tests
+        systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
+    }
+
+    val copyAsciiDoc = register<Copy>("copyAsciiDoc") {
+        includeEmptyDirs = false
+
+        val outputDir = file("$buildDir/tmp/asciidoctorSrc")
+        val inputFiles = fileTree(mapOf("dir" to rootDir,
+                "include" to listOf("**/*.asciidoc"),
+                "exclude" to listOf("build/**")))
+
+        inputs.files.plus(inputFiles)
+        outputs.dir(outputDir)
+
+        doFirst {
+            outputDir.mkdir()
+        }
+
+        from(inputFiles)
+        into(outputDir)
+    }
+
     withType<AsciidoctorTask> {
         dependsOn("copyAsciiDoc")
 
-        sourceDir = file("${buildDir}/tmp/asciidoctorSrc")
+        setSourceDir(file("$buildDir/tmp/asciidoctorSrc"))
         sources(delegateClosureOf<PatternSet> {
             include("README.asciidoc")
         })
 
-        backends("html5", "docbook")
-        options = mapOf( "doctype" to "article",
-                "ruby"    to "erubis")
+        outputOptions {
+            setBackends(listOf("html5", "docbook"))
+        }
+
+        options = mapOf("doctype" to "article",
+                "ruby" to "erubis")
         attributes = mapOf(
-                "latestRevision"        to  project.version,
-                "toc"                   to "left",
-                "toclevels"             to "2",
-                "source-highlighter"    to "coderay",
-                "icons"                 to "font",
-                "setanchors"            to "true",
-                "idprefix"              to "asciidoc",
-                "idseparator"           to "-",
-                "docinfo1"              to "true")
+                "latestRevision" to project.version,
+                "toc" to "left",
+                "toclevels" to "2",
+                "source-highlighter" to "coderay",
+                "icons" to "font",
+                "setanchors" to "true",
+                "idprefix" to "asciidoc",
+                "idseparator" to "-",
+                "docinfo1" to "true")
     }
 
     withType<JacocoReport> {
@@ -150,27 +171,22 @@ tasks {
         jacocoTestReport.dependsOn("test")
     }
 
-    withType<Test> {
-        dependsOn("jar")
-    }
-
     getByName("bintrayUpload")?.dependsOn("asciidoctor")
     getByName("publishToMavenLocal")?.dependsOn("asciidoctor")
-}
 
-val sourcesJar = task<Jar>("sourceJar") {
-    description = "Creates a JAR that contains the source code."
+    val sourcesJar = task<Jar>("sourceJar") {
+        description = "Creates a JAR that contains the source code."
 
-    from(sourceSets.getByName("main").allSource)
-    classifier = "sources"
-}
+        from(sourceSets.getByName("main").allSource)
+        archiveClassifier.set("sources")
+    }
 
-val groovydocJar = task<Jar>("javadocJar") {
-    dependsOn("groovydoc")
-    description = "Creates a JAR that contains the javadocs."
-
-    from(tasks.getByName("groovydoc"))
-    classifier = "javadoc"
+    val javadocJar = task<Jar>("javadocJar") {
+        dependsOn("javadoc")
+        description = "Creates a JAR that contains the javadocs."
+        from(javadoc)
+        archiveClassifier.set("javadoc")
+    }
 }
 
 publishing {
@@ -178,14 +194,14 @@ publishing {
         create("intershopMvn", MavenPublication::class.java) {
 
             from(components["java"])
-            artifact(sourcesJar)
-            artifact(groovydocJar)
+            artifact(tasks.getByName("sourceJar"))
+            artifact(tasks.getByName("javadocJar"))
 
-            artifact(File(buildDir, "asciidoc/html5/README.html")) {
+            artifact(File(buildDir, "docs/asciidoc/html5/README.html")) {
                 classifier = "reference"
             }
 
-            artifact(File(buildDir, "asciidoc/docbook/README.xml")) {
+            artifact(File(buildDir, "docs/asciidoc/docbook/README.xml")) {
                 classifier = "docbook"
             }
 
@@ -263,3 +279,4 @@ dependencies {
 repositories {
     jcenter()
 }
+
