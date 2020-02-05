@@ -18,12 +18,10 @@ import java.util.*
  * limitations under the License.
  */
 plugins {
-    // build performance
-    id("com.gradle.build-scan") version "3.0"
-
     // project plugins
     `java-gradle-plugin`
     groovy
+    id("nebula.kotlin") version "1.3.61"
 
     // test coverage
     jacoco
@@ -35,18 +33,13 @@ plugins {
     `maven-publish`
 
     // plugin for documentation
-    id("org.asciidoctor.jvm.convert") version "2.3.0"
+    id("org.asciidoctor.jvm.convert") version "2.4.0"
 
     // plugin for publishing to Gradle Portal
     id("com.gradle.plugin-publish") version "0.10.1"
 
     // plugin for publishing to jcenter
     id("com.jfrog.bintray") version "1.8.4"
-}
-
-buildScan {
-    termsOfServiceUrl   = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
 }
 
 // release configuration
@@ -88,6 +81,8 @@ tasks {
     withType<Test>().configureEach {
         testLogging.showStandardStreams = false
 
+        maxParallelForks = 1
+
         systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
 
         if (!System.getenv("GITUSER").isNullOrBlank() &&
@@ -109,7 +104,7 @@ tasks {
         //Change directory for gradle tests
         systemProperty("org.gradle.native.dir", ".gradle")
         //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "5.6.3")
+        systemProperty("intershop.gradle.versions", "6.1")
         //working dir for tests
         systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
     }
@@ -173,6 +168,10 @@ tasks {
 
     getByName("bintrayUpload")?.dependsOn("asciidoctor")
     getByName("publishToMavenLocal")?.dependsOn("asciidoctor")
+
+    val compileKotlin by getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 
     val sourcesJar = task<Jar>("sourceJar") {
         description = "Creates a JAR that contains the source code."
@@ -259,7 +258,8 @@ bintray {
 }
 
 dependencies {
-    implementation("com.intershop.gradle.version:extended-version:3.0.1")
+    implementation("com.intershop.gradle.version:extended-version:3.0.3")
+    implementation(gradleKotlinDsl())
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {

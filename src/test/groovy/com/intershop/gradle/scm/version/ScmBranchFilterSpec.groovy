@@ -16,16 +16,21 @@
 package com.intershop.gradle.scm.version
 
 import com.intershop.gradle.scm.utils.BranchType
+import com.intershop.gradle.scm.utils.IPrefixConfig
 import com.intershop.gradle.scm.utils.PrefixConfig
+import com.intershop.gradle.scm.utils.SimplePrefixConfig
 import spock.lang.Specification
 
 class ScmBranchFilterSpec extends Specification {
 
     def 'trunk filter with prefix'() {
         when:
-        PrefixConfig prefixes = new PrefixConfig('enf7ga', 'fbenf7ga', 'releases')
+        SimplePrefixConfig prefixes = new SimplePrefixConfig()
+        prefixes.stabilizationPrefix = 'enf7ga'
+        prefixes.featurePrefix = 'fbenf7ga'
+        prefixes.tagPrefix = 'releases'
         prefixes.setPrefixSeperator('-')
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.branch, prefixes, '', null, '', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(prefixes, BranchType.branch,  '', null, '', 2)
 
         then:
         versionStr == filter.getVersionStr(branchName)
@@ -46,11 +51,14 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'trunk filter with prefix and three digits'() {
         when:
-        PrefixConfig prefixes = new PrefixConfig('enf7ga', 'fbenf7ga', 'RELEASE')
+        SimplePrefixConfig prefixes = new SimplePrefixConfig()
+        prefixes.stabilizationPrefix = 'enf7ga'
+        prefixes.featurePrefix = 'fbenf7ga'
+        prefixes.tagPrefix = 'RELEASE'
         prefixes.setBranchPrefixSeperator('-')
         prefixes.setTagPrefixSeperator('_')
 
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, prefixes, 'enf7ga-7.4.6', BranchType.branch, '', 3)
+        ScmBranchFilter filter =  new ScmBranchFilter( prefixes, BranchType.tag,'enf7ga-7.4.6', BranchType.branch, '', 3)
 
         then:
         versionStr == filter.getVersionStr(branchName)
@@ -64,9 +72,13 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'featurebranch with jira issue'() {
         when:
-        PrefixConfig prefixes = new PrefixConfig('SB', 'FB', 'RELEASES')
+        SimplePrefixConfig prefixes = new SimplePrefixConfig()
+        prefixes.stabilizationPrefix = 'SB'
+        prefixes.featurePrefix = 'FB'
+        prefixes.tagPrefix = 'RELEASES'
+
         prefixes.setPrefixSeperator('_')
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.featureBranch, prefixes, '', null, 'ISTOOLS-12345', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(prefixes, BranchType.featureBranch, '', null, 'ISTOOLS-12345', 2)
 
         then:
         versionStr == filter.getVersionStr(branchName)
@@ -78,7 +90,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter with prefix'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, new PrefixConfig(), '', null, '', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(new SimplePrefixConfig(), BranchType.tag, '', null, '', 2)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -93,7 +105,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'featurebranch filter with prefix'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, new PrefixConfig(), '', null, 'fb1', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(new SimplePrefixConfig(), BranchType.tag, '', BranchType.tag, 'fb1', 2)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -105,7 +117,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter with prefix for feature branch'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, new PrefixConfig(), '', null, 'fb1', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter( new SimplePrefixConfig(), BranchType.tag,'', null, 'fb1', 2)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -120,7 +132,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter for special version for tags'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, new PrefixConfig(), 'SB_10', BranchType.branch, '', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(new SimplePrefixConfig(), BranchType.tag, 'SB_10', BranchType.branch, '', 2)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -138,7 +150,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter for wrong branch and for tags'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.tag, new PrefixConfig(), 'SB_10.0', BranchType.branch, '', 1)
+        ScmBranchFilter filter =  new ScmBranchFilter(new SimplePrefixConfig(), BranchType.tag, 'SB_10.0', BranchType.branch, '', 1)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -152,7 +164,7 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter for special version for branches'() {
         when:
-        ScmBranchFilter filter =  new ScmBranchFilter(BranchType.branch, new PrefixConfig(), '', null, '', 2)
+        ScmBranchFilter filter =  new ScmBranchFilter(new SimplePrefixConfig() as IPrefixConfig, BranchType.branch, '', null, '', 2)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -167,16 +179,19 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter with different prefix separator configurations'() {
         when:
-        PrefixConfig pc = new PrefixConfig('enf7ga', 'enf7gapre', 'RELEASE')
-        pc.tagPrefixSeperator = '_'
-        pc.branchPrefixSeperator = '-'
-        ScmBranchFilter filter = new ScmBranchFilter(BranchType.branch, pc, '', null, '', 2)
+        SimplePrefixConfig prefixes = new SimplePrefixConfig()
+        prefixes.stabilizationPrefix = 'enf7ga'
+        prefixes.featurePrefix = 'enf7gapre'
+        prefixes.tagPrefix = 'RELEASE'
+        prefixes.tagPrefixSeperator = '_'
+        prefixes.branchPrefixSeperator = '-'
+        ScmBranchFilter filter = new ScmBranchFilter(prefixes, BranchType.branch, '', null, '', 2)
 
         then:
         filter.getVersionStr('enf7ga-7.5') == '7.5'
 
         when:
-        filter = new ScmBranchFilter(BranchType.tag, pc, '', null, '', 2)
+        filter = new ScmBranchFilter( prefixes, BranchType.tag, '', BranchType.branch, '', 2)
 
         then:
         filter.getVersionStr('RELEASE_7.5.5.1') == '7.5.5.1'
@@ -185,16 +200,16 @@ class ScmBranchFilterSpec extends Specification {
 
     def 'branch filter with different prefixes configurations - extended'() {
         when:
-        PrefixConfig pc = new PrefixConfig('SB', 'FB', 'RELEASE', 'HB', 'BB')
+        SimplePrefixConfig pc = new SimplePrefixConfig()
         pc.tagPrefixSeperator = '_'
         pc.branchPrefixSeperator = '_'
-        ScmBranchFilter filter = new ScmBranchFilter(BranchType.hotfixbBranch, pc, '', null, '', 2)
+        ScmBranchFilter filter = new ScmBranchFilter( pc, BranchType.hotfixbBranch , '', null, '', 2)
 
         then:
         filter.getVersionStr('HB_1.0') == '1.0'
 
         when:
-        filter = new ScmBranchFilter(BranchType.tag, pc, '', null, '', 2)
+        filter = new ScmBranchFilter(pc, BranchType.tag, '', null, '', 2)
 
         then:
         filter.getVersionStr('RELEASE_7.5.5.1') == '7.5.5.1'

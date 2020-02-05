@@ -16,8 +16,10 @@
 package com.intershop.gradle.scm.version
 
 import com.intershop.gradle.scm.utils.PrefixConfig
+import com.intershop.gradle.scm.utils.SimplePrefixConfig
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
+import org.gradle.api.model.ObjectFactory
 import spock.lang.Specification
 
 class ReleaseFilterSpec extends Specification {
@@ -25,7 +27,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v)
+        ReleaseFilter filter =  new ReleaseFilter(new SimplePrefixConfig(), v)
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -43,7 +45,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions for branch'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb'))
+        ReleaseFilter filter =  new ReleaseFilter(new SimplePrefixConfig(), v.setBranchMetadata('fb'))
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -61,7 +63,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions for branch with JIRA issue'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb-1'))
+        ReleaseFilter filter =  new ReleaseFilter(new SimplePrefixConfig(), v.setBranchMetadata('fb-1'))
 
         then:
         versionStr == filter.getVersionStr(tagName)

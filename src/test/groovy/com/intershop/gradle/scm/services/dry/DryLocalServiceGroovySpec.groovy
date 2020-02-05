@@ -13,58 +13,61 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-
-package com.intershop.gradle.scm.services.file
+package com.intershop.gradle.scm.services.dry
 
 import com.intershop.gradle.scm.ScmVersionPlugin
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.extension.VersionExtension
-import com.intershop.gradle.test.util.TestDir
-import groovy.util.logging.Slf4j
+import com.intershop.gradle.scm.services.git.GitLocalService
+import com.intershop.gradle.scm.test.utils.AbstractScmGroovySpec
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.junit.rules.TestName
-import spock.lang.Specification
+import spock.lang.Requires
 import spock.lang.Unroll
 
-@Slf4j
 @Unroll
-class FileLocalServiceSpec extends Specification {
+class DryLocalServiceGroovySpec extends AbstractScmGroovySpec {
 
-    @TestDir
-    File projectDir
+    @Rule TemporaryFolder temp
 
     @Rule
     TestName testName = new TestName()
 
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
     def 'calculate local information of new project'() {
         setup:
-        ScmExtension scmExtension = prepareProject(projectDir)
-
-        def testFile = new File(projectDir, 'test.properties')
-        testFile.text = '''com.test.property = 1
-        com.test.value = 1'''
-
-        when:
-        FileLocalService infoService = scmExtension.localService
-
-        then:
-        infoService.getRemoteUrl() == projectDir.toURI().toURL().toString()
-        infoService.getBranchName() == 'trunk'
-        infoService.changed
-    }
-
-    ScmExtension prepareProject(File projectDir) {
         String canonicalName = testName.getMethodName().replaceAll(' ', '-')
 
+        def projectDir = temp.newFolder()
+
+        when:
+        gitCheckOut(projectDir, System.properties['giturl'].toString(), 'master' )
         Project project = ProjectBuilder.builder().withName(canonicalName).withProjectDir(projectDir).build()
+
+        then:
+        (new File(projectDir, ".git")).exists()
+
+        when:
         project.pluginManager.apply(ScmVersionPlugin.class)
+
+        then:
+        (new File(projectDir, ".git")).exists()
 
         ScmExtension scmConfig = project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
 
-        return scmConfig
+        VersionExtension versionExt = scmConfig.version
+        DryLocalService localService = new DryLocalService(projectDir, scmConfig.prefixes, scmConfig.localService)
+
+        then:
+        versionExt != null
+        localService.remoteUrl == System.properties['giturl']
+        localService.branchName == 'master'
+        ! localService.changed
     }
 }
