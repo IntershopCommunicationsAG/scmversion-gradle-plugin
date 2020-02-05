@@ -22,8 +22,6 @@ package com.intershop.gradle.scm.utils
  * <p><b>file</b> - This is used for unknown SCMs or not stored projects.
  */
 enum class ScmType {
-
-    git ,
-
-    file ;
+    GIT ,
+    FILE ;
 }

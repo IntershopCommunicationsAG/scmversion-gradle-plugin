@@ -21,7 +21,7 @@ open class PrepareRelease: DefaultTask() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
         val versionService = versionConfig.versionService
 
-        val version = if (versionService.localService.branchType != BranchType.tag) {
+        val version = if (versionService.localService.branchType != BranchType.TAG) {
             // create tag
             val tv = versionService.preVersion.toString()
 
@@ -29,7 +29,7 @@ open class PrepareRelease: DefaultTask() {
                 versionService.createTag(tv, null)
             }
 
-            if (versionService.moveTo(tv, BranchType.tag) == "") {
+            if (versionService.moveTo(tv, BranchType.TAG) == "") {
                 throw GradleException("It is not possible to move the existing working copy to version ${tv} on the SCM!")
             }
             tv

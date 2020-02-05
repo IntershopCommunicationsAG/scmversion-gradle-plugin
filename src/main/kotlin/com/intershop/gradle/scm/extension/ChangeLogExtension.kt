@@ -64,7 +64,7 @@ abstract class ChangeLogExtension @Inject constructor(val scmExtension: ScmExten
     abstract val projectLayout: ProjectLayout
 
     val changelogService: ScmChangeLogService by lazy {
-        val tempChangelogService = if (scmExtension.scmType == ScmType.git) {
+        val tempChangelogService = if (scmExtension.scmType == ScmType.GIT) {
             GitChangeLogService(scmExtension.version, GitRemoteService(scmExtension.localService as GitLocalService, scmExtension.user, scmExtension.key ))
         } else {
             FileChangeLogService()

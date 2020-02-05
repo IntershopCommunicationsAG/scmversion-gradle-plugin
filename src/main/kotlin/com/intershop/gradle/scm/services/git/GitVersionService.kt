@@ -40,7 +40,7 @@ import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
 import org.gradle.api.GradleException
 
-open class GitVersionService(versionExt: VersionExtension, val remoteService: GitRemoteService): ScmVersionService(versionExt) {
+open class GitVersionService(versionExt: VersionExtension, private val remoteService: GitRemoteService): ScmVersionService(versionExt) {
 
     /**
      * The basic information service of this project.
@@ -62,28 +62,28 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
         val headId = (localService as GitLocalService).repository.resolve(localService.revID)
         if(headId != null) {
 
-            var pos = 0
+            val pos = 0
 
-            rv = getTagObject(getTagMap(getBranchFilter(BranchType.tag)),
+            rv = getTagObject(getTagMap(getBranchFilter(BranchType.TAG)),
                               getTagMap(ScmBranchFilter(localService.prefixes)),
                               headId)
 
             val branchFilter = getBranchFilter(
-                    if (localService.featureBranchName.isNotEmpty()) { localService.branchType } else { BranchType.branch })
+                    if (localService.featureBranchName.isNotEmpty()) { localService.branchType } else { BranchType.BRANCH })
 
             // version from branch, if branch is available
-            if (rv == null && localService.branchWithVersion && versionExt.versionBranchType == BranchType.branch) {
+            if (rv == null && localService.branchWithVersion && versionExt.versionBranchType == BranchType.BRANCH) {
 
                 rv = getBranchObject(getBranchMap(branchFilter), headId)
             }
-            if(rv == null && localService.branchType == BranchType.trunk) {
+            if(rv == null && localService.branchType == BranchType.MASTER) {
                 // version is calculated for the master branch from all release branches
                 rv = getReleaseObject(getBranchMap(branchFilter))
             }
             if(rv == null && specialBranches.contains(localService.branchType)) {
                 // version is calculated from the branch name
-                var versionStr = branchFilter.getVersionStr(localService.branchName)
-                if(! versionStr.isNullOrBlank()) {
+                val versionStr = branchFilter.getVersionStr(localService.branchName)
+                if(! versionStr.isBlank()) {
                     rv = ScmVersionObject(localService.branchName, Version.forString(versionStr, versionExt.versionType), true)
                 }
             }
@@ -114,9 +114,9 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
     override val versionTagMap: Map<Version, VersionTag> by lazy  {
         val branchMap = this.getTagMap(ReleaseFilter(localService.prefixes, preVersion))
         val versionTags = mutableMapOf<Version, VersionTag>()
-        branchMap.forEach {_, bo ->
-            var v = Version.valueOf(bo.version)
-            versionTags.put(v, VersionTag(v, bo))
+        branchMap.forEach { (_, bo) ->
+            val v = Version.valueOf(bo.version)
+            versionTags[v] = VersionTag(v, bo)
         }
 
         versionTags
@@ -139,9 +139,9 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
         val path: String
         val versionMap = mutableMapOf<String, BranchObject>()
 
-        if(checkBranch(BranchType.tag, version)) {
-            branchName = getBranchName(BranchType.tag, version)
-            versionMap.putAll(getTagMap(getBranchFilter(BranchType.tag)))
+        if(checkBranch(BranchType.TAG, version)) {
+            branchName = getBranchName(BranchType.TAG, version)
+            versionMap.putAll(getTagMap(getBranchFilter(BranchType.TAG)))
             path = "tags/"
         } else if(checkBranch(type, version)) {
             branchName = getBranchName(type, version)
@@ -154,7 +154,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
 
         var objectID = ""
 
-        versionMap.forEach { key: String,  value: BranchObject ->
+        versionMap.forEach { (key: String, value: BranchObject) ->
             if(value.name == branchName) {
                 objectID = key
             }
@@ -186,7 +186,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
             walk.markStart(walk.parseCommit(headId))
 
             var commit: RevCommit? = walk.next()
-            var preCommit: RevCommit? = null
+            var preCommit: RevCommit?
             do {
                 preCommit = commit
                 commit = walk.next()
@@ -207,26 +207,26 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
     @Throws(ScmException::class)
     override fun createTag(version: String, rev: String?): String {
         // check if tag exits
-        if (checkBranch(BranchType.tag, version)) {
-            throw ScmException("Tag for ${version} exists on this repo.")
+        if (checkBranch(BranchType.TAG, version)) {
+            throw ScmException("Tag for $version exists on this repo.")
         }
 
-         val tagName: String = getBranchName(BranchType.tag, version)
+         val tagName: String = getBranchName(BranchType.TAG, version)
 
         // create tag
         val cmd = (localService as GitLocalService).client.tag()
-            cmd.name = tagName
-            cmd.setObjectId(remoteService.getObjectId(rev ?: localService.revID))
-            cmd.message = "Tag ${tagName} created by gradle plugin"
-            cmd.setAnnotated( true )
-            cmd.setForceUpdate( false )
+        cmd.name = tagName
+        cmd.objectId = remoteService.getObjectId(rev ?: localService.revID)
+        cmd.message = "Tag $tagName created by gradle plugin"
+        cmd.isAnnotated = true
+        cmd.isForceUpdate = false
 
-            val ref = cmd.call()
+        val ref = cmd.call()
 
-            // push changes to remote
-            pushCmd()
-            log.info("Tag ${tagName} was create on ${this.localService.branchName}")
-            return ref.toString()
+        // push changes to remote
+        pushCmd()
+        log.info("Tag $tagName was create on ${this.localService.branchName}")
+        return ref.toString()
     }
 
     /**
@@ -238,11 +238,11 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
      */
     @Throws(ScmException::class)
      override fun createBranch(version: String,  featureBranch: Boolean, rev: String? ): String {
-        val branchType = if(featureBranch) { localService.branchType } else { BranchType.branch }
+        val branchType = if(featureBranch) { localService.branchType } else { BranchType.BRANCH }
 
         // check if branch exits
         if (checkBranch(branchType, version) ) {
-            throw ScmException("Branch for ${version} exists in this repo.")
+            throw ScmException("Branch for $version exists in this repo.")
         }
         val branchName = getBranchName(branchType, version)
 
@@ -266,7 +266,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
      * @return true, if the specified release version is available
      */
     override fun isReleaseVersionAvailable( version: String): Boolean {
-        return checkBranch(BranchType.tag, version)
+        return checkBranch(BranchType.TAG, version)
     }
 
     /**
@@ -291,7 +291,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
             cmd.setPushAll()
             cmd.setPushTags()
             cmd.remote =  "origin"
-            cmd.setForce( true )
+            cmd.isForce = true
             cmd.call()
         } catch( gitEx: GitAPIException) {
             log.error(gitEx.message, gitEx.cause)
@@ -331,19 +331,19 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
                             rv = ScmVersionObject(tagObject.name, getVersionFrom(tagObject.version), false)
                             break
                         }
-                        if (pos != 0 && versionExt.versionBranchType == BranchType.tag) {
+                        if (pos != 0 && versionExt.versionBranchType == BranchType.TAG) {
                             log.info("Version from tag {}, but there are {} changes.", tagObject.name, pos)
 
                             rv = ScmVersionObject(localService.branchName, getVersionFrom(tagObject.version), true)
 
-                            if (localService.branchType != BranchType.trunk &&
-                                    localService.branchType != BranchType.branch &&
-                                    localService.branchType != BranchType.tag) {
+                            if (localService.branchType != BranchType.MASTER &&
+                                    localService.branchType != BranchType.BRANCH &&
+                                    localService.branchType != BranchType.TAG) {
                                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
                             }
                             break
                         }
-                        if (pos != 0 && versionExt.versionBranchType != BranchType.tag) {
+                        if (pos != 0 && versionExt.versionBranchType != BranchType.TAG) {
                             break
                         }
                     } else {
@@ -353,15 +353,15 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
                     commit = walk.next()
             } while (commit != null)
 
-            if (localService.branchType != BranchType.tag && ! localService.branchWithVersion && rv != null) {
+            if (localService.branchType != BranchType.TAG && ! localService.branchWithVersion && rv != null) {
                 rv.changed = (pos != 0) || localService.changed
 
-                if (rv.changed && log.isInfoEnabled()) {
+                if (rv.changed && log.isInfoEnabled) {
                     if (pos > 0) { log.info("There are {} commits after the last tag.", pos) }
                     if (localService.changed) { log.info("There are local changes in the repository.") }
                 }
 
-                rv.fromBranchName = localService.branchType != BranchType.trunk
+                rv.fromBranchName = localService.branchType != BranchType.MASTER
                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
             }
         }
@@ -372,7 +372,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
                                 headId: ObjectId): ScmVersionObject? {
         var rv: ScmVersionObject? = null
 
-        if(! branches.isEmpty()) {
+        if(branches.isNotEmpty()) {
             val localService = remoteService.localService
 
             var pos = 0
@@ -403,15 +403,15 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
 
     private fun getReleaseObject(branches: Map<String, BranchObject>) : ScmVersionObject? {
         var rv: ScmVersionObject? = null
-        if(! branches.isEmpty()) {
-            var branchVersions = mutableListOf<Version>()
+        if(branches.isNotEmpty()) {
+            val branchVersions = mutableListOf<Version>()
             var branchVersion: String
-            branches.forEach { _ , bo: BranchObject ->
+            branches.forEach { (_, bo: BranchObject) ->
                 branchVersion = bo.version
                 branchVersions.add(getVersionFrom(branchVersion))
             }
-            var l: List<Version> = branchVersions.sorted()
-            if (l.size > 0) {
+            val l: List<Version> = branchVersions.sorted()
+            if (l.isNotEmpty()) {
                 log.debug("Version found and latest will be used.")
                 rv = ScmVersionObject(remoteService.localService.branchName, l.last(), true)
             }
@@ -444,13 +444,13 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
 
         refList.forEach { ref: Ref ->
             val rc = walk.parseCommit(ref.objectId)
-            val name = ref.getName().toString()
+            val name = ref.name.toString()
             val branchName = name.substring(name.lastIndexOf('/') + 1)
 
             if(branchName != "master") {
                 val version = branchFilter.getVersionStr(branchName)
                 if(version.isNotEmpty()) {
-                    rv.put(ObjectId.toString(rc), BranchObject(ObjectId.toString(rc), version, branchName))
+                    rv[ObjectId.toString(rc)] = BranchObject(ObjectId.toString(rc), version, branchName)
                 }
             }
         }
@@ -468,7 +468,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
      */
     private fun checkBranch( type: BranchType,  version: String): Boolean {
         val name = getBranchName(type, version)
-        val path = if(type == BranchType.tag) {
+        val path = if(type == BranchType.TAG) {
                         remoteService.fetchTagsCmd()
                         "refs/tags/"
                     } else {
@@ -488,8 +488,8 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
 
         val rv = mutableListOf<String>()
         refs.forEach { r: Ref ->
-            if("${path}${name}".equals(r.getName()) && r.getName() != null) {
-                rv.add(r.getName())
+            if("${path}${name}" == r.name && r.name != null) {
+                rv.add(r.name)
             }
         }
         return rv.size > 0
@@ -504,7 +504,7 @@ open class GitVersionService(versionExt: VersionExtension, val remoteService: Gi
             // fetch all
             val cmd = remoteService.localService.client.fetch()
             cmd.remote = "origin"
-            cmd.setCheckFetchedObjects(true)
+            cmd.isCheckFetchedObjects = true
             remoteService.addCredentialsToCmd(cmd)
             cmd.call()
         } catch( nrex: InvalidRemoteException) {

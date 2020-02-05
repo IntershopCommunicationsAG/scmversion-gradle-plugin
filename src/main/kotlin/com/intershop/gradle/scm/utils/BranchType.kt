@@ -21,17 +21,11 @@ package com.intershop.gradle.scm.utils
  * also the synonym for to the "master" in git.
  */
 enum class BranchType {
-    trunk ,
-
-    branch ,
-
-    featureBranch ,
-
-    hotfixbBranch ,
-
-    bugfixBranch ,
-
-    tag ,
-
-    detachedHead ;
+    MASTER ,
+    BRANCH ,
+    FEATUREBRANCH ,
+    HOTFIXBBRANCH ,
+    BUGFIXBRANCH ,
+    TAG ,
+    DETACHEDHEAD ;
 }

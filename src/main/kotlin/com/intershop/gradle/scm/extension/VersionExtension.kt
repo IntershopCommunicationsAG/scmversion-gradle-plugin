@@ -22,15 +22,10 @@ import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.services.git.GitRemoteService
 import com.intershop.gradle.scm.services.git.GitVersionService
 import com.intershop.gradle.scm.utils.BranchType
-import com.intershop.gradle.scm.utils.IPrefixConfig
-import com.intershop.gradle.scm.utils.PrefixConfig
-import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmType
-import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.utils.getValue
 import com.intershop.gradle.scm.utils.setValue
 import com.intershop.gradle.scm.version.VersionTag
-import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
@@ -116,7 +111,7 @@ abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtensi
                 (System.getProperty(CONTINUOUSRELEASE) ?: System.getenv(CONTINUOUSRELEASE) ?: "")
                         .toString().trim().toBoolean())
 
-        versionBranchProperty.convention(BranchType.tag.toString())
+        versionBranchProperty.convention(BranchType.TAG.toString())
         defaultBuildMetadataProperty.convention("")
         useBuildExtensionProperty.convention(false)
         majorVersionOnlyProperty.convention(true)
@@ -133,7 +128,7 @@ abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtensi
     }
 
     val versionService: ScmVersionService by lazy {
-        if (scmExtension.scmType == ScmType.git) {
+        if (scmExtension.scmType == ScmType.GIT) {
             GitVersionService(this, GitRemoteService(scmExtension.localService as GitLocalService, scmExtension.user, scmExtension.key ))
         } else {
             FileVersionService(this, scmExtension.localService as FileLocalService)
@@ -182,17 +177,17 @@ abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtensi
         get() {
             try {
                 val bt = BranchType.valueOf( versionBranchProperty.get())
-                if(bt == BranchType.tag || bt == BranchType.branch) {
+                if(bt == BranchType.TAG || bt == BranchType.BRANCH) {
                     return bt
                 }
             } catch (ex: IllegalArgumentException){
                 log.error("Parameter for versionBranch is wrong (set: {}) (exception: {}), possible values: {}, {}.",
                         versionBranchProperty.get(), ex.message,
-                        BranchType.tag.toString(), BranchType.branch.toString())
+                        BranchType.TAG.toString(), BranchType.BRANCH.toString())
             }
 
             log.warn("Default value 'tag' is used for versionBranch.")
-            return BranchType.tag
+            return BranchType.TAG
         }
 
     /**

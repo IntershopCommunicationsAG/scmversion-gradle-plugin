@@ -18,7 +18,6 @@ package com.intershop.gradle.scm.services.git
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
-import com.intershop.gradle.scm.utils.ScmType
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.ObjectId
@@ -127,7 +126,7 @@ class GitLocalService(projectDir: File,
     }
 
     init {
-        branchType = BranchType.trunk
+        branchType = BranchType.MASTER
 
         if(branchName != "master") {
             val mfb = Regex(prefixes.featureBranchPattern).matchEntire(branchName)
@@ -136,26 +135,26 @@ class GitLocalService(projectDir: File,
             val msb =  Regex(prefixes.stabilizationBranchPattern).matchEntire(branchName)
 
             if(branchName.equals(revID)) {
-                branchType = BranchType.detachedHead
+                branchType = BranchType.DETACHEDHEAD
                 log.info("Repo is in detached mode! Create a tag on {}.", branchName)
             } else if(mfb != null && mfb.groups.size > 1) {
-                branchType = BranchType.featureBranch
+                branchType = BranchType.FEATUREBRANCH
                 featureBranchName = mfb.groupValues.last()
             } else if(mhb != null && mhb.groups.size > 1) {
-                branchType = BranchType.hotfixbBranch
+                branchType = BranchType.HOTFIXBBRANCH
                 featureBranchName = mhb.groupValues.last()
             } else if(mbb != null && mbb.groups.size > 1) {
-                branchType = BranchType.bugfixBranch
+                branchType = BranchType.BUGFIXBRANCH
                 featureBranchName = mbb.groupValues.last()
             } else if(msb != null && msb.groups.size > 1) {
-                branchType = BranchType.branch
+                branchType = BranchType.BRANCH
             } else {
-                branchType = BranchType.featureBranch
+                branchType = BranchType.FEATUREBRANCH
                 featureBranchName = branchName
             }
 
             if(tagNameOnHead == branchName) {
-                branchType = BranchType.tag
+                branchType = BranchType.TAG
             }
         }
 

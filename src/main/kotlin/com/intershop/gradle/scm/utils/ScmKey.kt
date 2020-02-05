@@ -48,7 +48,7 @@ open class ScmKey @Inject constructor(objectFactory: ObjectFactory) {
         if (filePath.isNotEmpty()) {
             fileTemp = File(filePath)
         }
-        if (fileTemp == null || !fileTemp?.exists() || !fileTemp?.canRead()) {
+        if (fileTemp == null || !fileTemp.exists() || !fileTemp.canRead()) {
             fileTemp = File(System.getProperty("user.home"), ".ssh/id_dsa")
         }
         fileProperty.set(fileTemp)

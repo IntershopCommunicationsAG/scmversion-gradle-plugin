@@ -17,7 +17,6 @@ package com.intershop.gradle.scm.version
 
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.IPrefixConfig
-import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.release.version.Version
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,7 +41,7 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
         var vdata = arrayOf("","","","")
         val dp = mutableListOf("\\d+", "(\\.\\d+)?", "(\\.\\d+)?", "(\\.\\d+)?")
 
-        var patternString: String = "^${this.prefixes.getPrefix(versionBranchtype ?: BranchType.tag)}"
+        var patternString: String = "^${this.prefixes.getPrefix(versionBranchtype ?: BranchType.TAG)}"
 
         if(versionBranchtype == null && branchFilterName == "" && branchFilterType == null && featureBranch == "") {
 
@@ -56,30 +55,29 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
 
             log.debug("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
 
-            if(branchFilterName != null) {
-                var branchFilterNamePattern = ".*"
+            var branchFilterNamePattern = ".*"
 
-                if(branchFilterType == BranchType.branch && prefixes.branchPrefixSeperator != null) {
-                    branchFilterNamePattern += prefixes.branchPrefixSeperator
-                }
-                if(branchFilterType == BranchType.tag && prefixes.tagPrefixSeperator != null) {
-                    branchFilterNamePattern += prefixes.tagPrefixSeperator
-                }
-                if(prefixes.tagPrefixSeperator == null && prefixes.branchPrefixSeperator == null) {
-                    branchFilterNamePattern += prefixes.prefixSeperator
-                }
-                branchFilterNamePattern = branchFilterNamePattern.replace("/", "\\/")
-
-                branchFilterNamePattern += versionregex
-
-                val branchRegex = Regex(branchFilterNamePattern)
-                val branchMatchResult: MatchResult? = branchRegex.matchEntire(branchFilterName)
-
-                if(branchMatchResult?.groupValues != null && branchMatchResult.groupValues.size > 0) {
-                    val tv = branchMatchResult!!.groupValues[1]
-                    vdata = tv.split(".").toTypedArray()
-                }
+            if(branchFilterType == BranchType.BRANCH && prefixes.branchPrefixSeperator != null) {
+                branchFilterNamePattern += prefixes.branchPrefixSeperator
             }
+            if(branchFilterType == BranchType.TAG && prefixes.tagPrefixSeperator != null) {
+                branchFilterNamePattern += prefixes.tagPrefixSeperator
+            }
+            if(prefixes.tagPrefixSeperator == null && prefixes.branchPrefixSeperator == null) {
+                branchFilterNamePattern += prefixes.prefixSeperator
+            }
+            branchFilterNamePattern = branchFilterNamePattern.replace("/", "\\/")
+
+            branchFilterNamePattern += versionregex
+
+            val branchRegex = Regex(branchFilterNamePattern)
+            val branchMatchResult: MatchResult? = branchRegex.matchEntire(branchFilterName)
+
+            if(branchMatchResult?.groupValues != null && branchMatchResult.groupValues.size > 0) {
+                val tv = branchMatchResult.groupValues[1]
+                vdata = tv.split(".").toTypedArray()
+            }
+
 
             for(i in 0..(Math.min(patternDigits, vdata.size) - 1)) {
                 if(vdata[i].isNotEmpty()) {
@@ -89,13 +87,13 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
 
             patternString = "^${this.prefixes.getPrefix(versionBranchtype!!)}"
 
-            val tempPrefix = if((versionBranchtype == BranchType.branch ||
-                                        versionBranchtype == BranchType.featureBranch ||
-                                        versionBranchtype == BranchType.hotfixbBranch ||
-                                        versionBranchtype == BranchType.bugfixBranch)
+            val tempPrefix = if((versionBranchtype == BranchType.BRANCH ||
+                                        versionBranchtype == BranchType.FEATUREBRANCH ||
+                                        versionBranchtype == BranchType.HOTFIXBBRANCH ||
+                                        versionBranchtype == BranchType.BUGFIXBRANCH)
                                     && prefixes.branchPrefixSeperator != null) {
                                 prefixes.branchPrefixSeperator
-                            } else if(versionBranchtype == BranchType.tag && prefixes.tagPrefixSeperator != null) {
+                            } else if(versionBranchtype == BranchType.TAG && prefixes.tagPrefixSeperator != null) {
                                 prefixes.tagPrefixSeperator
                             } else {
                                 prefixes.prefixSeperator
@@ -105,21 +103,21 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
             patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
 
             when (versionBranchtype) {
-                BranchType.branch -> patternString += "$)"
+                BranchType.BRANCH -> patternString += "$)"
                 else              -> patternString += ")"
             }
 
             if(featureBranch.isNotEmpty() &&
-                    (versionBranchtype == BranchType.featureBranch ||
-                            versionBranchtype == BranchType.bugfixBranch ||
-                            versionBranchtype == BranchType.hotfixbBranch ||
-                            versionBranchtype == BranchType.tag)) {
+                    (versionBranchtype == BranchType.FEATUREBRANCH ||
+                            versionBranchtype == BranchType.BUGFIXBRANCH ||
+                            versionBranchtype == BranchType.HOTFIXBBRANCH ||
+                            versionBranchtype == BranchType.TAG)) {
                 patternString += "${Version.METADATA_SEPARATOR}${featureBranch}"
             }
-            if(featureBranch.isEmpty() && versionBranchtype == BranchType.tag) {
+            if(featureBranch.isEmpty() && versionBranchtype == BranchType.TAG) {
                 patternString += "(${Version.METADATA_SEPARATOR}.*)?"
             }
-            if(versionBranchtype == BranchType.tag) {
+            if(versionBranchtype == BranchType.TAG) {
                 patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
             }
 
@@ -132,7 +130,7 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
 
         val matchResult: MatchResult? = regex.matchEntire(branch)
         if(matchResult?.groupValues != null && matchResult.groupValues.size > 0) {
-            return branch.substring(branch.indexOf(matchResult!!.groupValues[1]))
+            return branch.substring(branch.indexOf(matchResult.groupValues[1]))
         }
         return ""
     }

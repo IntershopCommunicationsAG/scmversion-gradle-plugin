@@ -49,9 +49,9 @@ open class ToVersion: DefaultTask() {
                     BranchType.valueOf(branchType)
                 } else {
                     if (feature.isNotEmpty()) {
-                        BranchType.featureBranch
+                        BranchType.FEATUREBRANCH
                     } else {
-                        BranchType.branch
+                        BranchType.BRANCH
                     }
                 }
 

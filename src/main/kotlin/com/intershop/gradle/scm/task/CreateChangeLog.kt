@@ -67,7 +67,7 @@ abstract class CreateChangeLog: DefaultTask() {
         val scmConfig: ScmExtension = project.extensions.getByType(ScmExtension::class.java)
         val changelogService = scmConfig.changelog.changelogService
 
-        if(scmConfig.scmType != ScmType.file) {
+        if(scmConfig.scmType != ScmType.FILE) {
             // set configuration parameter
             changelogFile.getParentFile().mkdirs()
             if (changelogFile.exists()) {

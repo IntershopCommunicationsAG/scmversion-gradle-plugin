@@ -40,8 +40,8 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         @JvmStatic
         val log: Logger = LoggerFactory.getLogger(this::class.java.name)
 
-        val specialBranches = listOf(BranchType.featureBranch, BranchType.bugfixBranch, BranchType.hotfixbBranch)
-        val baseBranches = listOf(BranchType.trunk, BranchType.branch, BranchType.tag)
+        val specialBranches = listOf(BranchType.FEATUREBRANCH, BranchType.BUGFIXBRANCH, BranchType.HOTFIXBBRANCH)
+        val baseBranches = listOf(BranchType.MASTER, BranchType.BRANCH, BranchType.TAG)
     }
 
     /**
@@ -146,7 +146,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
                     return tempVersion.setBuildMetadata(revIDExtension).toString()
                 }
 
-                if (localService.branchType == BranchType.detachedHead) {
+                if (localService.branchType == BranchType.DETACHEDHEAD) {
                     val versionForDetachedHead = tempVersion.setBuildMetadata(revIDExtension)
 
                     if (continuousRelease && !localService.changed) {
@@ -203,11 +203,11 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
             if (! specialBranches.contains(localService.branchType)) {
                 if (changed) {
                     if (versionExt.increment.isEmpty() &&
-                            localService.branchType != BranchType.trunk) {
+                            localService.branchType != BranchType.MASTER) {
                         return version.incrementVersion()
                     }
                     if (versionExt.increment.isEmpty() &&
-                            localService.branchType == BranchType.trunk) {
+                            localService.branchType == BranchType.MASTER) {
                         return version.incrementLatest()
                     }
                     if (versionExt.increment.isNotEmpty()) {
@@ -239,9 +239,9 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     }
 
     protected fun calcScmRevExtension(): String {
-        if(localService.branchType == BranchType.trunk ||
+        if(localService.branchType == BranchType.MASTER ||
                 versionExt.continuousReleaseBranches.contains(localService.branchName) ||
-                localService.branchType == BranchType.detachedHead) {
+                localService.branchType == BranchType.DETACHEDHEAD) {
             return if(localService is GitLocalService) {
                          "rev.id." + localService.revID.substring(0,7)
                     } else {
@@ -346,11 +346,11 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
      * @return
      */
     fun getBranchName(type: BranchType, version: String): String {
-        if(type == BranchType.tag &&
+        if(type == BranchType.TAG &&
                 ! localService.prefixes.tagPrefixSeperator.isNullOrBlank()) {
             return "${localService.prefixes.getPrefix(type)}${localService.prefixes.tagPrefixSeperator}${version}"
         }
-        if((type == BranchType.branch || type == BranchType.featureBranch) &&
+        if((type == BranchType.BRANCH || type == BranchType.FEATUREBRANCH) &&
                 ! localService.prefixes.branchPrefixSeperator.isNullOrBlank() ) {
             return "${localService.prefixes.getPrefix(type)}${localService.prefixes.branchPrefixSeperator}${version}"
         }

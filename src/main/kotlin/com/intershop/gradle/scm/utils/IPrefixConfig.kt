@@ -15,10 +15,6 @@
  */
 package com.intershop.gradle.scm.utils
 
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
-import javax.inject.Inject
-
 /**
  * This is the configuration class for the necessary prefixes
  * on special branches, so that it is possible to identify the
@@ -153,10 +149,10 @@ interface IPrefixConfig {
      */
     fun getPrefix(type: BranchType): String {
         when (type) {
-            BranchType.branch -> return stabilizationPrefix
-            BranchType.featureBranch -> return featurePrefix
-            BranchType.hotfixbBranch -> return hotfixPrefix
-            BranchType.bugfixBranch -> return bugfixPrefix
+            BranchType.BRANCH -> return stabilizationPrefix
+            BranchType.FEATUREBRANCH -> return featurePrefix
+            BranchType.HOTFIXBBRANCH -> return hotfixPrefix
+            BranchType.BUGFIXBRANCH -> return bugfixPrefix
             else -> return tagPrefix
         }
     }
@@ -171,11 +167,11 @@ interface IPrefixConfig {
     @Throws(ScmException::class)
     fun getBranchType(prefix: String): BranchType {
         when (prefix) {
-            stabilizationPrefix -> return BranchType.branch
-            featurePrefix -> return BranchType.featureBranch
-            hotfixPrefix -> return BranchType.hotfixbBranch
-            bugfixPrefix -> return BranchType.bugfixBranch
-            tagPrefix -> return BranchType.tag
+            stabilizationPrefix -> return BranchType.BRANCH
+            featurePrefix -> return BranchType.FEATUREBRANCH
+            hotfixPrefix -> return BranchType.HOTFIXBBRANCH
+            bugfixPrefix -> return BranchType.BUGFIXBRANCH
+            tagPrefix -> return BranchType.TAG
             else -> throw ScmException("Prefix is not specified!")
         }
     }

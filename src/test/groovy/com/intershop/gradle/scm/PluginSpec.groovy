@@ -67,7 +67,7 @@ class PluginSpec extends AbstractProjectSpec {
 
         then:
         config != null
-        config.scmType == ScmType.git
+        config.scmType == ScmType.GIT
     }
 
     def 'extension contains correct SCM type - file'() {
@@ -77,7 +77,7 @@ class PluginSpec extends AbstractProjectSpec {
 
         then:
         config != null
-        config.scmType == ScmType.file
+        config.scmType == ScmType.FILE
         config.prefixes.featurePrefix == 'FB'
     }
 

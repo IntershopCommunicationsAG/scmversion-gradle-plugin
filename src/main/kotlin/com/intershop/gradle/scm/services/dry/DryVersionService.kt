@@ -110,11 +110,7 @@ class DryVersionService(versionExt: VersionExtension,
      * @return the revision id of the branch
      */
     override fun createBranch(version: String, featureBranch: Boolean, rev: String?): String {
-        if(featureBranch != null) {
-            log.info("Create feature branch for {}", version)
-        } else {
-            log.info("Create branch for {}", version)
-        }
+        log.info("Create feature branch for {}", version)
         return ""
     }
 

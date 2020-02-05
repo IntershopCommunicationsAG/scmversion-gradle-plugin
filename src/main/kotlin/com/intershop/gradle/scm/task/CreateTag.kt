@@ -2,7 +2,6 @@ package com.intershop.gradle.scm.task
 
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.utils.BranchType
-import com.intershop.gradle.scm.utils.ScmException
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -22,7 +21,7 @@ open class CreateTag: DefaultTask() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
         val versionService = versionConfig.versionService
 
-        if(versionService.localService.branchType == BranchType.tag) {
+        if(versionService.localService.branchType == BranchType.TAG) {
             project.logger.error("It is not possible to create a tag from an existing tag! Please check your working copy.")
             throw GradleException("It is not possible to create a tag from an existing tag! Please check your working copy.")
         }

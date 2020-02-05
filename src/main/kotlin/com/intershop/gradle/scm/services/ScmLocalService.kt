@@ -17,7 +17,6 @@ package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
-import org.gradle.api.provider.Property
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -40,7 +39,7 @@ abstract class ScmLocalService(val projectDir: File,
     /**
      * The base branch type of the current working copy.
      */
-    var branchType: BranchType = BranchType.branch
+    var branchType: BranchType = BranchType.BRANCH
         protected set
 
     /**

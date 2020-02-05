@@ -25,7 +25,7 @@ open class CreateBranch: DefaultTask() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
         val versionService = versionConfig.versionService
 
-        if(versionService.localService.branchType == BranchType.tag) {
+        if(versionService.localService.branchType == BranchType.TAG) {
             throw GradleException("It is not possible to create a branch from an tag! Please check your working copy and workflow.")
         }
 

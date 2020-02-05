@@ -39,7 +39,7 @@ open class ReleaseFilter(val prefixConfig: IPrefixConfig,
             prefixConfig.prefixSeperator
         })?.replace("/", "\\/")
 
-        var patternString = "^${prefixConfig.getPrefix(BranchType.tag)}${prefixSep}"
+        var patternString = "^${prefixConfig.getPrefix(BranchType.TAG)}${prefixSep}"
 
         if(sourceVersion.normalVersion.versionType == VersionType.threeDigits) {
             patternString += threeDigitsFilter
@@ -61,7 +61,7 @@ open class ReleaseFilter(val prefixConfig: IPrefixConfig,
 
         val matchResult: MatchResult? = regex.matchEntire(branch)
         if(matchResult?.groupValues != null && matchResult.groupValues.size > 0) {
-            return branch.substring(branch.indexOf(matchResult!!.groupValues[1]))
+            return branch.substring(branch.indexOf(matchResult.groupValues[1]))
         }
         return ""
     }

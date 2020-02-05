@@ -15,16 +15,9 @@
  */
 package com.intershop.gradle.scm.extension
 
-import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.services.ScmLocalService
-import com.intershop.gradle.scm.services.ScmVersionService
-import com.intershop.gradle.scm.services.file.FileChangeLogService
 import com.intershop.gradle.scm.services.file.FileLocalService
-import com.intershop.gradle.scm.services.file.FileVersionService
-import com.intershop.gradle.scm.services.git.GitChangeLogService
 import com.intershop.gradle.scm.services.git.GitLocalService
-import com.intershop.gradle.scm.services.git.GitRemoteService
-import com.intershop.gradle.scm.services.git.GitVersionService
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmType
@@ -113,13 +106,13 @@ abstract class ScmExtension {
             val gitDir = projectLayout.projectDirectory.file(".git").asFile
             val isGit = gitDir.exists() && gitDir.isDirectory()
             return when(isGit) {
-                true -> ScmType.git
-                false -> ScmType.file
+                true -> ScmType.GIT
+                false -> ScmType.FILE
             }
         }
 
     val localService: ScmLocalService by lazy {
-        if (scmType == ScmType.git) {
+        if (scmType == ScmType.GIT) {
             GitLocalService(projectLayout.projectDirectory.asFile, prefixes)
         } else {
             FileLocalService(projectLayout.projectDirectory.asFile, prefixes)
