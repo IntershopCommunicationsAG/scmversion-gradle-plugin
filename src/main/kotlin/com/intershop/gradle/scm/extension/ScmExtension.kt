@@ -104,8 +104,7 @@ abstract class ScmExtension {
     val scmType: ScmType
         get() {
             val gitDir = projectLayout.projectDirectory.file(".git").asFile
-            val isGit = gitDir.exists() && gitDir.isDirectory()
-            return when(isGit) {
+            return when(gitDir.exists() && gitDir.isDirectory) {
                 true -> ScmType.GIT
                 false -> ScmType.FILE
             }

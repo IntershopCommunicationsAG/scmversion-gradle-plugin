@@ -16,5 +16,5 @@
 package com.intershop.gradle.scm.version
 
 abstract class AbstractBranchFilter {
-    abstract fun getVersionStr(branch: String): String
+    abstract fun getVersionStr(branch: String): String?
 }

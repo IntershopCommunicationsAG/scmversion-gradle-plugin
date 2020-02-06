@@ -15,7 +15,6 @@
  */
 package com.intershop.gradle.scm
 
-import com.intershop.gradle.scm.extension.ChangeLogExtension
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.task.CreateBranch
 import com.intershop.gradle.scm.task.CreateChangeLog
@@ -23,8 +22,6 @@ import com.intershop.gradle.scm.task.CreateTag
 import com.intershop.gradle.scm.task.PrepareRelease
 import com.intershop.gradle.scm.task.ShowVersion
 import com.intershop.gradle.scm.task.ToVersion
-import com.intershop.gradle.scm.utils.ScmKey
-import org.apache.tools.ant.taskdefs.cvslib.ChangeLogTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File

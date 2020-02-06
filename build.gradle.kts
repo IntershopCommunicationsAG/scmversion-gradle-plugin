@@ -1,5 +1,7 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 /*
@@ -34,6 +36,12 @@ plugins {
 
     // plugin for documentation
     id("org.asciidoctor.jvm.convert") version "2.4.0"
+
+    // documentation
+    id("org.jetbrains.dokka") version "0.10.0"
+
+    // code analysis for kotlin
+    id("io.gitlab.arturbosch.detekt") version "1.4.0"
 
     // plugin for publishing to Gradle Portal
     id("com.gradle.plugin-publish") version "0.10.1"
@@ -74,6 +82,11 @@ pluginBundle {
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
     status = "snapshot'"
+}
+
+detekt {
+    input = files("src/main/kotlin")
+    config = files("detekt.yml")
 }
 
 // test configuration
@@ -169,8 +182,17 @@ tasks {
     getByName("bintrayUpload")?.dependsOn("asciidoctor")
     getByName("publishToMavenLocal")?.dependsOn("asciidoctor")
 
-    val compileKotlin by getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    val compileKotlin by getting(KotlinCompile::class) {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    val dokka by existing(DokkaTask::class) {
+        outputFormat = "javadoc"
+        outputDirectory = "$buildDir/javadoc"
+
+        // Java 8 is only version supported both by Oracle/OpenJDK and Dokka itself
+        // https://github.com/Kotlin/dokka/issues/294
+        enabled = JavaVersion.current().isJava8
     }
 
     val sourcesJar = task<Jar>("sourceJar") {
@@ -181,9 +203,8 @@ tasks {
     }
 
     val javadocJar = task<Jar>("javadocJar") {
-        dependsOn("javadoc")
-        description = "Creates a JAR that contains the javadocs."
-        from(javadoc)
+        dependsOn(dokka)
+        from(dokka)
         archiveClassifier.set("javadoc")
     }
 }

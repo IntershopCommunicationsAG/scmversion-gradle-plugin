@@ -34,7 +34,7 @@ open class SSHConnector: JschConfigSessionFactory {
      * Constructs the object from the key file and a passphrase.
      *
      * @param privateKey Private key file
-     * @param passphrase Passphrase for the key file
+     * @param phrase Passphrase for the key file
      */
     constructor( privateKey: File?,  phrase: String?) {
         keyFile = privateKey

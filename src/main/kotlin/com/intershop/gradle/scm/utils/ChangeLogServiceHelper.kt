@@ -21,7 +21,7 @@ object ChangeLogServiceHelper {
 
     fun getHeader(sourceVersion: String, targetVersion: String): String {
         return """
-        = Change Log for ${sourceVersion}
+        = Change Log for $sourceVersion
 
         This list contains changes since ${targetVersion}. +
         Created: ${LocalDateTime.now()}
@@ -37,11 +37,11 @@ object ChangeLogServiceHelper {
         """
         }
 
-    fun getLineChangedFile(path: String, changeType: String): String {
-        return "| | ${changeType} | ${path} \n"
+    fun getFileLine(path: String, changeType: String): String {
+        return "| | $changeType | $path \n"
     }
 
-    fun getLineMessage(message: String, rev: String): String {
-        return "3+| ${message} (${rev}) \n"
+    fun getMessageLine(message: String, rev: String): String {
+        return "3+| $message (${rev}) \n"
     }
 }

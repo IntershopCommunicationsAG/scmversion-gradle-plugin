@@ -22,8 +22,8 @@ import com.intershop.release.version.VersionType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-open class ReleaseFilter(val prefixConfig: IPrefixConfig,
-                         val sourceVersion: Version): AbstractBranchFilter() {
+open class ReleaseFilter(private val prefixConfig: IPrefixConfig,
+                         private val sourceVersion: Version): AbstractBranchFilter() {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
@@ -41,13 +41,13 @@ open class ReleaseFilter(val prefixConfig: IPrefixConfig,
 
         var patternString = "^${prefixConfig.getPrefix(BranchType.TAG)}${prefixSep}"
 
-        if(sourceVersion.normalVersion.versionType == VersionType.threeDigits) {
-            patternString += threeDigitsFilter
+        patternString += if(sourceVersion.normalVersion.versionType == VersionType.threeDigits) {
+            threeDigitsFilter
         } else {
-            patternString += fourDigitsFilter
+            fourDigitsFilter
         }
 
-        if(sourceVersion.branchMetadata != null && ! sourceVersion.branchMetadata.isEmpty()) {
+        if(sourceVersion.branchMetadata != null && ! sourceVersion.branchMetadata.isEmpty) {
             patternString += "-${sourceVersion.branchMetadata}"
         }
         patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
@@ -60,7 +60,7 @@ open class ReleaseFilter(val prefixConfig: IPrefixConfig,
     override fun getVersionStr(branch: String): String {
 
         val matchResult: MatchResult? = regex.matchEntire(branch)
-        if(matchResult?.groupValues != null && matchResult.groupValues.size > 0) {
+        if(matchResult?.groupValues != null && matchResult.groupValues.isNotEmpty()) {
             return branch.substring(branch.indexOf(matchResult.groupValues[1]))
         }
         return ""

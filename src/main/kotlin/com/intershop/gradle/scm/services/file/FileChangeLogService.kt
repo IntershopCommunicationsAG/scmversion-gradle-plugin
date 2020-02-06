@@ -9,7 +9,7 @@ class FileChangeLogService : ScmChangeLogService {
 
     companion object {
         @JvmStatic
-        protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+        private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
     }
 
     override fun createLog(changelogFile: File, targetVersion: String?) {

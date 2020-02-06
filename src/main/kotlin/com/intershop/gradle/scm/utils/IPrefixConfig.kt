@@ -24,11 +24,6 @@ interface IPrefixConfig {
 
     companion object {
         /**
-         * Search pattern for branches with version information and a suffix.
-         */
-        const val extraBranchPatternSuffix = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)-(.+)"
-
-        /**
          * Search pattern for stabilization branches with version information.
          */
         const val stabilizationBranchPattern = "(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)"
@@ -43,34 +38,36 @@ interface IPrefixConfig {
 
     /**
      * Prefix for feature branches
+     *
+     * @property featurePrefix
      */
     var featurePrefix: String
 
     /**
      * Prefix for hotfix branches
      *
-     * @property stabilizationPrefix
+     * @property hotfixPrefix
      */
     var hotfixPrefix: String
 
     /**
      * Prefix for bugfix branches
      *
-     * @property bugfixPrefixProperty
+     * @property bugfixPrefix
      */
     var bugfixPrefix: String
 
     /**
      * Prefix for release tags
      *
-     * @property tagPrefixProperty
+     * @property tagPrefix
      */
     var tagPrefix: String
 
     /**
      * Separator between prefix and version.
      *
-     * @property prefixSeperatorProperty
+     * @property prefixSeperator
      */
     var prefixSeperator: String
 
@@ -148,32 +145,12 @@ interface IPrefixConfig {
      * @return the prefix for the specified branch type
      */
     fun getPrefix(type: BranchType): String {
-        when (type) {
-            BranchType.BRANCH -> return stabilizationPrefix
-            BranchType.FEATUREBRANCH -> return featurePrefix
-            BranchType.HOTFIXBBRANCH -> return hotfixPrefix
-            BranchType.BUGFIXBRANCH -> return bugfixPrefix
-            else -> return tagPrefix
+        return when (type) {
+            BranchType.BRANCH -> stabilizationPrefix
+            BranchType.FEATUREBRANCH -> featurePrefix
+            BranchType.HOTFIXBBRANCH -> hotfixPrefix
+            BranchType.BUGFIXBRANCH -> bugfixPrefix
+            else -> tagPrefix
         }
     }
-
-    /**
-     * Returns the branch type for the specified prefix.
-     *
-     * @param prefix string prefix
-     * @return the branch type for the specified prefix
-     * @throws com.intershop.gradle.scm.utils.ScmException if the prefix is not configured.
-     */
-    @Throws(ScmException::class)
-    fun getBranchType(prefix: String): BranchType {
-        when (prefix) {
-            stabilizationPrefix -> return BranchType.BRANCH
-            featurePrefix -> return BranchType.FEATUREBRANCH
-            hotfixPrefix -> return BranchType.HOTFIXBBRANCH
-            bugfixPrefix -> return BranchType.BUGFIXBRANCH
-            tagPrefix -> return BranchType.TAG
-            else -> throw ScmException("Prefix is not specified!")
-        }
-    }
-
 }

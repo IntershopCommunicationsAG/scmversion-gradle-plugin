@@ -58,12 +58,15 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
      */
      val defaultVersion : Version
         get() {
-            var tempVersion = if(versionExt.initialVersion.isNotEmpty()) {
-                getVersionFromString(versionExt.initialVersion, "intial")
+            return if(versionExt.initialVersion.isNotEmpty()) {
+                try {
+                    Version.valueOf(versionExt.initialVersion)
+                } catch (pex: ParserException) {
+                    (Version.Builder(versionExt.versionType)).build()
+                }
             } else {
                 (Version.Builder(versionExt.versionType)).build()
             }
-            return tempVersion!!
         }
 
     /**
@@ -77,7 +80,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
      * Moves the working copy to a specified version
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type branch type
      * @return the revision id of the working after the move
      */
     abstract fun moveTo(version: String, type: BranchType): String
@@ -134,14 +137,14 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         calcVersion()
     }
 
-    protected fun calcVersion(): String {
+    private fun calcVersion(): String {
         with(versionExt) {
             if (!disableSCM) {
                 val tempVersion: Version = preVersion
 
                 val revIDExtension = scmRevExtension
 
-                if (continuousRelease && !revIDExtension.isEmpty() && ! localService.changed) {
+                if (continuousRelease && revIDExtension.isNotEmpty() && ! localService.changed) {
                     log.info("Version {} will be extended with revID '{}'", tempVersion, revIDExtension)
                     return tempVersion.setBuildMetadata(revIDExtension).toString()
                 }
@@ -149,14 +152,14 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
                 if (localService.branchType == BranchType.DETACHEDHEAD) {
                     val versionForDetachedHead = tempVersion.setBuildMetadata(revIDExtension)
 
-                    if (continuousRelease && !localService.changed) {
+                    return if (continuousRelease && !localService.changed) {
                         log.info("Version {} will be extended with revID for detached head '{}'",
                                 tempVersion, revIDExtension)
-                        return versionForDetachedHead.toString()
+                        versionForDetachedHead.toString()
                     } else {
                         log.info("Version {} will be extended with revID for detached head and SNAPSHOT '{}'",
                                 tempVersion, revIDExtension)
-                        return "${versionForDetachedHead}-${SNAPSHOT}"
+                        "${versionForDetachedHead}-${SNAPSHOT}"
                     }
                 }
 
@@ -164,12 +167,12 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
                     log.info("Version {} will be used without extension (No changes detected!).", tempVersion)
                     return tempVersion.toString()
                 }
-                if (useBuildExtension) {
+                return if (useBuildExtension) {
                     log.info("Version {} will be extended with SNAPSHOT", tempVersion)
-                    return "${tempVersion}-${SNAPSHOT}"
+                    "${tempVersion}-${SNAPSHOT}"
                 } else {
                     log.info("Version {} will be extended with SNAPSHOT.", tempVersion.normalVersion)
-                    return tempVersion.setBuildMetadata(SNAPSHOT.toString()).toString()
+                    tempVersion.setBuildMetadata(SNAPSHOT.toString()).toString()
                 }
             } else {
                 val timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now())
@@ -193,7 +196,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         calcPreVersion()
     }
 
-    protected fun calcPreVersion(): Version {
+    private fun calcPreVersion(): Version {
         with(versionObject) {
             log.info("Version analysis: Path: {}, version: {}, changed: {}, metadata: {}, fromBranch: {}, default: {}",
                     scmPath, version, changed, version.buildMetadata, fromBranchName, defaultVersion)
@@ -218,15 +221,15 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
             } else {
                 if (versionExt.majorVersionOnly) {
                     val tv = version
-                    var mv = tv.normalVersion.getMajor()
+                    var mv = tv.normalVersion.major
                     if (versionExt.increment == "MAJOR") ++mv
                     return Version.forIntegers(mv, tv.normalVersion.versionType)
-                            .setBranchMetadata(tv.getBranchMetadata().toString())
+                            .setBranchMetadata(tv.branchMetadata.toString())
                 } else if (changed) {
-                    if (version.buildMetadata != MetadataVersion(null)) {
-                        return version.incrementBuildMetadata()
+                    return if (version.buildMetadata != MetadataVersion(null)) {
+                        version.incrementBuildMetadata()
                     } else {
-                        return version.setBuildMetadata(versionExt.defaultBuildMetadata)
+                        version.setBuildMetadata(versionExt.defaultBuildMetadata)
                     }
                 }
             }
@@ -238,7 +241,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         calcScmRevExtension()
     }
 
-    protected fun calcScmRevExtension(): String {
+    private fun calcScmRevExtension(): String {
         if(localService.branchType == BranchType.MASTER ||
                 versionExt.continuousReleaseBranches.contains(localService.branchName) ||
                 localService.branchType == BranchType.DETACHEDHEAD) {
@@ -276,36 +279,35 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     /**
      * Calculates the previous version from the scm.
      * If no release tag is available, the return value is null
-     * @property previous version from the scm repository
+     * @property previousVersion version from the scm repository
      */
     val previousVersion: Version? by lazy {
-            val tagMap : Map<Version, VersionTag> = versionTagMap
-            val versions: List<Version> = if( versionExt.useBuildExtension ) {
-                tagMap.keys.toList().sorted()
-            } else {
-                tagMap.keys.filter { it.buildMetadata.isEmpty() }.toList().sorted()
-            }
-            val resultList = versions.filter { it < preVersion }
-            if(resultList.isEmpty()) { null } else { resultList.last() }
-        }
+        val tagMap : Map<Version, VersionTag> = versionTagMap
+        val versions: List<Version> = if( versionExt.useBuildExtension ) {
+            tagMap.keys.toList().sorted() } else {
+            tagMap.keys.filter { it.buildMetadata.isEmpty }.toList().sorted() }
+        val resultList = versions.filter { it < preVersion }
+        if(resultList.isEmpty()) { null } else { resultList.last() }
+    }
 
     /**
      * Returns a previous version with the associated tag. If no tag is available, an exception will be thrown.
-     * @param targetVersion
+     * @param prevVersionStr
      * @return
      */
-     fun getPreviousVersionTag(prevVersionStr: String): VersionTag {
+    fun getPreviousVersionTag(prevVersionStr: String): VersionTag {
         var returnValue: VersionTag? = null
         var errormessage = "The configured previous version is not available!"
 
         if(prevVersionStr.isNotEmpty()) {
-            val previousVersionObj = getVersionFromString(prevVersionStr, "previous")
-            returnValue = if (previousVersionObj != null) { versionTagMap.get(previousVersionObj) } else { null }
+            try {
+                returnValue = versionTagMap[Version.valueOf(prevVersionStr)]
+            } catch (ex: ParserException) {}
         } else {
             errormessage = "There is no previous version!"
             if(previousVersion != null) {
                 val tagMap : Map<Version, VersionTag> = versionTagMap
-                returnValue = tagMap.get(previousVersion!!)
+                returnValue = tagMap[previousVersion!!]
             }
         }
 
@@ -314,21 +316,6 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         }
 
         return returnValue
-    }
-
-    /**
-     * Method for parsing version strings
-     * @param versionStr
-     * @param versionKind
-     * @return version object
-     */
-    fun getVersionFromString(versionStr: String, versionKind: String): Version? {
-        try {
-            return Version.valueOf(versionStr)
-        }catch(pe: ParserException) {
-            log.warn("It was not possible to parse the {} version from configured value.", versionKind)
-        }
-        return null
     }
 
     /**

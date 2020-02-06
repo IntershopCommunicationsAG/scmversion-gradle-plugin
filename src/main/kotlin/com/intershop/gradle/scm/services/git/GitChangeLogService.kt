@@ -19,9 +19,13 @@ import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.footer
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getHeader
-import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getLineChangedFile
-import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getLineMessage
-import com.intershop.release.version.Version
+import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getFileLine
+import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getMessageLine
+import org.eclipse.jgit.diff.DiffEntry.ChangeType.ADD
+import org.eclipse.jgit.diff.DiffEntry.ChangeType.DELETE
+import org.eclipse.jgit.diff.DiffEntry.ChangeType.MODIFY
+import org.eclipse.jgit.diff.DiffEntry.ChangeType.COPY
+import org.eclipse.jgit.diff.DiffEntry.ChangeType.RENAME
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.revwalk.RevCommit
@@ -33,8 +37,8 @@ import org.slf4j.LoggerFactory
 import java.io.BufferedOutputStream
 import java.io.File
 
-open class GitChangeLogService(val versionExt: VersionExtension,
-                               val remoteService: GitRemoteService) : ScmChangeLogService {
+open class GitChangeLogService(private val versionExt: VersionExtension,
+                               private val remoteService: GitRemoteService) : ScmChangeLogService {
 
     companion object {
         @JvmStatic
@@ -45,7 +49,7 @@ open class GitChangeLogService(val versionExt: VersionExtension,
     override fun createLog(changelogFile: File, targetVersion: String?) {
 
         try {
-            var prevVersion = if (targetVersion.isNullOrBlank()) { versionExt.previousVersion } else { targetVersion }
+            val prevVersion = if (targetVersion.isNullOrBlank()) { versionExt.previousVersion } else { targetVersion }
 
             val pvt = if(! prevVersion.isNullOrBlank()) { versionExt.getPreviousVersionTag(prevVersion) } else { null }
             val pv = versionExt.versionService.preVersion
@@ -56,19 +60,15 @@ open class GitChangeLogService(val versionExt: VersionExtension,
                 changelogFile.appendText(getHeader(pv.toString(), "first commit"))
             }
 
-            val objID = if(pvt != null) {
-                            remoteService.getObjectId(pvt.branchObject.id)
-                        } else {
-                            (versionExt.versionService as GitVersionService).getFirstObjectId()
-                        }
+            with(remoteService) {
+                val objID = if (pvt != null) { getObjectId(pvt.branchObject.id) } else { getFirstObjectId() }
 
-            val refs = remoteService.localService.client.log().addRange(
-                    objID,
-                    remoteService.getObjectId(remoteService.localService.revID)).call()
+                val refs = localService.client.log().addRange( objID, getObjectId(localService.revID)).call()
 
-            refs.forEach {  rc ->
-                changelogFile.appendText(getLineMessage(rc.getFullMessage(), rc.getName().substring(0, 8)))
-                addFilesInCommit(changelogFile, rc)
+                refs.forEach { rc ->
+                    changelogFile.appendText(getMessageLine(rc.fullMessage, rc.name.substring(0, 8)))
+                    addFilesInCommit(changelogFile, rc)
+                }
             }
             changelogFile.appendText(footer)
         } catch( ex: Exception) {
@@ -81,26 +81,28 @@ open class GitChangeLogService(val versionExt: VersionExtension,
     private fun addFilesInCommit(changelogFile: File, commit: RevCommit) {
         val diffFmt = DiffFormatter( BufferedOutputStream(System.out) )
         diffFmt.setRepository(remoteService.localService.repository)
-        diffFmt.setPathFilter(TreeFilter.ANY_DIFF)
-        diffFmt.setDetectRenames(true)
+        diffFmt.pathFilter = TreeFilter.ANY_DIFF
+        diffFmt.isDetectRenames = true
 
         val rw = RevWalk(remoteService.localService.repository)
         rw.parseHeaders(commit.getParent(0))
 
-        val a = commit.getParent(0).getTree()
-        val b = commit.getTree()
+        val a = commit.getParent(0).tree
+        val b = commit.tree
 
         diffFmt.scan(a, b).forEach {  e: DiffEntry ->
-
-            when (e.getChangeType()) {
-                DiffEntry.ChangeType.ADD    -> changelogFile.appendText(getLineChangedFile(e.getNewPath(), "A"))
-                DiffEntry.ChangeType.DELETE -> changelogFile.appendText(getLineChangedFile(e.getOldPath(), "D"))
-                DiffEntry.ChangeType.MODIFY -> changelogFile.appendText(getLineChangedFile(e.getNewPath(), "M"))
-                DiffEntry.ChangeType.COPY   -> changelogFile.appendText(getLineChangedFile("${e.getOldPath()} ->\n${e.getNewPath()} (${e.getScore()})", "C"))
-                DiffEntry.ChangeType.RENAME -> changelogFile.appendText(getLineChangedFile("${e.getOldPath()} ->\n${e.getNewPath()} (${e.getScore()})", "R"))
-                else -> changelogFile.appendText("unknown change")
-            }
+            changelogFile.appendText( processDiffEntry(e) )
         }
     }
 
+    private fun processDiffEntry(e: DiffEntry): String {
+        return when (e.changeType) {
+            ADD -> getFileLine(e.newPath, "A")
+            DELETE -> getFileLine(e.oldPath, "D")
+            MODIFY -> getFileLine(e.newPath, "M")
+            COPY -> getFileLine("${e.oldPath} ->\n${e.newPath} (${e.score})", "C")
+            RENAME -> getFileLine("${e.oldPath} ->\n${e.newPath} (${e.score})", "R")
+            else -> "unknown change"
+        }
+    }
 }

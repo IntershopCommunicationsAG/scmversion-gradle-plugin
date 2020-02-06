@@ -60,7 +60,7 @@ class GitLocalService(projectDir: File,
      */
     override val remoteUrl: String
         get() {
-            return repository.getConfig().getString("remote", "origin", "url")
+            return repository.config.getString("remote", "origin", "url")
         }
     
     /**
@@ -81,7 +81,7 @@ class GitLocalService(projectDir: File,
      */
     override val changed: Boolean by lazy {
         val status = client.status().call()
-        var rv = status.untracked.size > 0 || status.uncommittedChanges.size > 0 ||
+        val rv = status.untracked.size > 0 || status.uncommittedChanges.size > 0 ||
                 status.removed.size > 0 || status.added.size > 0 ||
                 status.changed.size > 0 || status.modified.size > 0
 
@@ -108,7 +108,6 @@ class GitLocalService(projectDir: File,
                 }
             }
         }
-
         rv
     }
 
@@ -116,7 +115,7 @@ class GitLocalService(projectDir: File,
         var rvTagName = ""
         val rw = RevWalk(repository)
 
-        repository.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).forEach {ref: Ref ->
+        repository.refDatabase.getRefsByPrefix(Constants.R_TAGS).forEach { ref: Ref ->
             if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == revID) {
                 rvTagName = ref.name.substring(Constants.R_TAGS.length)
             }
@@ -134,7 +133,7 @@ class GitLocalService(projectDir: File,
             val mbb =  Regex(prefixes.bugfixBranchPattern).matchEntire(branchName)
             val msb =  Regex(prefixes.stabilizationBranchPattern).matchEntire(branchName)
 
-            if(branchName.equals(revID)) {
+            if(branchName == revID) {
                 branchType = BranchType.DETACHEDHEAD
                 log.info("Repo is in detached mode! Create a tag on {}.", branchName)
             } else if(mfb != null && mfb.groups.size > 1) {
@@ -160,6 +159,4 @@ class GitLocalService(projectDir: File,
 
         log.info("Branch name is {} and branch type {}", branchName, branchType)
     }
-
-
 }

@@ -18,7 +18,7 @@ open class FileVersionService(versionExt: VersionExtension,
      * @property versionObject version object from scm
      */
     override val versionObject: ScmVersionObject by lazy {
-            val svo = ScmVersionObject(this.localService.projectDir.getName(), defaultVersion, true)
+            val svo = ScmVersionObject(this.localService.projectDir.name, defaultVersion, true)
             svo.defaultVersion = true
             svo
         }
@@ -27,7 +27,7 @@ open class FileVersionService(versionExt: VersionExtension,
      * Moves the working copy to a specified version
      *
      * @param version
-     * @param featureBranch true, if this is a version of a feature branch
+     * @param type branch type
      * @return the revision id of the working after the move
      */
     override fun moveTo(version: String, type: BranchType): String {

@@ -11,34 +11,36 @@ class SimplePrefixConfig : IPrefixConfig {
 
     /**
      * Prefix for feature branches
+     *
+     * @property featurePrefix
      */
     override var featurePrefix: String = "FB"
 
     /**
      * Prefix for hotfix branches
      *
-     * @property stabilizationPrefix
+     * @property hotfixPrefix
      */
     override var hotfixPrefix: String = "HB"
 
     /**
      * Prefix for bugfix branches
      *
-     * @property bugfixPrefixProperty
+     * @property bugfixPrefix
      */
     override var bugfixPrefix: String = "BB"
 
     /**
      * Prefix for release tags
      *
-     * @property tagPrefixProperty
+     * @property tagPrefix
      */
     override var tagPrefix: String = "RELEASE"
 
     /**
      * Separator between prefix and version.
      *
-     * @property prefixSeperatorProperty
+     * @property prefixSeperator
      */
     override var prefixSeperator: String = "_"
 

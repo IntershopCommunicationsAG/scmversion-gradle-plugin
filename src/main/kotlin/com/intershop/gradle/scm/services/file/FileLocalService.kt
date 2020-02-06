@@ -2,7 +2,6 @@ package com.intershop.gradle.scm.services.file
 
 import com.intershop.gradle.scm.services.ScmLocalService
 import com.intershop.gradle.scm.utils.PrefixConfig
-import com.intershop.gradle.scm.utils.ScmType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File

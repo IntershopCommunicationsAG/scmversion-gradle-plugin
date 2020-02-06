@@ -21,7 +21,6 @@ import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.AbstractBranchFilter
 import org.eclipse.jgit.api.TransportCommand
-import org.eclipse.jgit.api.TransportConfigCallback
 import org.eclipse.jgit.api.errors.InvalidRemoteException
 import org.eclipse.jgit.api.errors.TransportException
 import org.eclipse.jgit.lib.Constants
@@ -29,43 +28,43 @@ import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevObject
+import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.CredentialsProvider
 import org.eclipse.jgit.transport.SshTransport
 import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.transport.Transport
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
-import org.gradle.kotlin.dsl.provideDelegate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
 open class GitRemoteService(val localService: GitLocalService,
                             var user: ScmUser? = null,
-                            var key: ScmKey? = null) {
+                            private var key: ScmKey? = null) {
 
     companion object {
         protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
     }
 
     init {
-        if(localService.remoteUrl.isNotEmpty()) {
-            with(localService.remoteUrl) {
-                if(startsWith("http") && user != null &&
-                        ! user?.name.isNullOrEmpty() &&
-                        ! user?.password.isNullOrEmpty()) {
-                    log.debug("User name {} and password is used.", user?.name)
-                    credentials = UsernamePasswordCredentialsProvider(user?.name, user?.password)
-                } else if (localService.remoteUrl.startsWith("git@") && key?.file != null && key!!.file!!.exists()) {
-                    log.debug("ssh connector is used with key {}.", key!!.file!!.absolutePath)
-                    sshConnector = SSHConnector(key)
+        with(localService) {
+            if (remoteUrl.isNotEmpty()) {
+                with(remoteUrl) {
+                    if (startsWith("http") && !user?.name.isNullOrEmpty() && !user?.password.isNullOrEmpty()) {
+                        log.debug("User name {} and password is used.", user?.name)
+                        credentials = UsernamePasswordCredentialsProvider(user?.name, user?.password)
+                    } else if ((remoteUrl.startsWith("git@") || remoteUrl.startsWith("ssh://git@"))
+                            && key?.file != null && key!!.file!!.exists()) {
+                        log.debug("ssh connector is used with key {}.", key!!.file!!.absolutePath)
+                        sshConnector = SSHConnector(key)
+                    }
                 }
             }
         }
     }
 
-    var credentials: CredentialsProvider? = null
-    var sshConnector: SSHConnector? = null
+    private var credentials: CredentialsProvider? = null
+    private var sshConnector: SSHConnector? = null
 
     val remoteConfigAvailable: Boolean
         get() {
@@ -99,12 +98,12 @@ open class GitRemoteService(val localService: GitLocalService,
         val walk = RevWalk(localService.client.repository)
 
         //check tags and calculate
-        localService.repository.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).forEach { ref: Ref ->
+        localService.repository.refDatabase.getRefsByPrefix(Constants.R_TAGS).forEach { ref: Ref ->
             val tagName = ref.name.substring(Constants.R_TAGS.length)
             val version = branchFilter.getVersionStr(tagName)
             if(! version.isNullOrBlank()) {
                 val rc = walk.parseCommit(ref.objectId)
-                rv.put(ObjectId.toString(rc), BranchObject(ObjectId.toString(rc), version, tagName))
+                rv[ObjectId.toString(rc)] = BranchObject(ObjectId.toString(rc), version, tagName)
             }
         }
 
@@ -143,12 +142,9 @@ open class GitRemoteService(val localService: GitLocalService,
         if (credentials != null) {
             cmd.setCredentialsProvider(credentials)
         } else if (sshConnector != null) {
-            cmd.setTransportConfigCallback(TransportConfigCallback() {
-                fun configure( transport: Transport) {
-                    val sshTransport = transport as SshTransport
-                    sshTransport.setSshSessionFactory(sshConnector)
-                }
-            })
+            cmd.setTransportConfigCallback {
+                (it as SshTransport).sshSessionFactory = sshConnector
+            }
         }
     }
 
@@ -169,5 +165,26 @@ open class GitRemoteService(val localService: GitLocalService,
         } catch( tex: TransportException) {
             ScmVersionService.log.warn("It was not possible to fetch all. Please check your credential configuration.", tex)
         }
+    }
+
+    fun getFirstObjectId(): ObjectId? {
+        var commitId: ObjectId? = null
+        try {
+            val headId = localService.repository.resolve(localService.revID)
+            val walk = RevWalk( localService.repository)
+            walk.sort(RevSort.TOPO)
+            walk.markStart(walk.parseCommit(headId))
+
+            var commit: RevCommit? = walk.next()
+            var preCommit: RevCommit?
+            do {
+                preCommit = commit
+                commit = walk.next()
+            } while (commit != null)
+            commitId = walk.parseCommit(preCommit)
+        } catch ( ex: Exception ) {
+            log.error("it was not possible to get first commit")
+        }
+        return commitId
     }
 }

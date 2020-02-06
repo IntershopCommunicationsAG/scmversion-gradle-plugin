@@ -22,11 +22,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class ScmBranchFilter(val prefixes: IPrefixConfig,
-                      var versionBranchtype: BranchType? = null,
-                      var branchFilterName: String = "",
-                      var branchFilterType: BranchType? = null,
-                      var featureBranch: String = "",
-                      var patternDigits: Int = 2): AbstractBranchFilter() {
+                      private var versionBranchtype: BranchType? = null,
+                      private var branchFilterName: String = "",
+                      private var branchFilterType: BranchType? = null,
+                      private var featureBranch: String = "",
+                      private var patternDigits: Int = 2): AbstractBranchFilter() {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
@@ -73,13 +73,13 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
             val branchRegex = Regex(branchFilterNamePattern)
             val branchMatchResult: MatchResult? = branchRegex.matchEntire(branchFilterName)
 
-            if(branchMatchResult?.groupValues != null && branchMatchResult.groupValues.size > 0) {
+            if(branchMatchResult?.groupValues != null && branchMatchResult.groupValues.isNotEmpty()) {
                 val tv = branchMatchResult.groupValues[1]
                 vdata = tv.split(".").toTypedArray()
             }
 
 
-            for(i in 0..(Math.min(patternDigits, vdata.size) - 1)) {
+            for(i in 0 until Math.min(patternDigits, vdata.size)) {
                 if(vdata[i].isNotEmpty()) {
                     dp[i] =  if(i == 0) { vdata[i] } else { ".${vdata[i]}" }
                 }
@@ -102,9 +102,9 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
             patternString += "${tempPrefix!!.replace("/", "\\/")}("
             patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
 
-            when (versionBranchtype) {
-                BranchType.BRANCH -> patternString += "$)"
-                else              -> patternString += ")"
+            patternString += when (versionBranchtype) {
+                BranchType.BRANCH -> "$)"
+                else              -> ")"
             }
 
             if(featureBranch.isNotEmpty() &&
@@ -129,7 +129,7 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
     override fun getVersionStr(branch: String): String {
 
         val matchResult: MatchResult? = regex.matchEntire(branch)
-        if(matchResult?.groupValues != null && matchResult.groupValues.size > 0) {
+        if(matchResult?.groupValues != null && matchResult.groupValues.isNotEmpty()) {
             return branch.substring(branch.indexOf(matchResult.groupValues[1]))
         }
         return ""

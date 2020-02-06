@@ -31,11 +31,9 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListBranchCommand
 import org.eclipse.jgit.api.LsRemoteCommand
 import org.eclipse.jgit.api.errors.GitAPIException
-import org.eclipse.jgit.api.errors.InvalidRemoteException
 import org.eclipse.jgit.api.errors.TransportException
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
-import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
 import org.gradle.api.GradleException
@@ -159,28 +157,6 @@ open class GitVersionService(versionExt: VersionExtension, private val remoteSer
         log.debug("Reference is {}", ref)
 
         return objectID
-    }
-
-    fun getFirstObjectId(): ObjectId? {
-        var commitId: ObjectId? = null
-        try {
-            val localRepo = gitService.repository
-            val headId = localRepo.resolve(localService.revID)
-            val walk = RevWalk(localRepo)
-            walk.sort(RevSort.TOPO)
-            walk.markStart(walk.parseCommit(headId))
-
-            var commit: RevCommit? = walk.next()
-            var preCommit: RevCommit?
-            do {
-                preCommit = commit
-                commit = walk.next()
-            } while (commit != null)
-            commitId = walk.parseCommit(preCommit)
-        } catch ( ex: Exception ) {
-            log.error("it was not possible to get first commit")
-        }
-        return commitId
     }
 
     /**
@@ -424,7 +400,7 @@ open class GitVersionService(versionExt: VersionExtension, private val remoteSer
 
             if(branchName != "master") {
                 val version = branchFilter.getVersionStr(branchName)
-                if(version.isNotEmpty()) {
+                if(! version.isNullOrEmpty()) {
                     rv[ObjectId.toString(rc)] = BranchObject(ObjectId.toString(rc), version, branchName)
                 }
             }
@@ -458,7 +434,7 @@ open class GitVersionService(versionExt: VersionExtension, private val remoteSer
         val refs = cmd.setRemote(localService.remoteUrl).setHeads(true).setTags(true).call()
 
         var rv = false
-        refs.forEach { r: Ref ->  rv = rv || "${path}" == r.name }
+        refs.forEach { r: Ref ->  rv = rv || path == r.name }
         return rv
     }
 

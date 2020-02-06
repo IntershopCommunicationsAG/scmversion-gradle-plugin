@@ -48,7 +48,7 @@ import javax.inject.Inject
  * }
  * </pre>
  */
-abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtension) {
+abstract class VersionExtension @Inject constructor(private val scmExtension: ScmExtension) {
 
     companion object {
 
@@ -201,7 +201,7 @@ abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtensi
 
     /**
      * Returns the previous version.
-     * @property  information with Version and Tag information
+     * @property previousVersion information with Version and Tag information
      */
     val previousVersion: String? by lazy {
         if(this.versionService.previousVersion != null) {
@@ -251,12 +251,6 @@ abstract class VersionExtension @Inject constructor(val scmExtension: ScmExtensi
      * SCM is not possible.
      */
     var initialVersion: String by initialVersionProperty
-
-    /**
-     * This kind of branch is used for the version calculation.
-     * Possible values: tag, branch
-     */
-    var versionBranch: String by versionBranchProperty
 
     /**
      * number of digits for filtering

@@ -28,8 +28,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class DryVersionService(versionExt: VersionExtension,
-                        val sls: DryLocalService,
-                        val scmVersionService: ScmVersionService): ScmVersionService(versionExt)  {
+                        private val sls: DryLocalService,
+                        private val scmVersionService: ScmVersionService): ScmVersionService(versionExt)  {
 
     companion object {
         @JvmStatic

@@ -18,21 +18,12 @@ package com.intershop.gradle.scm.utils
 /**
  * SCM exception
  */
-class ScmException : RuntimeException {
-
-    /**
-     * Constructs a {@code ScmException} instance with an error message.
-     *
-     * @param message the error message
-     */
-    constructor(message: String) : super(message)
-
-    /**
-     * Constructs a {@code ParseException} instance with an error message.
-     *
-     * @param message the error message
-     */
-    constructor(message: String, cause: Throwable) : super(message, cause)
+class ScmException
+/**
+ * Constructs a {@code ScmException} instance with an error message.
+ *
+ * @param message the error message
+ */(message: String) : RuntimeException(message) {
 
     /**
      * Returns the string representation of this exception.
@@ -41,11 +32,11 @@ class ScmException : RuntimeException {
      */
     override fun toString() : String {
         val cause = super.cause
-        var msg = super.message
+        val msg = super.message
 
         if(! msg.isNullOrBlank()) {
             if(cause != null) {
-                return "$msg ( ${cause} ) "
+                return "$msg ( $cause ) "
             }
             return msg
         }

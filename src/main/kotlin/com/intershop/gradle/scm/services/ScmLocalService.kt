@@ -17,8 +17,6 @@ package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -29,8 +27,6 @@ abstract class ScmLocalService(val projectDir: File,
                                val prefixes: PrefixConfig) {
 
     companion object {
-        @JvmStatic
-        private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
         const val BRANCH_PATTERN = "^\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?(-.*)?"
     }
 
@@ -74,14 +70,6 @@ abstract class ScmLocalService(val projectDir: File,
      * @property changed
      */
     abstract val changed: Boolean
-
-    /**
-     * This is true, if the local working copy is a commit wihtout other changes.
-     * It is only used with a Git repository.
-     *
-     * @property commitOnly
-     */
-    var commitOnly: Boolean = true
 
     /**
      * This is true, if the feature branch contains a version.

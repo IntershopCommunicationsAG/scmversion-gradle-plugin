@@ -15,8 +15,6 @@
  */
 package com.intershop.gradle.scm.services
 
-import com.intershop.gradle.scm.utils.ScmType
-import org.gradle.api.Project
 import java.io.File
 
 interface ScmChangeLogService {
