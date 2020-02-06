@@ -42,6 +42,10 @@ abstract class ScmLocalService(val projectDir: File,
     var branchType: BranchType = BranchType.BRANCH
         protected set
 
+    fun getBranchType(isFeatureBranch: Boolean): BranchType {
+        return if(isFeatureBranch) { branchType } else { BranchType.BRANCH}
+    }
+
     /**
      * The base (stabilization) branch name of the current working copy
      */

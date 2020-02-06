@@ -265,6 +265,11 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
                     defaultVersion)
             val rv = ScmVersionObject(localService.branchName, defaultVersion, true)
             rv.defaultVersion = true
+
+            if(! baseBranches.contains(localService.branchType)) {
+                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
+            }
+
             return rv
         }
 

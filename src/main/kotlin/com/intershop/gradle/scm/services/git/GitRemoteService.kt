@@ -15,6 +15,7 @@
  */
 package com.intershop.gradle.scm.services.git
 
+import com.intershop.gradle.scm.services.ScmVersionService
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmUser
@@ -148,6 +149,25 @@ open class GitRemoteService(val localService: GitLocalService,
                     sshTransport.setSshSessionFactory(sshConnector)
                 }
             })
+        }
+    }
+
+    /**
+     * fetch all changes from remote
+     * remote connection is necessary
+     */
+    open fun fetchAllCmd() {
+        try {
+            // fetch all
+            val cmd = localService.client.fetch()
+            cmd.remote = "origin"
+            cmd.isCheckFetchedObjects = true
+            addCredentialsToCmd(cmd)
+            cmd.call()
+        } catch( nrex: InvalidRemoteException) {
+            ScmVersionService.log.warn("No remote repository is available! {}", nrex.message)
+        } catch( tex: TransportException) {
+            ScmVersionService.log.warn("It was not possible to fetch all. Please check your credential configuration.", tex)
         }
     }
 }
