@@ -40,7 +40,7 @@ open class ToVersion: DefaultTask() {
     }
 
     @TaskAction
-    fun toVersion() {
+    fun toVersionAction() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
 
         val targetVersion = if( project.hasProperty(VERSION_PROPNAME) ) {
@@ -90,8 +90,12 @@ open class ToVersion: DefaultTask() {
                 project.logger.error("The version {} is not a valid version.", targetVersion)
                 throw GradleException("The target version is not valid")
             } catch( ex: ScmException) {
-                project.logger.error("It was not possible to switch the current working copy to the specifed version.", ex)
-                throw GradleException("It was not possible to switch the current working copy to the specifed version [${ex.message}].")
+                project.logger.error(
+                        "It was not possible to switch the current working copy to the specifed version.",
+                        ex)
+                throw GradleException(
+                        "It was not possible to switch the current working copy " +
+                                "to the specifed version [${ex.message}].")
             }
         }
     }

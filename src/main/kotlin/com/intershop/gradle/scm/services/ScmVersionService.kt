@@ -17,6 +17,7 @@ package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.git.GitLocalService
+import com.intershop.gradle.scm.services.git.GitLocalService.Companion.HASHLENGTH
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.version.AbstractBranchFilter
@@ -246,7 +247,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
                 versionExt.continuousReleaseBranches.contains(localService.branchName) ||
                 localService.branchType == BranchType.DETACHEDHEAD) {
             return if(localService is GitLocalService) {
-                         "rev.id." + localService.revID.substring(0,7)
+                         "rev.id." + localService.revID.substring(0, HASHLENGTH)
                     } else {
                         "rev.id." + localService.revID
                     }
@@ -302,7 +303,9 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         if(prevVersionStr.isNotEmpty()) {
             try {
                 returnValue = versionTagMap[Version.valueOf(prevVersionStr)]
-            } catch (ex: ParserException) {}
+            } catch (ex: ParserException) {
+                log.debug("Error during calculaten of previous version {}. {}", prevVersionStr, ex.cause)
+            }
         } else {
             errormessage = "There is no previous version!"
             if(previousVersion != null) {

@@ -17,6 +17,7 @@ package com.intershop.gradle.scm.services.git
 
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.ScmChangeLogService
+import com.intershop.gradle.scm.services.git.GitLocalService.Companion.HASHLENGTH
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.footer
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getHeader
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getFileLine
@@ -66,7 +67,7 @@ open class GitChangeLogService(private val versionExt: VersionExtension,
                 val refs = localService.client.log().addRange( objID, getObjectId(localService.revID)).call()
 
                 refs.forEach { rc ->
-                    changelogFile.appendText(getMessageLine(rc.fullMessage, rc.name.substring(0, 8)))
+                    changelogFile.appendText(getMessageLine(rc.fullMessage, rc.name.substring(0, HASHLENGTH)))
                     addFilesInCommit(changelogFile, rc)
                 }
             }

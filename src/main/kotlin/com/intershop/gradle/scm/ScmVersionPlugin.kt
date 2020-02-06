@@ -55,13 +55,28 @@ class ScmVersionPlugin  : Plugin<Project> {
         const val  CHANGELOG = "CHANGELOG_FILE"
 
         /**
-         * Task namen
+         * Task names for showVersion task.
          */
         const val  SHOW_VERSION_TASK = "showVersion"
+        /**
+         * Task names for toVersion task.
+         */
         const val  TO_VERSION_TASK = "toVersion"
+        /**
+         * Task names for tag task.
+         */
         const val  CREATE_TAG_TASK = "tag"
+        /**
+         * Task names for branch task.
+         */
         const val  CREATE_BRANCH_TASK = "branch"
+        /**
+         * Task names for release task.
+         */
         const val  RELEASE_TASK = "release"
+        /**
+         * Task names for changelog task.
+         */
         const val  CHANGELOG_TASK = "changelog"
     }
 
@@ -73,7 +88,8 @@ class ScmVersionPlugin  : Plugin<Project> {
 
             extensions.extraProperties.set("useSCMVersionConfig", true)
 
-            extension.changelog.targetVersion = (System.getProperty(TARGETVERSION) ?: System.getenv(TARGETVERSION) ?: "").toString().trim()
+            extension.changelog.targetVersion = (System.getProperty(TARGETVERSION) ?:
+                                                    System.getenv(TARGETVERSION) ?: "").toString().trim()
 
             if(System.getProperty(CHANGELOG) != null) {
                 extension.changelog.changelogFile = File(System.getProperty(CHANGELOG))

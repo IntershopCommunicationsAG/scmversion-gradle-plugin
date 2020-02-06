@@ -88,6 +88,4 @@ open class FileVersionService(versionExt: VersionExtension,
             log.info("Not available for file system only projects!")
             mapOf<Version, VersionTag>()
         }
-
-
 }

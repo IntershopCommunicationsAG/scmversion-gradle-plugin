@@ -65,5 +65,5 @@ open class ReleaseFilter(private val prefixConfig: IPrefixConfig,
         }
         return ""
     }
-
 }
+

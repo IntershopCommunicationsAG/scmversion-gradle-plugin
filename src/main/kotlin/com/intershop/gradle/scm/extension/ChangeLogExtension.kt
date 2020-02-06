@@ -63,9 +63,17 @@ abstract class ChangeLogExtension @Inject constructor(val scmExtension: ScmExten
     @get:Inject
     abstract val projectLayout: ProjectLayout
 
+    /**
+     * This provides the functionality for all
+     * tasks etc.
+     *
+     * @property changelogService
+     */
     val changelogService: ScmChangeLogService by lazy {
         val tempChangelogService = if (scmExtension.scmType == ScmType.GIT) {
-            GitChangeLogService(scmExtension.version, GitRemoteService(scmExtension.localService as GitLocalService, scmExtension.user, scmExtension.key ))
+            with(scmExtension) {
+                GitChangeLogService(version, GitRemoteService(localService as GitLocalService, user, key))
+            }
         } else {
             FileChangeLogService()
         }
@@ -79,6 +87,11 @@ abstract class ChangeLogExtension @Inject constructor(val scmExtension: ScmExten
         changelogFileProperty.convention(projectLayout.buildDirectory.file(CHANGELOGFILE_PATH))
     }
 
+    /**
+     * This is provider for the target version.
+     *
+     * @property targetVersioneProvider
+     */
     val targetVersioneProvider: Provider<String>
         get() = targetVersioneProperty
 
@@ -90,6 +103,11 @@ abstract class ChangeLogExtension @Inject constructor(val scmExtension: ScmExten
      */
     var targetVersion: String by targetVersioneProperty
 
+    /**
+     * This is provider for the changelog file.
+     *
+     * @property changelogFileProvider
+     */
     val changelogFileProvider: Provider<RegularFile> = changelogFileProperty
 
     /**

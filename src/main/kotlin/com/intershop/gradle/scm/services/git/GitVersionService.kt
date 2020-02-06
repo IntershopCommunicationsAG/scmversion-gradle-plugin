@@ -38,7 +38,9 @@ import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
 import org.gradle.api.GradleException
 
-open class GitVersionService(versionExt: VersionExtension, private val remoteService: GitRemoteService): ScmVersionService(versionExt) {
+open class GitVersionService
+        (versionExt: VersionExtension, private val remoteService: GitRemoteService):
+        ScmVersionService(versionExt) {
 
     /**
      * The basic information service of this project.
@@ -82,7 +84,9 @@ open class GitVersionService(versionExt: VersionExtension, private val remoteSer
                 // version is calculated from the branch name
                 val versionStr = branchFilter.getVersionStr(localService.branchName)
                 rv = if(! versionStr.isBlank()) {
-                        ScmVersionObject(localService.branchName, Version.forString(versionStr, versionExt.versionType), true)
+                        ScmVersionObject(localService.branchName,
+                                         Version.forString(versionStr, versionExt.versionType),
+                                         true)
                     } else { null }
             }
         }
@@ -437,6 +441,4 @@ open class GitVersionService(versionExt: VersionExtension, private val remoteSer
         refs.forEach { r: Ref ->  rv = rv || path == r.name }
         return rv
     }
-
-
 }

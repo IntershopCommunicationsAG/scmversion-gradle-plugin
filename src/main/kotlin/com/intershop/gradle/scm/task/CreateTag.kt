@@ -37,8 +37,9 @@ open class CreateTag: DefaultTask() {
         val versionService = versionConfig.versionService
 
         if(versionService.localService.branchType == BranchType.TAG) {
-            project.logger.error("It is not possible to create a tag from an existing tag! Please check your working copy.")
-            throw GradleException("It is not possible to create a tag from an existing tag! Please check your working copy.")
+            val txt = "It is not possible to create a tag from an existing tag! Please check your working copy."
+            project.logger.error(txt)
+            throw GradleException(txt)
         }
 
         // create tag

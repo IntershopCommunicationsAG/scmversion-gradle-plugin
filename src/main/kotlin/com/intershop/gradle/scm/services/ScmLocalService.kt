@@ -28,6 +28,8 @@ abstract class ScmLocalService(val projectDir: File,
 
     companion object {
         const val BRANCH_PATTERN = "^\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?(-.*)?"
+
+        private val MIN_GROUP_SIZE = 3
     }
 
     private var featureBranchNameInternal: String = ""
@@ -55,7 +57,7 @@ abstract class ScmLocalService(val projectDir: File,
         set(value) {
             val result = Regex(BRANCH_PATTERN).matchEntire(value)
 
-            featureBranchNameInternal = if(result?.groupValues != null && result.groupValues.size > 3) {
+            featureBranchNameInternal = if(result?.groupValues != null && result.groupValues.size > MIN_GROUP_SIZE) {
                 result.groupValues.last().substring(1)
             } else {
                 value

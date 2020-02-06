@@ -127,16 +127,25 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
         }
     }
 
+    /**
+     * This provides access to the functionality for all
+     * tasks etc.
+     *
+     * @property versionService
+     */
     val versionService: ScmVersionService by lazy {
         if (scmExtension.scmType == ScmType.GIT) {
-            GitVersionService(this, GitRemoteService(scmExtension.localService as GitLocalService, scmExtension.user, scmExtension.key ))
+            with(scmExtension) {
+                GitVersionService(this@VersionExtension,
+                        GitRemoteService(localService as GitLocalService, user, key))
+            }
         } else {
             FileVersionService(this, scmExtension.localService as FileLocalService)
         }
     }
 
     /**
-     * <p>Digits of the version number</p>
+     * <p>Digits of the version number.</p>
      *
      * <p>Possible values: 'fourDigits' (Intershop), 'threeDigits' (semver)</p>
      */
@@ -152,7 +161,8 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
             try {
                 return VersionType.valueOf(typeProperty.get())
             } catch (ex: IllegalArgumentException ) {
-                log.error("Version type is wrong (set: {}) (exception: {}), possible values: threeDigits, fourDigits.", typeProperty.get(), ex.message)
+                log.error("Version type is wrong (set: {}) (exception: {}), possible values: threeDigits, fourDigits.",
+                        typeProperty.get(), ex.message)
             }
 
             log.warn("Default value 'fourDigits' is used for versionType.")
@@ -160,7 +170,7 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
         }
 
     /**
-     * Returns an extension if disableSCM is true
+     * Returns an extension if disableSCM is true.
      * @property versionExt Value of SCMVERSIONEXT_ENV or SCMVERSIONEXT_PRJ
      */
     val versionExt: String
@@ -191,7 +201,7 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
         }
 
     /**
-     * Caluculates the version from the SCM
+     * Caluculates the version from the SCM.
      *
      * @property version version string
      */
@@ -201,6 +211,7 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
 
     /**
      * Returns the previous version.
+     *
      * @property previousVersion information with Version and Tag information
      */
     val previousVersion: String? by lazy {
@@ -213,7 +224,8 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
 
     /**
      * Returns the branch name.
-     * @return short branch name
+     *
+     * @property branchName short branch name
      */
     val branchName: String by lazy {
         var tempBranchName = this.versionService.localService.branchName
@@ -253,23 +265,24 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
     var initialVersion: String by initialVersionProperty
 
     /**
-     * number of digits for filtering
-     * available versions on version branches
+     * Number of digits for filtering of
+     * available versions on version branches.
      */
     var patternDigits: Int by patternDigitsProperty
 
     /**
-     * meta data setting for feature branches
+     * Meta data setting for feature branches.
      */
     var defaultBuildMetadata: String by defaultBuildMetadataProperty
 
     /**
      * Build extension will be removed for
-     * SNAPSHOT extensions if this property is false
+     * SNAPSHOT extensions if this property is false.
      */
     var useBuildExtension: Boolean by useBuildExtensionProperty
 
-    /** This property affects only GIT based repositories.
+    /**
+     * This property affects only GIT based repositories.
      *
      * If this property is true and branchWithVersion is false,
      * the version is always only the major version.

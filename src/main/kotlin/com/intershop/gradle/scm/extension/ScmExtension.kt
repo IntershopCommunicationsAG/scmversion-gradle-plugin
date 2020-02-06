@@ -51,7 +51,7 @@ abstract class ScmExtension {
      *
      * <p>Can be configured/overwritten with environment variables SCM_USERNAME,
      * SCM_PASSWORD; java environment SCM_USERNAME, SCM_PASSWORD or project
-     * variables scmUserName, scmUserPasswd</p>
+     * variables scmUserName, scmUserPasswd.</p>
      *
      * <pre>
      * {@code
@@ -69,7 +69,7 @@ abstract class ScmExtension {
      *
      * <p>Can be configured/overwritten with environment variables SCM_KEYFILE,
      * SCM_KEYPASSPHRASE; java environment SCM_KEYFILE, SCM_KEYPASSPHRASE or project
-     * variables scmKeyFile, scmKeyPassphrase</p>
+     * variables scmKeyFile, scmKeyPassphrase.</p>
      * <pre>
      * {@code
      *      key {
@@ -82,7 +82,7 @@ abstract class ScmExtension {
     val key: ScmKey = objectFactory.newInstance(ScmKey::class.java)
 
     /**
-     * prefixes for branches and tags
+     * Prefixes for branches and tags.
      * <pre>
      * {@code
      *      prefixes {
@@ -98,7 +98,7 @@ abstract class ScmExtension {
     val prefixes: PrefixConfig = objectFactory.newInstance(PrefixConfig::class.java)
 
     /**
-     * Getter for scmType
+     * Getter for scmType.
      * @property scmType the scmType object for the detected SCM
      */
     val scmType: ScmType
@@ -110,6 +110,12 @@ abstract class ScmExtension {
             }
         }
 
+    /**
+     * This provides the local service functionality for all
+     * tasks ect.
+     *
+     * @property localService
+     */
     val localService: ScmLocalService by lazy {
         if (scmType == ScmType.GIT) {
             GitLocalService(projectLayout.projectDirectory.asFile, prefixes)
@@ -139,7 +145,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * SCM user for authentication for Java/Kotlin
+     * SCM user for authentication for Java/Kotlin.
      *
      * @param action scm user (see ScmUser)
      */
@@ -166,7 +172,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Prefix configuration for branches and tags
+     * Prefix configuration for branches and tags.
      *
      * @param closure prefix configuration (see PrefixConfig)
      */
@@ -175,7 +181,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Prefix configuration for branches and tags for Java/Kotlin
+     * Prefix configuration for branches and tags for Java/Kotlin.
      *
      * @param action prefix configuration (see PrefixConfig)
      */
@@ -184,7 +190,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Version extension with configuration
+     * Version extension with configuration.
      *
      * @param closure version extension (VersionExtension)
      */
@@ -193,7 +199,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Version extension with configuration for Java/Kotlin
+     * Version extension with configuration for Java/Kotlin.
      *
      * @param action version extension (VersionExtension)
      */
@@ -202,7 +208,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Changelog extenions with configuration
+     * Changelog extenions with configuration.
      *
      * @param closure changelog extension (ChangelogExtension)
      */
@@ -211,7 +217,7 @@ abstract class ScmExtension {
     }
 
     /**
-     * Changelog extenions with configuration for Java/Kotlin
+     * Changelog extenions with configuration for Java/Kotlin.
      *
      * @param action changelog extension (ChangelogExtension)
      */

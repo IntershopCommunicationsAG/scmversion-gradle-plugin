@@ -30,35 +30,35 @@ interface IPrefixConfig {
     }
 
     /**
-     * Prefix for stabilization branches
+     * Prefix for stabilization branches.
      *
      * @property stabilizationPrefix
      */
     var stabilizationPrefix: String
 
     /**
-     * Prefix for feature branches
+     * Prefix for feature branches.
      *
      * @property featurePrefix
      */
     var featurePrefix: String
 
     /**
-     * Prefix for hotfix branches
+     * Prefix for hotfix branches.
      *
      * @property hotfixPrefix
      */
     var hotfixPrefix: String
 
     /**
-     * Prefix for bugfix branches
+     * Prefix for bugfix branches.
      *
      * @property bugfixPrefix
      */
     var bugfixPrefix: String
 
     /**
-     * Prefix for release tags
+     * Prefix for release tags.
      *
      * @property tagPrefix
      */

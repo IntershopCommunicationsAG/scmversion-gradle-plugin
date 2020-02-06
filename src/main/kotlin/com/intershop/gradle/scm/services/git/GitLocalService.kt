@@ -35,6 +35,11 @@ class GitLocalService(projectDir: File,
     companion object {
         @JvmStatic
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+
+        /**
+         * Length of Git hash refids.
+         */
+        const val HASHLENGTH = 8
     }
 
     val repository: Repository by lazy {

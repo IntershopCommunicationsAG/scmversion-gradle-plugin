@@ -32,7 +32,7 @@ open class PrepareRelease: DefaultTask() {
 
     @Throws(GradleException::class)
     @TaskAction
-    fun prepareRelease() {
+    fun prepareReleaseAction() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
         val versionService = versionConfig.versionService
 
