@@ -21,6 +21,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
+/**
+ * This is an implementation of a local service
+ * for dryrun tests.
+ */
 class DryLocalService( projectDir: File,
                        prefixes: PrefixConfig,
                        val localService: ScmLocalService) : ScmLocalService(projectDir, prefixes) {
@@ -31,7 +35,7 @@ class DryLocalService( projectDir: File,
     }
 
     /**
-     * The base (stabilization) branch name of the current working copy
+     * The base (stabilization) branch name of the current working copy.
      */
     override val branchName: String
         get() = localService.branchName

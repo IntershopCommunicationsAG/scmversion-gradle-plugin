@@ -35,13 +35,25 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * This is the abstract class of a version service.
+ *
+ * @constructor creates a service
+ * @param versionExt main extension of this plugin
+ */
 abstract class ScmVersionService(val versionExt: VersionExtension) {
 
     companion object {
-        @JvmStatic
-        val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+        private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
 
+        /**
+         * List of special branch types.
+         */
         val specialBranches = listOf(BranchType.FEATUREBRANCH, BranchType.BUGFIXBRANCH, BranchType.HOTFIXBBRANCH)
+
+        /**
+         * List of base branch types.
+         */
         val baseBranches = listOf(BranchType.MASTER, BranchType.BRANCH, BranchType.TAG)
     }
 
@@ -78,7 +90,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     abstract val versionObject: ScmVersionObject
 
     /**
-     * Moves the working copy to a specified version
+     * Moves the working copy to a specified version.
      *
      * @param version
      * @param type branch type
@@ -95,7 +107,8 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     abstract fun createTag(version: String, rev: String?): String
 
     /**
-     * Returns a list of version and tags/branches
+     * Returns a list of version and tags/branches.
+     *
      * @param branchFilter
      * @return map
      */
@@ -119,7 +132,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     abstract fun isReleaseVersionAvailable(version: String): Boolean
 
     /**
-     * Returns a Map with version and associated version tag object
+     * Returns a Map with version and associated version tag object.
      *
      * @property versionTagMap map of version and version tag
      */
@@ -142,7 +155,6 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         with(versionExt) {
             if (!disableSCM) {
                 val tempVersion: Version = preVersion
-
                 val revIDExtension = scmRevExtension
 
                 if (continuousRelease && revIDExtension.isNotEmpty() && ! localService.changed) {
@@ -205,39 +217,43 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
             if ((!changed && fromBranchName) || defaultVersion)  return version
 
             if (! specialBranches.contains(localService.branchType)) {
-                if (changed) {
-                    if (versionExt.increment.isEmpty() &&
-                            localService.branchType != BranchType.MASTER) {
-                        return version.incrementVersion()
-                    }
-                    if (versionExt.increment.isEmpty() &&
-                            localService.branchType == BranchType.MASTER) {
-                        return version.incrementLatest()
-                    }
-                    if (versionExt.increment.isNotEmpty()) {
-                        val pos = DigitPos.valueOf(versionExt.increment)
-                        return version.incrementVersion(pos)
-                    }
-                }
+                if (changed) { getChangedVersion() }
             } else {
                 if (versionExt.majorVersionOnly) {
-                    val tv = version
-                    var mv = tv.normalVersion.major
+                    var mv = version.normalVersion.major
                     if (versionExt.increment == "MAJOR") ++mv
-                    return Version.forIntegers(mv, tv.normalVersion.versionType)
-                            .setBranchMetadata(tv.branchMetadata.toString())
+
+                    return Version.forIntegers(mv, version.normalVersion.versionType)
+                            .setBranchMetadata(version.branchMetadata.toString())
                 } else if (changed) {
                     return if (version.buildMetadata != MetadataVersion(null)) {
-                        version.incrementBuildMetadata()
-                    } else {
-                        version.setBuildMetadata(versionExt.defaultBuildMetadata)
-                    }
+                                version.incrementBuildMetadata()
+                            } else {
+                                version.setBuildMetadata(versionExt.defaultBuildMetadata)
+                            }
                 }
             }
             return version
         }
     }
 
+    private fun getChangedVersion(): Version {
+        with(versionObject) {
+            return if (versionExt.increment.isEmpty() && localService.branchType != BranchType.MASTER) {
+                        version.incrementVersion()
+                    } else if (versionExt.increment.isEmpty() && localService.branchType == BranchType.MASTER) {
+                        version.incrementLatest()
+                    } else {
+                        version.incrementVersion(DigitPos.valueOf(versionExt.increment))
+                    }
+        }
+    }
+
+    /**
+     * Revison extension for the version.
+     *
+     * @property scmRevExtension
+     */
     val scmRevExtension: String by lazy {
         calcScmRevExtension()
     }

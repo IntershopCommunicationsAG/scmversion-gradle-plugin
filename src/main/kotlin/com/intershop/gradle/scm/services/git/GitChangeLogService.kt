@@ -38,6 +38,13 @@ import org.slf4j.LoggerFactory
 import java.io.BufferedOutputStream
 import java.io.File
 
+/**
+ * Git change log service implementation calculates
+ * changes between two versions.
+ *
+ * @param versionExt extension of the plugin
+ * @param remoteService Git remote service
+ */
 open class GitChangeLogService(private val versionExt: VersionExtension,
                                private val remoteService: GitRemoteService) : ScmChangeLogService {
 
@@ -46,6 +53,11 @@ open class GitChangeLogService(private val versionExt: VersionExtension,
         protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
     }
 
+    /**
+     * This is the main method of this servcie.
+     * @param changelogFile target file for the changes
+     * @param targetVersion start version
+     */
     @Throws(GradleException::class)
     override fun createLog(changelogFile: File, targetVersion: String?) {
 
@@ -62,7 +74,7 @@ open class GitChangeLogService(private val versionExt: VersionExtension,
             }
 
             with(remoteService) {
-                val objID = if (pvt != null) { getObjectId(pvt.branchObject.id) } else { getFirstObjectId() }
+                val objID = if (pvt != null) { getObjectId(pvt.branchObject.id) } else { firstObjectId }
 
                 val refs = localService.client.log().addRange( objID, getObjectId(localService.revID)).call()
 

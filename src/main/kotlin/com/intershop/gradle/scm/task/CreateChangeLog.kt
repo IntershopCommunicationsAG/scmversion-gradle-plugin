@@ -31,6 +31,12 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.inject.Inject
 
+/**
+ * This is the implementation of Gradle
+ * task to create a change log from the
+ * previous tag (target) and the current
+ * tag.
+ */
 abstract class CreateChangeLog: DefaultTask() {
 
     /**
@@ -77,6 +83,9 @@ abstract class CreateChangeLog: DefaultTask() {
         get() = changelogFileProperty.get().asFile
         set(value) = changelogFileProperty.set(value)
 
+    /**
+     * Implementation of the task action.
+     */
     @TaskAction
     fun createLog() {
         val scmConfig: ScmExtension = project.extensions.getByType(ScmExtension::class.java)

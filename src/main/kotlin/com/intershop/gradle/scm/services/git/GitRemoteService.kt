@@ -15,7 +15,6 @@
  */
 package com.intershop.gradle.scm.services.git
 
-import com.intershop.gradle.scm.services.ScmVersionService
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.gradle.scm.utils.ScmKey
 import com.intershop.gradle.scm.utils.ScmUser
@@ -35,9 +34,19 @@ import org.eclipse.jgit.transport.SshTransport
 import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.transport.Transport
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+import org.gradle.kotlin.dsl.provideDelegate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * This is the implementation of a remote service of
+ * a GIT repository.
+ *
+ * @constructor creates a remote service
+ * @param localService
+ * @param user
+ * @param key
+ */
 open class GitRemoteService(val localService: GitLocalService,
                             var user: ScmUser? = null,
                             private var key: ScmKey? = null) {
@@ -66,13 +75,19 @@ open class GitRemoteService(val localService: GitLocalService,
     private var credentials: CredentialsProvider? = null
     private var sshConnector: SSHConnector? = null
 
+    /**
+     * This variable returns true if the
+     * remote configuration is available.
+     *
+     * @property remoteConfigAvailable
+     */
     val remoteConfigAvailable: Boolean
         get() {
             return (credentials != null || sshConnector != null)
         }
 
     /**
-     * Calculates the rev object from revision id string
+     * Calculates the rev object from revision id string.
      *
      * @param rev
      * @return rev object from the Git repository
@@ -112,8 +127,8 @@ open class GitRemoteService(val localService: GitLocalService,
     }
 
     /**
-     * fetch all tag information from remote branch
-     * remote connection is necessary
+     * Fetch all tag information from remote branch
+     * branch if necessary.
      */
     fun fetchTagsCmd() {
         try {
@@ -149,8 +164,8 @@ open class GitRemoteService(val localService: GitLocalService,
     }
 
     /**
-     * fetch all changes from remote
-     * remote connection is necessary
+     * Fetch all changes from remote
+     * connection if necessary.
      */
     open fun fetchAllCmd() {
         try {
@@ -161,15 +176,17 @@ open class GitRemoteService(val localService: GitLocalService,
             addCredentialsToCmd(cmd)
             cmd.call()
         } catch( nrex: InvalidRemoteException) {
-            ScmVersionService.log.warn("No remote repository is available! {}", nrex.message)
+            log.warn("No remote repository is available! {}", nrex.message)
         } catch( tex: TransportException) {
-            ScmVersionService.log.warn(
-                    "It was not possible to fetch all. Please check your credential configuration.",
-                    tex)
+            log.warn( "It was not possible to fetch all. Please check your credential configuration.", tex)
         }
     }
 
-    fun getFirstObjectId(): ObjectId? {
+    /**
+     * Returns the first commit in the
+     * Git repository.
+     */
+    val firstObjectId: ObjectId? by lazy {
         var commitId: ObjectId? = null
         try {
             val headId = localService.repository.resolve(localService.revID)
@@ -187,6 +204,6 @@ open class GitRemoteService(val localService: GitLocalService,
         } catch ( ex: Exception ) {
             log.error("it was not possible to get first commit")
         }
-        return commitId
+        commitId
     }
 }

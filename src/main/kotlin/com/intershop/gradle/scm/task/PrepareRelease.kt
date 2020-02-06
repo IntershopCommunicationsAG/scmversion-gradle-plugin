@@ -21,6 +21,12 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * This is the implementation of Gradle
+ * task to prepare a release from the
+ * current SCM repository. It creates a
+ * task switch the repo to this tag.
+ */
 open class PrepareRelease: DefaultTask() {
 
     init {
@@ -30,6 +36,9 @@ open class PrepareRelease: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    /**
+     * Implementation of the task action.
+     */
     @Throws(GradleException::class)
     @TaskAction
     fun prepareReleaseAction() {

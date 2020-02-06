@@ -17,8 +17,15 @@ package com.intershop.gradle.scm.utils
 
 import java.time.LocalDateTime
 
+/**
+ * This class provides static methods
+ * for change log file content.
+ */
 object ChangeLogServiceHelper {
 
+    /**
+     * Returns a header string for the change log file.
+     */
     fun getHeader(sourceVersion: String, targetVersion: String): String {
         return """
         = Change Log for $sourceVersion
@@ -31,16 +38,25 @@ object ChangeLogServiceHelper {
         """
     }
 
+    /**
+     * Returns a footer string for the change log file.
+     */
     val footer: String
         get() {
         return """|===
         """
         }
 
+    /**
+     * Returns a line string of a changed file of the change log file.
+     */
     fun getFileLine(path: String, changeType: String): String {
         return "| | $changeType | $path \n"
     }
 
+    /**
+     * Returns a message string of a commit of the change log file.
+     */
     fun getMessageLine(message: String, rev: String): String {
         return "3+| $message (${rev}) \n"
     }

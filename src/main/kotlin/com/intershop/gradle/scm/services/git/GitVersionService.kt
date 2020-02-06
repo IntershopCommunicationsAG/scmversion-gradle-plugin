@@ -37,10 +37,25 @@ import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
 import org.gradle.api.GradleException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
+/**
+ * This is the implementation of a version
+ * service based on GIT.
+ *
+ * @constructor creates a service based on GIT
+ * @param versionExt main extension of this plugin
+ * @param remoteService remote service for GIt functionality
+ */
 open class GitVersionService
         (versionExt: VersionExtension, private val remoteService: GitRemoteService):
         ScmVersionService(versionExt) {
+
+    companion object {
+        @JvmStatic
+        private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+    }
 
     /**
      * The basic information service of this project.
@@ -95,7 +110,7 @@ open class GitVersionService
     }
 
     /**
-     * Returns a Map with version and associated version tag object
+     * Returns a Map with version and associated version tag object.
      *
      * @property versionTagMap map of version and version tag
      */
@@ -111,7 +126,7 @@ open class GitVersionService
     }
 
     /**
-     * Moves the working copy to a specified version
+     * Moves the working copy to a specified version.
      *
      * @param version
      * @param type Branchtype of the target branch
@@ -233,7 +248,7 @@ open class GitVersionService
     }
 
     /**
-     * Returns a list of version and tags/branches
+     * Returns a list of version and tags/branches.
      * @param branchFilter
      * @return map
      */
@@ -242,8 +257,7 @@ open class GitVersionService
     }
 
     /**
-     * push changes (tag/branch) to remote
-     * remote connection is necessary
+     * Push changes (tag/branch) to remote.
      */
     @Throws(GradleException::class)
     private fun pushCmd() {

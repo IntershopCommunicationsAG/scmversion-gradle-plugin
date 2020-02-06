@@ -1,37 +1,41 @@
 package com.intershop.gradle.scm.utils
 
+/**
+ * Simple prefix configuration for
+ * testing.
+ */
 class SimplePrefixConfig : IPrefixConfig {
 
     /**
-     * Prefix for stabilization branches
+     * Prefix for stabilization branches.
      *
      * @property stabilizationPrefix
      */
     override var stabilizationPrefix: String = "SB"
 
     /**
-     * Prefix for feature branches
+     * Prefix for feature branches.
      *
      * @property featurePrefix
      */
     override var featurePrefix: String = "FB"
 
     /**
-     * Prefix for hotfix branches
+     * Prefix for hotfix branches.
      *
      * @property hotfixPrefix
      */
     override var hotfixPrefix: String = "HB"
 
     /**
-     * Prefix for bugfix branches
+     * Prefix for bugfix branches.
      *
      * @property bugfixPrefix
      */
     override var bugfixPrefix: String = "BB"
 
     /**
-     * Prefix for release tags
+     * Prefix for release tags.
      *
      * @property tagPrefix
      */

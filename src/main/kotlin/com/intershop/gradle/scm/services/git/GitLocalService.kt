@@ -29,6 +29,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
+/**
+ * This is the container of all information from an existing
+ * working copy without any access to the remote location of the project.
+ */
 class GitLocalService(projectDir: File,
                       prefixes: PrefixConfig) : ScmLocalService(projectDir, prefixes) {
 
@@ -42,16 +46,26 @@ class GitLocalService(projectDir: File,
         const val HASHLENGTH = 8
     }
 
+    /**
+     * Returns the GIT repository
+     * implementation for the local repository.
+     */
     val repository: Repository by lazy {
         RepositoryBuilder().readEnvironment().findGitDir(projectDir).build()
     }
-    
+
+    /**
+     * Returns the GIT client implementation
+     * for the local repository.
+     */
     val client: Git by lazy {
         Git(repository)
     }
 
     /**
-     * The base (stabilization) branch name of the current working copy
+     * The base (stabilization) branch name of the current working copy.
+     *
+     * @property branchName
      */
     override val branchName: String by lazy {
         val tagname = tagNameOnHead

@@ -19,6 +19,11 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * This is the implementation of Gradle
+ * task to show the calculated version
+ * from SCM.
+ */
 open class ShowVersion: DefaultTask() {
 
     init {
@@ -28,6 +33,9 @@ open class ShowVersion: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    /**
+     * Implementation of the task action.
+     */
     @TaskAction
     fun show() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version

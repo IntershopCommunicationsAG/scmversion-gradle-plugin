@@ -21,9 +21,17 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * This is the implementation of Gradle
+ * task to create the "next" branch.
+ */
 open class CreateBranch: DefaultTask() {
 
     companion object {
+        /**
+         * Property name of the feature
+         * branch extension configuration.
+         */
         const val PROPNAME = "feature"
     }
 
@@ -34,6 +42,9 @@ open class CreateBranch: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    /**
+     * Implementation of the task action.
+     */
     @Throws(GradleException::class)
     @TaskAction
     fun branch() {
@@ -41,7 +52,8 @@ open class CreateBranch: DefaultTask() {
         val versionService = versionConfig.versionService
 
         if(versionService.localService.branchType == BranchType.TAG) {
-            throw GradleException("It is not possible to create a branch from an tag! Please check your working copy and workflow.")
+            throw GradleException("It is not possible to create a branch from an tag! " +
+                    "Please check your working copy and workflow.")
         }
 
         var version = versionService.preVersion

@@ -57,14 +57,14 @@ complexity:
   active: true
   ComplexCondition:
     active: true
-    threshold: 4
+    threshold: 5
   ComplexInterface:
     active: false
     threshold: 10
     includeStaticDeclarations: false
   ComplexMethod:
     active: true
-    threshold: 15
+    threshold: 18
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -87,7 +87,7 @@ complexity:
     threshold: 6
   NestedBlockDepth:
     active: true
-    threshold: 4
+    threshold: 6
   StringLiteralDuplication:
     active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
@@ -97,12 +97,12 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    thresholdInFiles: 11
-    thresholdInClasses: 11
-    thresholdInInterfaces: 11
-    thresholdInObjects: 11
-    thresholdInEnums: 11
+    excludes: "**/test/**,**/androiTooManyFunctionsdTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
+    thresholdInFiles: 14
+    thresholdInClasses: 14
+    thresholdInInterfaces: 14
+    thresholdInObjects: 14
+    thresholdInEnums: 14
     ignoreDeprecated: false
     ignorePrivate: false
     ignoreOverridden: false
@@ -178,7 +178,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: false
   TooGenericExceptionCaught:
-    active: true
+    active: false
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
     exceptionNames:
      - ArrayIndexOutOfBoundsException
@@ -491,11 +491,11 @@ style:
     active: true
   LoopWithTooManyJumpStatements:
     active: true
-    maxJumpCount: 1
+    maxJumpCount: 4
   MagicNumber:
     active: true
     excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
-    ignoreNumbers: '-1,0,1,2'
+    ignoreNumbers: '-1,0,1,2,3'
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
@@ -539,7 +539,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 8
     excludedFunctions: "equals"
     excludeLabeled: false
     excludeReturnFromLambda: true
@@ -552,14 +552,14 @@ style:
     active: false
   ThrowsCount:
     active: true
-    max: 2
+    max: 4
   TrailingWhitespace:
     active: false
   UnderscoresInNumericLiterals:
     active: false
     acceptableDecimalLength: 5
   UnnecessaryAbstractClass:
-    active: true
+    active: false
     excludeAnnotatedClasses: "dagger.Module"
   UnnecessaryAnnotationUseSiteTarget:
     active: false

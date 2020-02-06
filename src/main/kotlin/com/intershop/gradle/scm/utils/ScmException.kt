@@ -16,7 +16,7 @@
 package com.intershop.gradle.scm.utils
 
 /**
- * SCM exception
+ * SCM exception.
  */
 class ScmException
 /**

@@ -15,6 +15,16 @@
  */
 package com.intershop.gradle.scm.version
 
+/**
+ * Abstract class of a branch filter for
+ * version calculation.
+ */
 abstract class AbstractBranchFilter {
+
+    /**
+     * Get version string from branch.
+     * @param branch name of the branch/tag
+     * @return version string
+     */
     abstract fun getVersionStr(branch: String): String?
 }

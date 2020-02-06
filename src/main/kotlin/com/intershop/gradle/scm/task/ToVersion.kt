@@ -24,11 +24,27 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * This is the implementation of Gradle
+ * task to switch the branch to a special version.
+ */
 open class ToVersion: DefaultTask() {
 
     companion object {
+        /**
+         * This is the project property name
+         * of the target version.
+         */
         const val VERSION_PROPNAME = "targetVersion"
+        /**
+         * This is the project property name
+         * of the branch type.
+         */
         const val BRANCHTYPE_PROPNAME = "branchType"
+        /**
+         * This is the project property name
+         * of the feature property.
+         */
         const val FEATURE_RPOPNAME = "feature"
     }
     
@@ -39,40 +55,43 @@ open class ToVersion: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    private fun getProperty(propName: String): String {
+        return if( project.hasProperty(propName) ) { project.property(propName).toString() } else { "" }
+    }
+
+    private fun getBranchType(branchTypeStr: String, featureBranchStr: String): BranchType {
+        return if(branchTypeStr.isNotEmpty()) {
+                    BranchType.valueOf(branchTypeStr)
+                } else if (featureBranchStr.isNotEmpty()) {
+                    BranchType.FEATUREBRANCH
+                } else {
+                    BranchType.BRANCH
+                }
+    }
+
+    /**
+     * Implementation of the task action.
+     */
+    @Throws(GradleException::class)
     @TaskAction
     fun toVersionAction() {
         val versionConfig = project.extensions.getByType(ScmExtension::class.java).version
 
-        val targetVersion = if( project.hasProperty(VERSION_PROPNAME) ) {
-                project.property(VERSION_PROPNAME).toString()
-            } else { "" }
+        val targetVersionProp = getProperty(VERSION_PROPNAME)
+        val featureProp = getProperty(FEATURE_RPOPNAME)
+        val branchTypeProp = getProperty(BRANCHTYPE_PROPNAME)
 
-        val feature = if( project.hasProperty(FEATURE_RPOPNAME)) {
-                project.property(FEATURE_RPOPNAME).toString()
-            } else { "" }
+        project.logger.debug("Version is {} branch type is {}, Feature is {}",
+                targetVersionProp, branchTypeProp, featureProp)
 
-        val branchType = if(project.hasProperty(BRANCHTYPE_PROPNAME)) {
-                project.property(BRANCHTYPE_PROPNAME).toString()
-            } else { "" }
-
-        project.logger.debug("Version is {} branch type is {}, Feature is {}", targetVersion, branchType, feature)
-
-        if(targetVersion.isNotEmpty()) {
+        if(targetVersionProp.isNotEmpty()) {
 
             try {
-                val bType: BranchType = if (branchType.isNotEmpty()) {
-                    BranchType.valueOf(branchType)
-                } else {
-                    if (feature.isNotEmpty()) {
-                        BranchType.FEATUREBRANCH
-                    } else {
-                        BranchType.BRANCH
-                    }
-                }
+                val bType = getBranchType(branchTypeProp, featureProp)
+                var v = VersionParser.parseVersion(targetVersionProp, versionConfig.versionType)
 
-                var v = VersionParser.parseVersion(targetVersion, versionConfig.versionType)
-                if (feature.isNotEmpty()) {
-                    v = v.setBranchMetadata(feature)
+                if (featureProp.isNotEmpty()) {
+                    v = v.setBranchMetadata(featureProp)
                 }
 
                 project.logger.debug("Target version is {}", v.toString())
@@ -84,17 +103,15 @@ open class ToVersion: DefaultTask() {
                 project.logger.info("Working copy was switched to {} with revision id {}", v.toString(), revision)
 
             } catch(iex: IllegalArgumentException) {
-                project.logger.error("The branch type {} is not a valid type.", branchType)
+                project.logger.error("The branch type {} is not a valid type.", branchTypeProp)
                 throw GradleException("The branch type is not valid")
             } catch( ex: ParserException) {
-                project.logger.error("The version {} is not a valid version.", targetVersion)
+                project.logger.error("The version {} is not a valid version.", targetVersionProp)
                 throw GradleException("The target version is not valid")
             } catch( ex: ScmException) {
-                project.logger.error(
-                        "It was not possible to switch the current working copy to the specifed version.",
+                project.logger.error( "It was not possible to switch the current working copy to the specifed version.",
                         ex)
-                throw GradleException(
-                        "It was not possible to switch the current working copy " +
+                throw GradleException( "It was not possible to switch the current working copy " +
                                 "to the specifed version [${ex.message}].")
             }
         }

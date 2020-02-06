@@ -53,33 +53,35 @@ abstract class PrefixConfig: IPrefixConfig {
     }
 
     /**
-     * Prefix for stabilization branches
+     * Prefix for stabilization branches.
      *
      * @property stabilizationPrefix
      */
     override var stabilizationPrefix: String by stabilizationPrefixProperty
 
     /**
-     * Prefix for feature branches
+     * Prefix for feature branches.
+     *
+     * @property featurePrefix
      */
     override var featurePrefix: String by featurePrefixxProperty
 
     /**
-     * Prefix for hotfix branches
+     * Prefix for hotfix branches.
      *
      * @property stabilizationPrefix
      */
     override var hotfixPrefix: String by hotfixPrefixProperty
 
     /**
-     * Prefix for bugfix branches
+     * Prefix for bugfix branches.
      *
      * @property bugfixPrefixProperty
      */
     override var bugfixPrefix: String by bugfixPrefixProperty
 
     /**
-     * Prefix for release tags
+     * Prefix for release tags.
      *
      * @property tagPrefixProperty
      */

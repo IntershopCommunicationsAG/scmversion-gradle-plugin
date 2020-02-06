@@ -6,6 +6,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
+/**
+ * This is the container of all information from an existing
+ * working copy without any access to the remote location of the project.
+ */
 open class FileLocalService(projectDir: File,
                             prefixes: PrefixConfig) : ScmLocalService(projectDir, prefixes) {
 
@@ -37,7 +41,9 @@ open class FileLocalService(projectDir: File,
         get() = "unknown"
 
     /**
-     * The base (stabilization) branch name of the current working copy
+     * The base (stabilization) branch name of the current working copy.
+     *
+     * @property branchName
      */
     override val branchName: String
         get() = "trunk"

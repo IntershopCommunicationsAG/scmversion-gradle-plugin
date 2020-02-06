@@ -22,13 +22,27 @@ import com.intershop.release.version.VersionType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * This class provides a filter for release processes.
+ *
+ * @constructor uses prefix config and a source version.
+ * @param prefixConfig
+ * @param sourceVersion
+ */
 open class ReleaseFilter(private val prefixConfig: IPrefixConfig,
                          private val sourceVersion: Version): AbstractBranchFilter() {
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
 
+        /**
+         * Regex for three digits version number.
+         */
         const val threeDigitsFilter = "(\\d+\\.\\d+\\.\\d+)"
+
+        /**
+         * Regex for four digits version number.
+         */
         const val fourDigitsFilter = "(\\d+\\.\\d+\\.\\d+.\\d+)"
     }
 
@@ -57,6 +71,11 @@ open class ReleaseFilter(private val prefixConfig: IPrefixConfig,
         Regex(patternString)
     }
 
+    /**
+     * Get version string from branch.
+     * @param branch name of the branch/tag
+     * @return version string
+     */
     override fun getVersionStr(branch: String): String {
 
         val matchResult: MatchResult? = regex.matchEntire(branch)

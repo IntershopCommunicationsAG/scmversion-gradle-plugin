@@ -19,12 +19,37 @@ import com.intershop.release.version.Version
 
 /**
  * SCM version object.
+ *
+ * @constructor create a scm version object for version calculation
+ * @property scmPath
+ * @property version
+ * @property changed
  */
 open class ScmVersionObject constructor(val scmPath: String, var version: Version, var changed: Boolean = false){
 
+    /**
+     * Is this the default version? If the property
+     * is true the version is the default version.
+     *
+     * @property defaultVersion
+     */
     var defaultVersion = false
+
+    /**
+     * Is the version calculated from branch name
+     * and not from a tag? If true, the version
+     * is calculated from a branch obbject.
+     *
+     * @property fromBranchName
+     */
     var fromBranchName = false
 
+    /**
+     * Update the version object of
+     * this object.
+     *
+     * @param version version object
+     */
     fun updateVersion(version: Version) {
         this.version = version
     }

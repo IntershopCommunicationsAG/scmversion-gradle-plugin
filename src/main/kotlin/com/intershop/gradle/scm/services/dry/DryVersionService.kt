@@ -27,6 +27,10 @@ import com.intershop.release.version.Version
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * This is an implementation of a version service
+ * for dryrun tests.
+ */
 class DryVersionService(versionExt: VersionExtension,
                         private val sls: DryLocalService,
                         private val scmVersionService: ScmVersionService): ScmVersionService(versionExt)  {
@@ -56,7 +60,7 @@ class DryVersionService(versionExt: VersionExtension,
         }
 
     /**
-     * Returns a Map with version and associated version tag object
+     * Returns a Map with version and associated version tag object.
      *
      * @property versionTagMap map of version and version tag
      */
@@ -93,7 +97,8 @@ class DryVersionService(versionExt: VersionExtension,
     }
 
     /**
-     * Returns a list of version and tags/branches
+     * Returns a list of version and tags/branches.
+     *
      * @param branchFilter
      * @return map
      */

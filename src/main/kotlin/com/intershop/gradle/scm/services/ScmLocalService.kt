@@ -27,9 +27,12 @@ abstract class ScmLocalService(val projectDir: File,
                                val prefixes: PrefixConfig) {
 
     companion object {
+        /**
+         * Regex pattern for banches.
+         */
         const val BRANCH_PATTERN = "^\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?(-.*)?"
 
-        private val MIN_GROUP_SIZE = 3
+        private const val MIN_GROUP_SIZE = 3
     }
 
     private var featureBranchNameInternal: String = ""
@@ -40,17 +43,27 @@ abstract class ScmLocalService(val projectDir: File,
     var branchType: BranchType = BranchType.BRANCH
         protected set
 
+    /**
+     * Returns the branch type depending on
+     * the parameter.
+     *
+     * @param isFeatureBranch true if a feature branch is used.
+     */
     fun getBranchType(isFeatureBranch: Boolean): BranchType {
         return if(isFeatureBranch) { branchType } else { BranchType.BRANCH}
     }
 
     /**
-     * The base (stabilization) branch name of the current working copy
+     * The base (stabilization) branch name of the current working copy.
+     *
+     * @property branchName
      */
     abstract val branchName: String
 
     /**
-     * The base feature branch name of the current working copy
+     * The base feature branch name of the current working copy.
+     *
+     * @property featureBranchName
      */
     var featureBranchName: String
         get() = featureBranchNameInternal

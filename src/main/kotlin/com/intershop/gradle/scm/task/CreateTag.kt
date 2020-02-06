@@ -21,6 +21,10 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * This is the implementation of Gradle
+ * task to create the "next" tag.
+ */
 open class CreateTag: DefaultTask() {
 
     init {
@@ -30,6 +34,9 @@ open class CreateTag: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    /**
+     * Implementation of the task action.
+     */
     @Throws(GradleException::class)
     @TaskAction
     fun tag() {

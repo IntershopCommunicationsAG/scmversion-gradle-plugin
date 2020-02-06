@@ -8,9 +8,24 @@ import com.intershop.gradle.scm.version.AbstractBranchFilter
 import com.intershop.gradle.scm.version.ScmVersionObject
 import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.Version
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
+/**
+ * This is the implementation of a version
+ * service based on a file system.
+ *
+ * @constructor creates a service based on the file system
+ * @param versionExt main extension of this plugin
+ * @param localService local service for GIt functionality
+ */
 open class FileVersionService(versionExt: VersionExtension,
                               override val localService: FileLocalService): ScmVersionService(versionExt) {
+
+    companion object {
+        @JvmStatic
+        protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+    }
 
     /**
      * Returns an object from the SCM with additional information.
@@ -24,7 +39,7 @@ open class FileVersionService(versionExt: VersionExtension,
         }
 
     /**
-     * Moves the working copy to a specified version
+     * Moves the working copy to a specified version.
      *
      * @param version
      * @param type branch type
@@ -47,7 +62,8 @@ open class FileVersionService(versionExt: VersionExtension,
     }
 
     /**
-     * Returns a list of version and tags/branches
+     * Returns a list of version and tags/branches.
+     *
      * @param branchFilter
      * @return map
      */
@@ -80,7 +96,7 @@ open class FileVersionService(versionExt: VersionExtension,
     }
 
     /**
-     * Returns a Map with version and associated version tag object
+     * Returns a Map with version and associated version tag object.
      *
      * @property versionTagMap map of version and version tag
      */

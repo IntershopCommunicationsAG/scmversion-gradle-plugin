@@ -24,6 +24,10 @@ import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.util.FS
 import java.io.File
 
+/**
+ * This is the helper implemenation for
+ * access with an ssh key.
+ */
 open class SSHConnector: JschConfigSessionFactory {
 
     private var keyFile: File? = null

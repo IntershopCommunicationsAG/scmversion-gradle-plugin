@@ -48,10 +48,16 @@ class ScmVersionPlugin  : Plugin<Project> {
          */
         const val SCM_EXTENSION = "scm"
 
-        // target version property name
+        /**
+         * Target version property name for
+         * change log.
+         */
         const val  TARGETVERSION = "TARGET_VERSION"
 
-        // change log file
+        /**
+         * Changelog file property name for
+         * change log.
+         */
         const val  CHANGELOG = "CHANGELOG_FILE"
 
         /**

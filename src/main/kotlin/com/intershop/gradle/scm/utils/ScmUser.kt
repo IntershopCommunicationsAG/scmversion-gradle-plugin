@@ -20,7 +20,7 @@ import org.gradle.api.provider.Property
 import javax.inject.Inject
 
 /**
- * SCM user object
+ * SCM user object.
  */
 open class ScmUser @Inject constructor(objectFactory: ObjectFactory) {
 

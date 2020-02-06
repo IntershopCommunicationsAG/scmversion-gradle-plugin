@@ -17,7 +17,15 @@ package com.intershop.gradle.scm.services
 
 import java.io.File
 
+/**
+ * File change log service interface.
+ */
 interface ScmChangeLogService {
 
+    /**
+     * This is the main function of the service.
+     * @param changelogFile
+     * @param targetVersion
+     */
     fun createLog(changelogFile: File, targetVersion: String?)
 }

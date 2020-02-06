@@ -18,4 +18,9 @@ package com.intershop.gradle.scm.version
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.release.version.Version
 
+/**
+ * Data object for of a version tag.
+ * @property version        version object
+ * @property branchObject   orginal scm object
+ */
 data class VersionTag constructor(var version: Version, var branchObject: BranchObject)
