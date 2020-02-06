@@ -142,17 +142,19 @@ open class GitVersionService
         val path: String
         val versionMap = mutableMapOf<String, BranchObject>()
 
-        if(checkBranch(BranchType.TAG, version)) {
-            branchName = getBranchName(BranchType.TAG, version)
-            versionMap.putAll(getTagMap(getBranchFilter(BranchType.TAG)))
-            path = "tags/"
-        } else if(checkBranch(type, version)) {
-            branchName = getBranchName(type, version)
-            versionMap.putAll(getBranchMap( ScmBranchFilter(localService.prefixes, type,
-                    localService.branchName, localService.branchType, ".*", versionExt.patternDigits)))
-            path = "origin/"
-        } else {
-            throw ScmException("Version '${version}' does not exists")
+        when {
+            checkBranch(BranchType.TAG, version) -> {
+                branchName = getBranchName(BranchType.TAG, version)
+                path = "tags/"
+                versionMap.putAll(getTagMap(getBranchFilter(BranchType.TAG)))
+            }
+            checkBranch(type, version) -> {
+                branchName = getBranchName(type, version)
+                versionMap.putAll(getBranchMap( ScmBranchFilter(localService.prefixes, type,
+                        localService.branchName, localService.branchType, ".*", versionExt.patternDigits)))
+                path = "origin/"
+            }
+            else -> throw ScmException("Version '${version}' does not exists")
         }
 
         var objectID = ""

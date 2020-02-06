@@ -42,7 +42,7 @@ import javax.inject.Inject
  * }
  * </pre>
  */
-abstract class ChangeLogExtension @Inject constructor(val scmExtension: ScmExtension) {
+abstract class ChangeLogExtension @Inject constructor(private val scmExtension: ScmExtension) {
 
     companion object {
         /**

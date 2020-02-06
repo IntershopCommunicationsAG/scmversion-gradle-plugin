@@ -60,13 +60,11 @@ open class ToVersion: DefaultTask() {
     }
 
     private fun getBranchType(branchTypeStr: String, featureBranchStr: String): BranchType {
-        return if(branchTypeStr.isNotEmpty()) {
-                    BranchType.valueOf(branchTypeStr)
-                } else if (featureBranchStr.isNotEmpty()) {
-                    BranchType.FEATUREBRANCH
-                } else {
-                    BranchType.BRANCH
-                }
+        return when {
+            branchTypeStr.isNotEmpty()      -> BranchType.valueOf(branchTypeStr)
+            featureBranchStr.isNotEmpty()   -> BranchType.FEATUREBRANCH
+            else -> BranchType.BRANCH
+        }
     }
 
     /**

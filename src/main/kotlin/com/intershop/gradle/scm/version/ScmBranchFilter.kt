@@ -15,7 +15,6 @@
  */
 package com.intershop.gradle.scm.version
 
-import com.intershop.gradle.scm.services.ScmVersionService
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.IPrefixConfig
 import com.intershop.release.version.Version
