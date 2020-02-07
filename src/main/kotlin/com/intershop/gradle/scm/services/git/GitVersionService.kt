@@ -55,6 +55,11 @@ open class GitVersionService
     companion object {
         @JvmStatic
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+
+        /**
+         * Max length of the branch name
+         */
+        const val MAX_BRANCHNAME_LENGTH = 250
     }
 
     /**
@@ -226,7 +231,12 @@ open class GitVersionService
         if (checkBranch(branchType, version) ) {
             throw ScmException("Branch for $version exists in this repo.")
         }
-        val branchName = getBranchName(branchType, version)
+        var branchName = getBranchName(branchType, version)
+
+        if(branchName.length > MAX_BRANCHNAME_LENGTH) {
+            log.warn("Branchname {} will be reduced to a length of {}", branchName, MAX_BRANCHNAME_LENGTH)
+            branchName = branchName.substring(0, MAX_BRANCHNAME_LENGTH)
+        }
 
         // create branch
         val cmd = gitService.client.branchCreate().setName(branchName).

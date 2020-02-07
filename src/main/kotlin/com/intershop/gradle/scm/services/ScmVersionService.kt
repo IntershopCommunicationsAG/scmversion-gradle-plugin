@@ -55,6 +55,11 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
          * List of base branch types.
          */
         val baseBranches = listOf(BranchType.MASTER, BranchType.BRANCH, BranchType.TAG)
+
+        /**
+         * Branches with rev id extension
+         */
+        val extBranches = listOf(BranchType.MASTER, BranchType.DETACHEDHEAD)
     }
 
     /**
@@ -217,7 +222,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
             if ((!changed && fromBranchName) || defaultVersion)  return version
 
             if (! specialBranches.contains(localService.branchType)) {
-                if (changed) { getChangedVersion() }
+                if (changed) return getChangedVersion()
             } else {
                 if (versionExt.majorVersionOnly) {
                     var mv = version.normalVersion.major
@@ -259,14 +264,10 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
     }
 
     private fun calcScmRevExtension(): String {
-        if(localService.branchType == BranchType.MASTER ||
-                versionExt.continuousReleaseBranches.contains(localService.branchName) ||
-                localService.branchType == BranchType.DETACHEDHEAD) {
-            return if(localService is GitLocalService) {
-                         "rev.id." + localService.revID.substring(0, HASHLENGTH)
-                    } else {
-                        "rev.id." + localService.revID
-                    }
+        if(versionExt.continuousReleaseBranches.contains(localService.branchName)
+                || extBranches.contains(localService.branchType)
+                && ! versionExt.disableRevExt) {
+            return "rev.id." + localService.revID.substring(0, HASHLENGTH)
         }
 
         return ""

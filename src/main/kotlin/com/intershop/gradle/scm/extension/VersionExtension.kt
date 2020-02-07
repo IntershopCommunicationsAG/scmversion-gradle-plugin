@@ -96,6 +96,7 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
     private val useBuildExtensionProperty: Property<Boolean> = objectFactory.property(Boolean::class.java)
     private val majorVersionOnlyProperty: Property<Boolean> = objectFactory.property(Boolean::class.java)
     private val disableSCMProperty: Property<Boolean> = objectFactory.property(Boolean::class.java)
+    private val disableRevExtProperty: Property<Boolean> = objectFactory.property(Boolean::class.java)
     private val continuousReleaseProperty: Property<Boolean> = objectFactory.property(Boolean::class.java)
     private val continuousReleaseBranchesProperty: ListProperty<String> = objectFactory.listProperty(String::class.java)
 
@@ -116,7 +117,7 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
         useBuildExtensionProperty.convention(false)
         majorVersionOnlyProperty.convention(true)
         disableSCMProperty.convention(false)
-
+        disableRevExtProperty.convention(false)
         val staticVersionFile = projectLayout.buildDirectory.
                 file("${SCMVERSIONDIR}/${STATICVERSIONFILE}").get().asFile
 
@@ -307,6 +308,12 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
      * be added to the version.
      */
     var disableSCM: Boolean by disableSCMProperty
+
+    /**
+     * With this configuration the extension of the rev id in
+     * special cases can be disabled.
+     */
+    var disableRevExt: Boolean by disableRevExtProperty
 
     /**
      * For continuous releases it is helpful to use an
