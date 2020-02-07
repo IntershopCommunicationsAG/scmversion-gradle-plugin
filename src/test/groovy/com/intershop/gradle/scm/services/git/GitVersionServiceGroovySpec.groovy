@@ -159,7 +159,7 @@ class GitVersionServiceGroovySpec extends AbstractScmGroovySpec {
         when:
         VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
         GitVersionService client = versionConfig.versionService
-        def rev = client.createTag(version, null)
+        def rev = client.createTag(version)
 
         then:
         rev != null
@@ -179,7 +179,7 @@ class GitVersionServiceGroovySpec extends AbstractScmGroovySpec {
         when:
         VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
         GitVersionService client = versionConfig.versionService
-        def rev = client.createBranch(version, false, null)
+        def rev = client.createBranch(version, false)
 
         then:
         rev != null

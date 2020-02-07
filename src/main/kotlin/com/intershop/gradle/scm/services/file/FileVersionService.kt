@@ -56,7 +56,7 @@ open class FileVersionService(versionExt: VersionExtension,
      * @param version
      * @return the revision id of the tag
      */
-    override fun createTag(version: String, rev: String?): String {
+    override fun createTag(version: String): String {
         log.info("Not available for file system only projects!")
         return ""
     }
@@ -79,7 +79,7 @@ open class FileVersionService(versionExt: VersionExtension,
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the branch
      */
-    override fun createBranch(version: String, featureBranch: Boolean, rev: String?): String {
+    override fun createBranch(version: String, featureBranch: Boolean): String {
         log.info("Not available for file system only projects!")
         return ""
     }

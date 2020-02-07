@@ -65,7 +65,7 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
         var vdata = arrayOf("","","","")
         val dp = mutableListOf("\\d+", "(\\.\\d+)?", "(\\.\\d+)?", "(\\.\\d+)?")
 
-        var patternString: String = "^${this.prefixes.getPrefix(versionBranchtype ?: BranchType.TAG)}"
+        var patternString = "^${this.prefixes.getPrefix(versionBranchtype ?: BranchType.TAG)}"
 
         if(versionBranchtype == null && branchFilterName == "" && branchFilterType == null && featureBranch == "") {
             log.debug("Create filter for tags.")

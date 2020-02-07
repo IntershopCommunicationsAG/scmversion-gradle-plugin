@@ -19,7 +19,9 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.utils.BranchType
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 /**
  * This is the implementation of Gradle
@@ -36,6 +38,16 @@ open class PrepareRelease: DefaultTask() {
         group = "Release Version Plugin"
     }
 
+    private var dryRunProp: Boolean = false
+
+    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
+    @get:Input
+    var dryRun: Boolean
+        get() = dryRunProp
+        set(value) {
+            dryRunProp = value
+        }
+
     /**
      * Implementation of the task action.
      */
@@ -50,20 +62,35 @@ open class PrepareRelease: DefaultTask() {
             val tv = versionService.preVersion.toString()
 
             if (!versionService.isReleaseVersionAvailable(tv)) {
-                versionService.createTag(tv, null)
+                if(! dryRun) {
+                    versionService.createTag(tv)
+                } else {
+                    println("-> DryRun: Tag will be created with $tv")
+                }
             }
 
-            if (versionService.moveTo(tv, BranchType.TAG) == "") {
-                throw GradleException("It is not possible to move the existing working copy to version $tv on the SCM!")
+            if(!dryRun) {
+                if (versionService.moveTo(tv, BranchType.TAG) == "") {
+                    throw GradleException("It is not possible to move the existing working copy to version $tv on the SCM!")
+                }
+            } else {
+                println("-> DryRun: Working copy will be moved to $tv")
             }
             tv
         } else {
             versionConfig.version
         }
 
-        println("""
-                    |----------------------------------------------
-                    |        Project version: $version
-                    |----------------------------------------------""".trimMargin())
+        if(! dryRun) {
+            println("""
+            |----------------------------------------------
+            |        Project version: $version
+            |----------------------------------------------""".trimMargin())
+        } else {
+            println("""
+            |----------------------------------------------
+            |        DryRun: No changes on working copy.
+            |----------------------------------------------""".trimMargin())
+        }
     }
 }

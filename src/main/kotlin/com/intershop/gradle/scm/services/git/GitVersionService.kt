@@ -192,7 +192,7 @@ open class GitVersionService
      * @return the revision id of the tag
      */
     @Throws(ScmException::class)
-    override fun createTag(version: String, rev: String?): String {
+    override fun createTag(version: String): String {
         // check if tag exits
         if (checkBranch(BranchType.TAG, version)) {
             throw ScmException("Tag for $version exists on this repo.")
@@ -203,7 +203,7 @@ open class GitVersionService
         // create tag
         val cmd = gitService.client.tag()
         cmd.name = tagName
-        cmd.objectId = remoteService.getObjectId(rev ?: localService.revID)
+        cmd.objectId = remoteService.getObjectId(localService.revID)
         cmd.message = "Tag $tagName created by gradle plugin"
         cmd.isAnnotated = true
         cmd.isForceUpdate = false
@@ -224,7 +224,7 @@ open class GitVersionService
      * @return the revision id of the branch
      */
     @Throws(ScmException::class)
-     override fun createBranch(version: String,  featureBranch: Boolean, rev: String? ): String {
+     override fun createBranch(version: String,  featureBranch: Boolean): String {
         val branchType = localService.getBranchType(featureBranch)
 
         // check if branch exits
@@ -240,7 +240,7 @@ open class GitVersionService
 
         // create branch
         val cmd = gitService.client.branchCreate().setName(branchName).
-                    setStartPoint(rev ?: localService.revID).setForce(true)
+                    setStartPoint(localService.revID).setForce(true)
         val ref = cmd.call()
 
         // push changes to remote

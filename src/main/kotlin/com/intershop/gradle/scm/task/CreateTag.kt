@@ -19,7 +19,9 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.utils.BranchType
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 /**
  * This is the implementation of Gradle
@@ -33,6 +35,16 @@ open class CreateTag: DefaultTask() {
         description = "Creates an SCM tag With a specific version from the working copy"
         group = "Release Version Plugin"
     }
+
+    private var dryRunProp: Boolean = false
+
+    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
+    @get:Input
+    var dryRun: Boolean
+        get() = dryRunProp
+        set(value) {
+            dryRunProp = value
+        }
 
     /**
      * Implementation of the task action.
@@ -53,14 +65,23 @@ open class CreateTag: DefaultTask() {
         val version = versionService.preVersion
 
         try {
-            versionService.createTag(version.toString(), null)
+            versionService.createTag(version.toString())
         } catch ( ex: Exception ) {
             throw GradleException("It is not possible to create a tag on the SCM! (${ex.message})")
         }
 
+        if(! dryRun) {
         println("""
             |----------------------------------------------
             |        Tag created: $version
             |----------------------------------------------""".trimMargin())
+        } else {
+
+            println("""
+            |----------------------------------------------
+            |        DryRun: Tag would be created: 
+            |        Tag: $version
+            |----------------------------------------------""".trimMargin())
+        }
     }
 }

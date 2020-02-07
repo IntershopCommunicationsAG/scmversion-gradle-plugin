@@ -19,7 +19,10 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.utils.BranchType
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 /**
  * This is the implementation of Gradle
@@ -27,13 +30,8 @@ import org.gradle.api.tasks.TaskAction
  */
 open class CreateBranch: DefaultTask() {
 
-    companion object {
-        /**
-         * Property name of the feature
-         * branch extension configuration.
-         */
-        const val PROPNAME = "feature"
-    }
+    private var dryRunProp: Boolean = false
+    private var featureName: String = ""
 
     init {
         outputs.upToDateWhen { false }
@@ -41,6 +39,23 @@ open class CreateBranch: DefaultTask() {
         description = "Creates an SCM branch With a specific version from the working copy"
         group = "Release Version Plugin"
     }
+
+    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
+    @get:Input
+    var dryRun: Boolean
+        get() = dryRunProp
+        set(value) {
+            dryRunProp = value
+        }
+
+    @set:Option(option = "feature", description = "Feature name for branch creation")
+    @get:Optional
+    @get:Input
+    var feature: String
+        get() = featureName
+        set(value) {
+            featureName = value
+        }
 
     /**
      * Implementation of the task action.
@@ -59,21 +74,30 @@ open class CreateBranch: DefaultTask() {
         var version = versionService.preVersion
         var isFeatureBranch = false
 
-        if(project.hasProperty(PROPNAME) && project.property(PROPNAME).toString().isNotEmpty()) {
-            val feature = project.property(PROPNAME).toString()
-            version = version.setBranchMetadata(feature)
+        if(featureName.isNotEmpty()) {
+            version = version.setBranchMetadata(featureName)
             isFeatureBranch = true
         }
 
-        try {
-             versionService.createBranch(version.toStringFor(versionConfig.patternDigits), isFeatureBranch, null)
-        }catch ( ex: Exception ) {
-            throw GradleException("It is not possible to create a branch on the SCM! (${ex.message})")
-        }
+        if(! dryRun) {
+            try {
+                versionService.createBranch(version.toStringFor(versionConfig.patternDigits), isFeatureBranch)
+            } catch (ex: Exception) {
+                throw GradleException("It is not possible to create a branch on the SCM! (${ex.message})")
+            }
 
-        println("""
+            println("""
             |----------------------------------------------
             |        Branch created: $version
             |----------------------------------------------""".trimMargin())
+
+        } else {
+
+            println("""
+            |----------------------------------------------
+            |        DryRun: Branch would be created: 
+            |        Branch: $version
+            |----------------------------------------------""".trimMargin())
+        }
     }
 }

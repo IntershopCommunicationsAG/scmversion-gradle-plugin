@@ -108,7 +108,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
      * @param version
      * @return the revision id of the tag
      */
-    abstract fun createTag(version: String, rev: String?): String
+    abstract fun createTag(version: String): String
 
     /**
      * Returns a list of version and tags/branches.
@@ -125,7 +125,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
      * @param featureBranch true, if this is a version of a feature branch
      * @return the revision id of the branch
      */
-    abstract fun createBranch(version: String, featureBranch: Boolean, rev: String?): String
+    abstract fun createBranch(version: String, featureBranch: Boolean): String
 
     /**
      * Returns true, if the specified release version is available.
