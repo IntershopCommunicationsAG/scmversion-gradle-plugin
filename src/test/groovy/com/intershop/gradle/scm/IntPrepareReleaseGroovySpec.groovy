@@ -52,7 +52,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -62,7 +62,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '--stacktrace', "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('release', '--stacktrace', "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -101,7 +101,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -111,7 +111,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def createResult = getPreparedGradleRunner()
-                .withArguments('tag', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('tag', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -121,7 +121,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def prepareResult = getPreparedGradleRunner()
-                .withArguments('release', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('release', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

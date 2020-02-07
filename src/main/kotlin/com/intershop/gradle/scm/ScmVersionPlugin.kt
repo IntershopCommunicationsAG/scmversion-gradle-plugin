@@ -15,6 +15,7 @@
  */
 package com.intershop.gradle.scm
 
+import com.intershop.gradle.scm.extension.ChangeLogExtension
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.task.CreateBranch
 import com.intershop.gradle.scm.task.CreateChangeLog
@@ -22,6 +23,8 @@ import com.intershop.gradle.scm.task.CreateTag
 import com.intershop.gradle.scm.task.PrepareRelease
 import com.intershop.gradle.scm.task.ShowVersion
 import com.intershop.gradle.scm.task.ToVersion
+import com.intershop.gradle.scm.utils.ScmKey
+import com.intershop.gradle.scm.utils.ScmUser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -49,18 +52,6 @@ class ScmVersionPlugin  : Plugin<Project> {
         const val SCM_EXTENSION = "scm"
 
         /**
-         * Target version property name for
-         * change log.
-         */
-        const val  TARGETVERSION = "TARGET_VERSION"
-
-        /**
-         * Changelog file property name for
-         * change log.
-         */
-        const val  CHANGELOG = "CHANGELOG_FILE"
-
-        /**
          * Task names for showVersion task.
          */
         const val  SHOW_VERSION_TASK = "showVersion"
@@ -84,6 +75,46 @@ class ScmVersionPlugin  : Plugin<Project> {
          * Task names for changelog task.
          */
         const val  CHANGELOG_TASK = "changelog"
+
+        /**
+         * Environment variable, project property and system property for name of scm user.
+         */
+        val SCM_USER_NAME = mapOf("env" to "SCM_USERNAME", "prop" to "scmUserName")
+
+        /**
+         * Environment variable, project property and system property for password scm user.
+         */
+        val SCM_USER_PASSWORD = mapOf("env" to "SCM_PASSWORD", "prop" to "scmUserPasswd")
+
+
+        /**
+         * Key file for SCM access.
+         */
+        val SCM_KEY_FILE = mapOf("env" to "SCM_KEYFILE", "prop" to "scmKeyFile")
+        /**
+         * Passphrase of key file for SCM access.
+         */
+        val SCM_KEY_PASSPHRASE = mapOf("env" to "SCM_KEYPASSPHRASE", "prop" to "scmKeyPassphrase")
+
+        /**
+         * Environment variable to always disable the rev ID extension.
+         */
+        val SCM_DISABLE_REVIDEXT = mapOf("env" to "SCM_DISABLE_REVIDEXT", "prop" to "scmDisableRevIdExt")
+
+        /**
+         * Target version property name for
+         * change log.
+         */
+        val  CHANGELOG_PREV_VERSION = mapOf("env" to "PREV_VERSION", "prop" to "prevVersion")
+
+        /**
+         * Changelog file property name for
+         * change log.
+         */
+        val  CHANGELOG_FILE = mapOf("env" to "CHANGELOG_FILE", "prop" to "changelogFile")
+
+        private const val ENVVAR = "env"
+        private const val PROPVAR = "prop"
     }
 
     override fun apply(project: Project) {
@@ -94,15 +125,10 @@ class ScmVersionPlugin  : Plugin<Project> {
 
             extensions.extraProperties.set("useSCMVersionConfig", true)
 
-            extension.changelog.targetVersion = (System.getProperty(TARGETVERSION) ?:
-                                                    System.getenv(TARGETVERSION) ?: "").toString().trim()
-
-            if(System.getProperty(CHANGELOG) != null) {
-                extension.changelog.changelogFile = File(System.getProperty(CHANGELOG))
-            }
-            if(System.getenv(CHANGELOG) != null) {
-                extension.changelog.changelogFile = File(System.getenv(CHANGELOG))
-            }
+            configureKey(project, extension.key)
+            configureUser(project, extension.user)
+            extension.version.disableRevExt = getDisableRevIdExt(project)
+            configureChangeLog(project, extension.changelog)
 
             tasks.maybeCreate(SHOW_VERSION_TASK, ShowVersion::class.java)
             tasks.maybeCreate(TO_VERSION_TASK, ToVersion::class.java)
@@ -112,8 +138,58 @@ class ScmVersionPlugin  : Plugin<Project> {
 
             tasks.maybeCreate(CHANGELOG_TASK, CreateChangeLog::class.java).apply {
                 provideChangelogFile(extension.changelog.changelogFileProvider)
-                provideTargetVersion(extension.changelog.targetVersioneProvider)
+                providePreviousVersion(extension.changelog.previousVersionProvider)
             }
         }
     }
+
+    private fun getDisableRevIdExt(project: Project): Boolean {
+        val disable = getValueFrom(project, SCM_DISABLE_REVIDEXT, "false")
+        return disable.toBoolean()
+    }
+
+    private fun configureChangeLog(project: Project, changelog: ChangeLogExtension ) {
+        val preVersion = getValueFrom(project, CHANGELOG_PREV_VERSION, "")
+        if(preVersion.isNotEmpty()) {
+            changelog.previousVersion = preVersion
+        }
+
+        val changeLogFile = getValueFrom(project, CHANGELOG_FILE, "")
+        if(changeLogFile.isNotEmpty()) {
+            changelog.changelogFile = project.file(changeLogFile)
+        }
+    }
+
+    private fun configureUser(project: Project, userconf: ScmUser) {
+        val username = getValueFrom(project, SCM_USER_NAME, "")
+        if(username.isNotEmpty()) {
+            userconf.name = username
+        }
+        val password = getValueFrom(project, SCM_USER_PASSWORD, "")
+        if(password.isNotEmpty()) {
+            userconf.password = password
+        }
+    }
+
+    private fun configureKey(project: Project, keyconf: ScmKey) {
+        val keyFile = getValueFrom(project, SCM_KEY_FILE, "")
+        if(keyFile.isNotEmpty() && File(keyFile).exists()) {
+            keyconf.file = File(keyFile)
+        }
+        val keyPhrase = getValueFrom(project, SCM_KEY_PASSPHRASE, "")
+        if(keyPhrase.isNotEmpty()) {
+            keyconf.passphrase = keyPhrase
+        }
+    }
+
+    private fun getValueFrom(project: Project, vars: Map<String,String>, defaultValue: String): String {
+        return when {
+            ! System.getenv(vars[ENVVAR]).isNullOrEmpty() -> System.getenv(vars[ENVVAR]).trim()
+            ! System.getProperty(vars[PROPVAR]!!).isNullOrEmpty() -> System.getProperty(vars[PROPVAR]!!).trim()
+            project.hasProperty(vars[PROPVAR]!!) &&  project.property(vars[PROPVAR]!!).toString().isNotEmpty() ->
+                                                                project.property(vars[PROPVAR]!!).toString().trim()
+            else -> defaultValue
+        }
+    }
+
 }

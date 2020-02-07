@@ -16,7 +16,6 @@
 package com.intershop.gradle.scm.services
 
 import com.intershop.gradle.scm.extension.VersionExtension
-import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.services.git.GitLocalService.Companion.HASHLENGTH
 import com.intershop.gradle.scm.utils.BranchObject
 import com.intershop.gradle.scm.utils.BranchType

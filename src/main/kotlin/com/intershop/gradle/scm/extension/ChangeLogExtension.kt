@@ -80,28 +80,29 @@ abstract class ChangeLogExtension @Inject constructor(private val scmExtension: 
         tempChangelogService
     }
 
-    private val targetVersioneProperty: Property<String> = objectFactory.property(String::class.java)
+    private val previousVersionProperty: Property<String> = objectFactory.property(String::class.java)
     private val changelogFileProperty: RegularFileProperty = objectFactory.fileProperty()
 
     init {
         changelogFileProperty.convention(projectLayout.buildDirectory.file(CHANGELOGFILE_PATH))
+        previousVersionProperty.convention("")
     }
 
     /**
-     * This is provider for the target version.
+     * This is provider for the previous version.
      *
-     * @property targetVersioneProvider
+     * @property previousVersionProperty
      */
-    val targetVersioneProvider: Provider<String>
-        get() = targetVersioneProperty
+    val previousVersionProvider: Provider<String>
+        get() = previousVersionProperty
 
     /**
-     * This is the target version for the
+     * This is the previous version for the
      * calculation of the change log.
      *
-     * @property targetVersion
+     * @property previousVersion
      */
-    var targetVersion: String by targetVersioneProperty
+    var previousVersion: String by previousVersionProperty
 
     /**
      * This is provider for the changelog file.

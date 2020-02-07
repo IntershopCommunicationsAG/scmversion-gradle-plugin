@@ -52,7 +52,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -86,7 +86,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -120,7 +120,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=RELEASE", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=RELEASE")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -155,7 +155,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -189,7 +189,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=SNAPSHOT", "-PscmUserName=${System.properties['svnuser']}", "-PscmUserPasswd=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmVersionExt=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -224,7 +224,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -295,7 +295,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -329,7 +329,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -399,7 +399,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -436,7 +436,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -477,7 +477,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .withDebug(true)
                 .build()
@@ -519,7 +519,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -560,7 +560,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -597,7 +597,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -667,7 +667,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -739,7 +739,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -807,7 +807,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -847,7 +847,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -884,7 +884,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -922,7 +922,7 @@ class IntShowVersionKtsSpec extends AbstractTaskKtsSpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-PscmUserName=${System.properties['gituser']}", "-PscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 

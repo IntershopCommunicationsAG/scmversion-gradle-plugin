@@ -27,7 +27,7 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 @Unroll
 class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
-    final static String LOGLEVEL = "-i"
+    final static String LOGLEVEL = "-info"
 
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
@@ -49,7 +49,7 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -82,7 +82,7 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -111,13 +111,13 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
         version = scm.version.version
 
-        scm.changelog.targetVersion = '1.0.0'
+        scm.changelog.previousVersion = '1.0.0'
 
         """.stripIndent()
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -159,7 +159,7 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copy', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('copy', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
@@ -201,7 +201,7 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('copy', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('copy', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
         File f = new File(testProjectDir, 'build/testlog/testlog.asciidoc')

@@ -15,9 +15,11 @@
  */
 package com.intershop.gradle.scm.utils
 
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import java.io.File
 import javax.inject.Inject
 
@@ -30,31 +32,13 @@ open class ScmKey @Inject constructor(objectFactory: ObjectFactory) {
     private val fileProperty: RegularFileProperty = objectFactory.fileProperty()
     private val passphraseProperty: Property<String> = objectFactory.property(String::class.java)
 
-    companion object {
-        /**
-         * Key file for SCM access.
-         */
-        const val KEYFILE = "SCM_KEYFILE"
+    /**
+     * Provider for name property.
+     */
+    val fileProvider: Provider<RegularFile> = fileProperty
 
-        /**
-         * Passphrase of key file for SCM access.
-         */
-        const val PASSPHRASE = "SCM_KEYPASSPHRASE"
-    }
-
-    init {
-        val filePath = (System.getProperty(KEYFILE) ?: System.getenv(KEYFILE) ?: "").toString().trim()
-        var fileTemp: File? = null
-        if (filePath.isNotEmpty()) {
-            fileTemp = File(filePath)
-        }
-        if (fileTemp == null || !fileTemp.exists() || !fileTemp.canRead()) {
-            fileTemp = File(System.getProperty("user.home"), ".ssh/id_dsa")
-        }
-        fileProperty.set(fileTemp)
-
-        passphraseProperty.set( (System.getProperty(PASSPHRASE) ?: System.getenv(PASSPHRASE) ?: "").toString().trim() )
-    }
+    val fileIsAvailable: Boolean
+        get() = fileProvider.isPresent && fileProvider.orNull != null && fileProvider.get().asFile.exists()
 
     /**
      * Key file property.

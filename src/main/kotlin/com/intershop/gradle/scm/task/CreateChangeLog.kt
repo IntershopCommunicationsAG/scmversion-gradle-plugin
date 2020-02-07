@@ -26,6 +26,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.File
@@ -46,25 +47,28 @@ abstract class CreateChangeLog: DefaultTask() {
     abstract val objectFactory: ObjectFactory
 
     private val changelogFileProperty: RegularFileProperty = objectFactory.fileProperty()
-    private val targetVersionProperty: Property<String> = project.objects.property(String::class.java)
+    private val previousVersionProperty: Property<String> = project.objects.property(String::class.java)
 
     init {
         description = "Creates a changelog based on SCM information in ASCIIDoc format"
         group = "Release Version Plugin"
+
+        previousVersionProperty.convention("")
     }
 
     /**
      * This is the provider for the targetVersion.
      */
-    fun provideTargetVersion(targetVersion: Provider<String>) = targetVersionProperty.set(targetVersion)
+    fun providePreviousVersion(previousVersion: Provider<String>) = previousVersionProperty.set(previousVersion)
 
     /**
-     * This is the targetVersion.
+     * This is the previousVersion.
      *
-     * @property targetVersion
+     * @property previousVersion
      */
+    @get:Optional
     @get:Input
-    var targetVersion by targetVersionProperty
+    var previousVersion by previousVersionProperty
 
     /**
      * Provider for output file property.
@@ -99,7 +103,8 @@ abstract class CreateChangeLog: DefaultTask() {
             }
             changelogFile.createNewFile()
 
-            changelogService.createLog(changelogFile, targetVersion)
+            val tempPrevVersion = if(previousVersion.isNotEmpty()) { previousVersion } else { null }
+            changelogService.createLog(changelogFile, tempPrevVersion)
             project.logger.info("Change log was written to {}", changelogFile.absolutePath)
         } else {
             project.logger.warn("The used scm does not support the creation of a change log.")

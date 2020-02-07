@@ -50,7 +50,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['svnuser']}", "-DSCM_PASSWORD=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -84,7 +84,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['svnuser']}", "-DSCM_PASSWORD=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -118,7 +118,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=RELEASE", "-DSCM_USERNAME=${System.properties['svnuser']}", "-DSCM_PASSWORD=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=RELEASE")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -153,7 +153,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT", "-DSCM_USERNAME=${System.properties['svnuser']}", "-DSCM_PASSWORD=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -187,7 +187,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT", "-DSCM_USERNAME=${System.properties['svnuser']}", "-DSCM_PASSWORD=${System.properties['svnpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -222,7 +222,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -291,7 +291,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -325,7 +325,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -395,7 +395,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -432,7 +432,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -470,7 +470,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .withDebug(true)
                 .build()
@@ -512,7 +512,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -553,7 +553,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -590,7 +590,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -660,7 +660,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -732,7 +732,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -802,7 +802,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -842,7 +842,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -879,7 +879,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -917,7 +917,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 

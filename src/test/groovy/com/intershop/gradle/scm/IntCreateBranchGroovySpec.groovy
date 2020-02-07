@@ -54,7 +54,7 @@ class IntCreateBranchGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -64,7 +64,7 @@ class IntCreateBranchGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def createResult = getPreparedGradleRunner()
-                .withArguments('branch', '--stacktrace', LOGLEVEL, "-DSCM_USERNAME=${System.properties['gituser']}", "-DSCM_PASSWORD=${System.properties['gitpasswd']}")
+                .withArguments('branch', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

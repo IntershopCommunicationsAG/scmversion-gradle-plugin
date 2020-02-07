@@ -17,6 +17,7 @@ package com.intershop.gradle.scm.utils
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import javax.inject.Inject
 
 /**
@@ -27,22 +28,17 @@ open class ScmUser @Inject constructor(objectFactory: ObjectFactory) {
     private val nameProperty: Property<String> = objectFactory.property(String::class.java)
     private val passwordProperty: Property<String> = objectFactory.property(String::class.java)
 
-    companion object {
-        /**
-         * Environment variable for name of scm user.
-         */
-        const val USERNAME = "SCM_USERNAME"
-
-        /**
-         * Environment variable for password scm user.
-         */
-        const val PASSWORD = "SCM_PASSWORD"
-    }
-
     init {
-        nameProperty.set((System.getProperty(USERNAME) ?: System.getenv(USERNAME) ?: "").toString().trim())
-        passwordProperty.set((System.getProperty(PASSWORD) ?: System.getenv(PASSWORD) ?: "").toString().trim())
+        passwordProperty.isPresent
     }
+
+    /**
+     * Provider for name property.
+     */
+    val nameProvider: Provider<String> = nameProperty
+
+    val nameIsAvailable: Boolean
+        get() = nameProvider.isPresent && nameProvider.getOrElse("").isNotEmpty()
 
     /**
      * This is the name of the SCM user.
@@ -50,6 +46,14 @@ open class ScmUser @Inject constructor(objectFactory: ObjectFactory) {
      * @property name
      */
     var name: String by nameProperty
+
+    /**
+     * Provider for password property.
+     */
+    val passwordProvider: Provider<String> = passwordProperty
+
+    val passwordIsAvailable: Boolean
+        get() = passwordProvider.isPresent && passwordProvider.getOrElse("").isNotEmpty()
 
     /**
      * This is the password of the SCM user.

@@ -48,23 +48,26 @@ import org.slf4j.LoggerFactory
  * @param key
  */
 open class GitRemoteService(val localService: GitLocalService,
-                            var user: ScmUser? = null,
-                            private var key: ScmKey? = null) {
+                            var user: ScmUser,
+                            private var key: ScmKey) {
 
     companion object {
         protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
+
+        fun isSSHGit(remoteUrl: String): Boolean {
+            return (remoteUrl.startsWith("git@") || remoteUrl.startsWith("ssh://git@"))
+        }
     }
 
     init {
         with(localService) {
             if (remoteUrl.isNotEmpty()) {
                 with(remoteUrl) {
-                    if (startsWith("http") && !user?.name.isNullOrEmpty() && !user?.password.isNullOrEmpty()) {
-                        log.debug("User name {} and password is used.", user?.name)
-                        credentials = UsernamePasswordCredentialsProvider(user?.name, user?.password)
-                    } else if ((remoteUrl.startsWith("git@") || remoteUrl.startsWith("ssh://git@"))
-                            && key?.file != null && key!!.file!!.exists()) {
-                        log.debug("ssh connector is used with key {}.", key!!.file!!.absolutePath)
+                    if (startsWith("http") && user.nameIsAvailable && user.passwordIsAvailable) {
+                        log.debug("User name {} and password is used.", user.name)
+                        credentials = UsernamePasswordCredentialsProvider(user.name, user.password)
+                    } else if (isSSHGit(remoteUrl) && key.fileIsAvailable) {
+                        log.debug("ssh connector is used with key {}.", key.file!!.absolutePath)
                         sshConnector = SSHConnector(key)
                     }
                 }
