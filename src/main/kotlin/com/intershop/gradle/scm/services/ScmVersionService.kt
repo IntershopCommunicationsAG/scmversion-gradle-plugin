@@ -56,7 +56,7 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         val baseBranches = listOf(BranchType.MASTER, BranchType.BRANCH, BranchType.TAG)
 
         /**
-         * Branches with rev id extension
+         * Branches with rev id extension.
          */
         val extBranches = listOf(BranchType.MASTER, BranchType.DETACHEDHEAD)
     }

@@ -138,7 +138,7 @@ class ScmVersionPlugin  : Plugin<Project> {
 
             tasks.maybeCreate(CHANGELOG_TASK, CreateChangeLog::class.java).apply {
                 provideChangelogFile(extension.changelog.changelogFileProvider)
-                providePreviousVersion(extension.changelog.previousVersionProvider)
+                providePrevVersion(extension.changelog.previousVersionProvider)
             }
         }
     }

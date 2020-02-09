@@ -28,27 +28,23 @@ import org.gradle.api.tasks.options.Option
  * This is the implementation of Gradle
  * task to create the "next" branch.
  */
-open class CreateBranch: DefaultTask() {
+open class CreateBranch: AbstractDryRunTask() {
 
-    private var dryRunProp: Boolean = false
     private var featureName: String = ""
 
     init {
         outputs.upToDateWhen { false }
 
         description = "Creates an SCM branch With a specific version from the working copy"
-        group = "Release Version Plugin"
     }
 
-    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
-    @get:Input
-    var dryRun: Boolean
-        get() = dryRunProp
-        set(value) {
-            dryRunProp = value
-        }
-
-    @set:Option(option = "feature", description = "Feature name for branch creation")
+    /**
+     * This will configure the feature extension of a branch.
+     * It is a command line option of this task.
+     *
+     * @property feature
+     */
+    @set:Option(option = "feature", description = "Feature extension for version tasks.")
     @get:Optional
     @get:Input
     var feature: String

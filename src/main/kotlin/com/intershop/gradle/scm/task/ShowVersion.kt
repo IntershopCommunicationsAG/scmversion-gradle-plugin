@@ -24,13 +24,12 @@ import org.gradle.api.tasks.TaskAction
  * task to show the calculated version
  * from SCM.
  */
-open class ShowVersion: DefaultTask() {
+open class ShowVersion: AbstractReleaseVersionTask() {
 
     init {
         outputs.upToDateWhen { false }
 
         description = "Prints current project version extracted from SCM."
-        group = "Release Version Plugin"
     }
 
     /**

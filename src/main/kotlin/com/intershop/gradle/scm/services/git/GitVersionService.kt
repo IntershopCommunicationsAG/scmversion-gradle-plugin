@@ -57,7 +57,7 @@ open class GitVersionService
         private val log: Logger = LoggerFactory.getLogger(this::class.java.name)
 
         /**
-         * Max length of the branch name
+         * Max length of the branch name.
          */
         const val MAX_BRANCHNAME_LENGTH = 250
     }

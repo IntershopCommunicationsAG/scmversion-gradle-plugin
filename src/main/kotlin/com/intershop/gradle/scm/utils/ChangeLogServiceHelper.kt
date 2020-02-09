@@ -28,9 +28,9 @@ object ChangeLogServiceHelper {
      */
     fun getHeader(sourceVersion: String, targetVersion: String): String {
         return """
-        = Change Log for $sourceVersion
+        = Change Log for $targetVersion
 
-        This list contains changes since ${targetVersion}. +
+        This list contains changes since ${sourceVersion}. +
         Created: ${LocalDateTime.now()}
 
         [cols="5%,5%,90%", width="95%", options="header"]

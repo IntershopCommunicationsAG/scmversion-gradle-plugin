@@ -29,24 +29,13 @@ import org.gradle.api.tasks.options.Option
  * current SCM repository. It creates a
  * task switch the repo to this tag.
  */
-open class PrepareRelease: DefaultTask() {
+open class PrepareRelease: AbstractDryRunTask() {
 
     init {
         outputs.upToDateWhen { false }
 
         description = "Prepare a release process, create branch and/or tag, moves the working copy to the tag"
-        group = "Release Version Plugin"
     }
-
-    private var dryRunProp: Boolean = false
-
-    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
-    @get:Input
-    var dryRun: Boolean
-        get() = dryRunProp
-        set(value) {
-            dryRunProp = value
-        }
 
     /**
      * Implementation of the task action.
@@ -71,7 +60,7 @@ open class PrepareRelease: DefaultTask() {
 
             if(!dryRun) {
                 if (versionService.moveTo(tv, BranchType.TAG) == "") {
-                    throw GradleException("It is not possible to move the existing working copy to version $tv on the SCM!")
+                    throw GradleException("It is not possible to move the working copy to version $tv on the SCM!")
                 }
             } else {
                 println("-> DryRun: Working copy will be moved to $tv")

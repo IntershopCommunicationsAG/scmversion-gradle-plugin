@@ -34,9 +34,16 @@ open class ScmKey @Inject constructor(objectFactory: ObjectFactory) {
 
     /**
      * Provider for name property.
+     *
+     * @property fileProvider for SSH key file.
      */
     val fileProvider: Provider<RegularFile> = fileProperty
 
+    /**
+     * file check for configuration of the SSH key file.
+     *
+     * @returns true if file is available.
+     */
     val fileIsAvailable: Boolean
         get() = fileProvider.isPresent && fileProvider.orNull != null && fileProvider.get().asFile.exists()
 

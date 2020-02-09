@@ -16,8 +16,12 @@
 
 package com.intershop.gradle.scm
 
+import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.test.utils.AbstractTaskGroovySpec
 import groovy.util.logging.Slf4j
+import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -52,11 +56,13 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
                 .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
-        File f = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
+        File testLog = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
 
         then:
         result.task(":changelog").outcome == SUCCESS
-        f.exists()
+        testLog.exists()
+        testLog.text.contains('add change')
+        testLog.text.contains('| M | test.properties')
 
         where:
         gradleVersion << supportedGradleVersions
@@ -211,6 +217,111 @@ class IntChangelogGroovySpec extends AbstractTaskGroovySpec {
         result.task(":changelog").outcome == SUCCESS
         f.exists()
         cf.exists()
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'get change log on git between tag and not configured previous tag'() {
+        given:
+        prepareTagGitCheckout(testProjectDir, System.properties['giturl'],'CLRELEASE_2.0.0')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes.tagPrefix = 'CLRELEASE'
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('changelog', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+        File testLog = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
+
+        then:
+        result.task(":changelog").outcome == SUCCESS
+        testLog.exists()
+        testLog.text.contains('This list contains changes since 1.5.0.')
+        testLog.text.contains('add change for CL')
+        testLog.text.contains('| M | test.properties')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'get change log on git between tag and configured tag'() {
+        given:
+        prepareTagGitCheckout(testProjectDir, System.properties['giturl'],'CLRELEASE_2.0.0')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes.tagPrefix = 'CLRELEASE'
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('changelog', '--prevVersion=1.0.0', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .build()
+        File testLog = new File(testProjectDir, 'build/changelog/changelog.asciidoc')
+
+        then:
+        result.task(":changelog").outcome == SUCCESS
+        testLog.exists()
+        testLog.text.contains('This list contains changes since 1.0.0.')
+        testLog.text.contains('add change for CL')
+        testLog.text.contains('| M | test.properties')
+
+        where:
+        gradleVersion << supportedGradleVersions
+    }
+
+    @Requires({ System.properties['giturl'] &&
+            System.properties['gituser'] &&
+            System.properties['gitpasswd'] })
+    def 'configured previous version does not exists'() {
+        given:
+        prepareTagGitCheckout(testProjectDir, System.properties['giturl'],'CLRELEASE_2.0.0')
+
+        buildFile << """
+        plugins {
+            id 'com.intershop.gradle.scmversion'
+        }
+
+        scm.prefixes.tagPrefix = 'CLRELEASE'
+
+        version = scm.version.version
+
+        """.stripIndent()
+
+        when:
+        def result = getPreparedGradleRunner()
+                .withArguments('changelog', '--prevVersion=0.9.0', '--stacktrace', LOGLEVEL, "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
+                .withGradleVersion(gradleVersion)
+                .buildAndFail()
+
+        then:
+        result.output.contains("The configured previous version is not available! Please check your configuration.")
 
         where:
         gradleVersion << supportedGradleVersions

@@ -28,15 +28,18 @@ open class ScmUser @Inject constructor(objectFactory: ObjectFactory) {
     private val nameProperty: Property<String> = objectFactory.property(String::class.java)
     private val passwordProperty: Property<String> = objectFactory.property(String::class.java)
 
-    init {
-        passwordProperty.isPresent
-    }
-
     /**
      * Provider for name property.
+     *
+     * @property nameProvider
      */
     val nameProvider: Provider<String> = nameProperty
 
+    /**
+     * Check for name configuration.
+     *
+     * @returns true if provider is configured and the the configuration is not empty.
+     */
     val nameIsAvailable: Boolean
         get() = nameProvider.isPresent && nameProvider.getOrElse("").isNotEmpty()
 
@@ -49,9 +52,16 @@ open class ScmUser @Inject constructor(objectFactory: ObjectFactory) {
 
     /**
      * Provider for password property.
+     *
+     * @property passwordProvider
      */
     val passwordProvider: Provider<String> = passwordProperty
 
+    /**
+     * Check for password configuration.
+     *
+     * @returns true if provider is configured and the the configuration is not empty.
+     */
     val passwordIsAvailable: Boolean
         get() = passwordProvider.isPresent && passwordProvider.getOrElse("").isNotEmpty()
 

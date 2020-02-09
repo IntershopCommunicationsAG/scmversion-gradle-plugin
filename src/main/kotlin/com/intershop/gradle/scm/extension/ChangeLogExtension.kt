@@ -15,12 +15,6 @@
  */
 package com.intershop.gradle.scm.extension
 
-import com.intershop.gradle.scm.services.ScmChangeLogService
-import com.intershop.gradle.scm.services.file.FileChangeLogService
-import com.intershop.gradle.scm.services.git.GitChangeLogService
-import com.intershop.gradle.scm.services.git.GitLocalService
-import com.intershop.gradle.scm.services.git.GitRemoteService
-import com.intershop.gradle.scm.utils.ScmType
 import com.intershop.gradle.scm.utils.getValue
 import com.intershop.gradle.scm.utils.setValue
 import org.gradle.api.file.ProjectLayout
@@ -62,23 +56,6 @@ abstract class ChangeLogExtension @Inject constructor(private val scmExtension: 
      */
     @get:Inject
     abstract val projectLayout: ProjectLayout
-
-    /**
-     * This provides the functionality for all
-     * tasks etc.
-     *
-     * @property changelogService
-     */
-    val changelogService: ScmChangeLogService by lazy {
-        val tempChangelogService = if (scmExtension.scmType == ScmType.GIT) {
-            with(scmExtension) {
-                GitChangeLogService(version, GitRemoteService(localService as GitLocalService, user, key))
-            }
-        } else {
-            FileChangeLogService()
-        }
-        tempChangelogService
-    }
 
     private val previousVersionProperty: Property<String> = objectFactory.property(String::class.java)
     private val changelogFileProperty: RegularFileProperty = objectFactory.fileProperty()

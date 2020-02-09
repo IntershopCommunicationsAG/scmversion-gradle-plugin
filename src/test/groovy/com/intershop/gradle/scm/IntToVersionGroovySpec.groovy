@@ -62,7 +62,7 @@ class IntToVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '--stacktrace', LOGLEVEL)
+                .withArguments('toVersion', '--version=1.1.0', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -81,7 +81,7 @@ class IntToVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result02 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=4.1.0', '--stacktrace', LOGLEVEL)
+                .withArguments('toVersion', '--version=4.1.0', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .buildAndFail()
 
@@ -126,7 +126,7 @@ class IntToVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result01 = getPreparedGradleRunner()
-                .withArguments('toVersion', '-PtargetVersion=1.1.0', '-Pfeature=test', '--stacktrace', LOGLEVEL)
+                .withArguments('toVersion', '--version=1.1.0', '--feature=test', '--stacktrace', LOGLEVEL)
                 .withGradleVersion(gradleVersion)
                 .build()
 

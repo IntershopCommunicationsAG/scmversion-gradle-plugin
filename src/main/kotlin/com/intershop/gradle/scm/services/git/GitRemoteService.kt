@@ -54,6 +54,11 @@ open class GitRemoteService(val localService: GitLocalService,
     companion object {
         protected val log: Logger = LoggerFactory.getLogger(this::class.java.name)
 
+        /**
+         * Check of a GIT remote url.
+         *
+         * @returns true if the protocol is SSH.
+         */
         fun isSSHGit(remoteUrl: String): Boolean {
             return (remoteUrl.startsWith("git@") || remoteUrl.startsWith("ssh://git@"))
         }

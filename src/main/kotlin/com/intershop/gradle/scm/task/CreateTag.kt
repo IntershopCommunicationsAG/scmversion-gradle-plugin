@@ -27,24 +27,13 @@ import org.gradle.api.tasks.options.Option
  * This is the implementation of Gradle
  * task to create the "next" tag.
  */
-open class CreateTag: DefaultTask() {
+open class CreateTag: AbstractDryRunTask() {
 
     init {
         outputs.upToDateWhen { false }
 
         description = "Creates an SCM tag With a specific version from the working copy"
-        group = "Release Version Plugin"
     }
-
-    private var dryRunProp: Boolean = false
-
-    @set:Option(option = "dryRun", description = "SCM version tasks run without any scm action.")
-    @get:Input
-    var dryRun: Boolean
-        get() = dryRunProp
-        set(value) {
-            dryRunProp = value
-        }
 
     /**
      * Implementation of the task action.
