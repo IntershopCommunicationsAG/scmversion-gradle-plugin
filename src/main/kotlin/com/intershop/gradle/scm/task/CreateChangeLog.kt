@@ -109,9 +109,6 @@ abstract class CreateChangeLog: AbstractDryRunTask() {
             with(scmext.localService as GitLocalService) {
                 if (tempPrevVersion != null) {
                     val versiontag = scmext.version.getPreviousVersionTag(tempPrevVersion)
-                    if (versiontag == null) {
-                        throw GradleException("Unknown Version was specified (${tempPrevVersion}")
-                    }
                     startVersionView = tempPrevVersion
                     objectID = getObjectId(versiontag.branchObject.id, repository)
                 } else {

@@ -1,6 +1,7 @@
 package com.intershop.gradle.scm.task
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.options.Option
 
 /**
@@ -9,6 +10,7 @@ import org.gradle.api.tasks.options.Option
  */
 abstract class AbstractDryRunTask: AbstractReleaseVersionTask() {
 
+    @get:Internal
     protected var dryRunProp: Boolean = false
 
     /**
