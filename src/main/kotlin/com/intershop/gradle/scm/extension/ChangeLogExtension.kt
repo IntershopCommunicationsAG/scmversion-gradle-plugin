@@ -36,7 +36,7 @@ import javax.inject.Inject
  * }
  * </pre>
  */
-abstract class ChangeLogExtension @Inject constructor() {
+abstract class ChangeLogExtension {
 
     companion object {
         /**

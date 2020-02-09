@@ -133,7 +133,7 @@ abstract class ScmExtension {
     /**
      * This extension contains settings for change log configuration.
      */
-    val changelog: ChangeLogExtension = objectFactory.newInstance(ChangeLogExtension::class.java, this)
+    val changelog: ChangeLogExtension = objectFactory.newInstance(ChangeLogExtension::class.java)
 
     /**
      * SCM user for authentication.
