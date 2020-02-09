@@ -46,6 +46,7 @@ import java.io.File
 import javax.inject.Inject
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getHeader
 import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.getMessageLine
+import com.intershop.gradle.scm.utils.ChangeLogServiceHelper.footer
 
 /**
  * This is the implementation of Gradle
@@ -208,6 +209,7 @@ abstract class CreateChangeLog: AbstractDryRunTask() {
                             addFilesInCommit(changelogFile, rc, this)
                         }
                     }
+                    appendText(footer)
                 }
 
                 project.logger.info("Change log was written to {}", changelogFile.absolutePath)
@@ -217,8 +219,8 @@ abstract class CreateChangeLog: AbstractDryRunTask() {
                 |        DryRun for ${this@CreateChangeLog.path}
                 |        Changelog will created in ${changelogFile.absolutePath}
                 |        
-                |        Start rev: ${startRevObject} [${startVersionView}]
-                |        End rev:   ${endRevObject} [${scmConfig.version.version}]
+                |        Start rev: $startRevObject [${startVersionView}]
+                |        End rev:   $endRevObject [${scmConfig.version.version}]
                 |--------------------------------------------------------------------------------------""".trimMargin())
             }
         } else {

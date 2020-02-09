@@ -20,7 +20,6 @@ import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.ScmException
 import com.intershop.release.version.ParserException
 import com.intershop.release.version.VersionParser
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional

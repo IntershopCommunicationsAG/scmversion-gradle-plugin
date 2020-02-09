@@ -189,29 +189,4 @@ open class GitRemoteService(val localService: GitLocalService,
             log.warn( "It was not possible to fetch all. Please check your credential configuration.", tex)
         }
     }
-
-    /**
-     * Returns the first commit in the
-     * Git repository.
-     */
-    val firstObjectId: ObjectId? by lazy {
-        var commitId: ObjectId? = null
-        try {
-            val headId = localService.repository.resolve(localService.revID)
-            val walk = RevWalk( localService.repository)
-            walk.sort(RevSort.TOPO)
-            walk.markStart(walk.parseCommit(headId))
-
-            var commit: RevCommit? = walk.next()
-            var preCommit: RevCommit?
-            do {
-                preCommit = commit
-                commit = walk.next()
-            } while (commit != null)
-            commitId = walk.parseCommit(preCommit)
-        } catch ( ex: Exception ) {
-            log.error("it was not possible to get first commit")
-        }
-        commitId
-    }
 }
