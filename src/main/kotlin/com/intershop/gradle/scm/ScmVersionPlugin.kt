@@ -15,7 +15,6 @@
  */
 package com.intershop.gradle.scm
 
-import com.intershop.gradle.scm.extension.ChangeLogExtension
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.task.CreateBranch
 import com.intershop.gradle.scm.task.CreateChangeLog
