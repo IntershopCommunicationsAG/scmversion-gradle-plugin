@@ -19,6 +19,7 @@ package com.intershop.gradle.scm.services.file
 
 import com.intershop.gradle.scm.ScmVersionPlugin
 import com.intershop.gradle.scm.extension.ScmExtension
+import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.test.util.TestDir
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
@@ -48,20 +49,19 @@ class FileLocalServiceSpec extends Specification {
         com.test.value = 1'''
 
         when:
-        FileLocalService infoService = new FileLocalService(projectDir, scmExtension)
+        FileLocalService infoService = scmExtension.localService
 
         then:
         infoService.getRemoteUrl() == projectDir.toURI().toURL().toString()
         infoService.getBranchName() == 'trunk'
-        infoService.isChanged()
+        infoService.changed
     }
 
     ScmExtension prepareProject(File projectDir) {
         String canonicalName = testName.getMethodName().replaceAll(' ', '-')
 
         Project project = ProjectBuilder.builder().withName(canonicalName).withProjectDir(projectDir).build()
-        Plugin plugin = new ScmVersionPlugin()
-        plugin.apply(project)
+        project.pluginManager.apply(ScmVersionPlugin.class)
 
         ScmExtension scmConfig = project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)
 

@@ -1,5 +1,7 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 /*
@@ -18,12 +20,10 @@ import java.util.*
  * limitations under the License.
  */
 plugins {
-    // build performance
-    id("com.gradle.build-scan") version "3.0"
-
     // project plugins
     `java-gradle-plugin`
     groovy
+    id("nebula.kotlin") version "1.3.61"
 
     // test coverage
     jacoco
@@ -35,18 +35,19 @@ plugins {
     `maven-publish`
 
     // plugin for documentation
-    id("org.asciidoctor.jvm.convert") version "2.3.0"
+    id("org.asciidoctor.jvm.convert") version "2.4.0"
+
+    // documentation
+    id("org.jetbrains.dokka") version "0.10.0"
+
+    // code analysis for kotlin
+    id("io.gitlab.arturbosch.detekt") version "1.4.0"
 
     // plugin for publishing to Gradle Portal
     id("com.gradle.plugin-publish") version "0.10.1"
 
     // plugin for publishing to jcenter
     id("com.jfrog.bintray") version "1.8.4"
-}
-
-buildScan {
-    termsOfServiceUrl   = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
 }
 
 // release configuration
@@ -83,10 +84,17 @@ if (project.version.toString().endsWith("-SNAPSHOT")) {
     status = "snapshot'"
 }
 
+detekt {
+    input = files("src/main/kotlin")
+    config = files("detekt.yml")
+}
+
 // test configuration
 tasks {
     withType<Test>().configureEach {
         testLogging.showStandardStreams = false
+
+        maxParallelForks = 1
 
         systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
 
@@ -109,7 +117,7 @@ tasks {
         //Change directory for gradle tests
         systemProperty("org.gradle.native.dir", ".gradle")
         //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "5.6.3")
+        systemProperty("intershop.gradle.versions", "6.1")
         //working dir for tests
         systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
     }
@@ -174,6 +182,19 @@ tasks {
     getByName("bintrayUpload")?.dependsOn("asciidoctor")
     getByName("publishToMavenLocal")?.dependsOn("asciidoctor")
 
+    val compileKotlin by getting(KotlinCompile::class) {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    val dokka by existing(DokkaTask::class) {
+        outputFormat = "javadoc"
+        outputDirectory = "$buildDir/javadoc"
+
+        // Java 8 is only version supported both by Oracle/OpenJDK and Dokka itself
+        // https://github.com/Kotlin/dokka/issues/294
+        enabled = JavaVersion.current().isJava8
+    }
+
     val sourcesJar = task<Jar>("sourceJar") {
         description = "Creates a JAR that contains the source code."
 
@@ -182,9 +203,8 @@ tasks {
     }
 
     val javadocJar = task<Jar>("javadocJar") {
-        dependsOn("javadoc")
-        description = "Creates a JAR that contains the javadocs."
-        from(javadoc)
+        dependsOn(dokka)
+        from(dokka)
         archiveClassifier.set("javadoc")
     }
 }
@@ -259,7 +279,8 @@ bintray {
 }
 
 dependencies {
-    implementation("com.intershop.gradle.version:extended-version:3.0.1")
+    implementation("com.intershop.gradle.version:extended-version:3.0.3")
+    implementation(gradleKotlinDsl())
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {

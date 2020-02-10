@@ -38,7 +38,7 @@ class PluginSpec extends AbstractProjectSpec {
         ! ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.disableSCM
         ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version.patternDigits == 2
 
-        task.outputs.files.contains(new File(project.getBuildDir(), 'changelog/changelog.asciidoc'))
+        task.outputs.files.first().absolutePath == new File(project.getBuildDir(), 'changelog/changelog.asciidoc').absolutePath
     }
 
     def 'should add tasks for version handling'() {
@@ -67,7 +67,7 @@ class PluginSpec extends AbstractProjectSpec {
 
         then:
         config != null
-        config.scmType == ScmType.git
+        config.scmType == ScmType.GIT
     }
 
     def 'extension contains correct SCM type - file'() {
@@ -77,7 +77,7 @@ class PluginSpec extends AbstractProjectSpec {
 
         then:
         config != null
-        config.scmType == ScmType.file
+        config.scmType == ScmType.FILE
         config.prefixes.featurePrefix == 'FB'
     }
 

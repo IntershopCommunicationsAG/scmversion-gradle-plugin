@@ -16,7 +16,6 @@
 package com.intershop.gradle.scm.services.file
 
 import com.intershop.gradle.scm.ScmVersionPlugin
-import com.intershop.gradle.scm.builder.ScmBuilder
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.test.util.TestDir
@@ -46,11 +45,11 @@ class FileVersionServiceSpec extends Specification {
 
         when:
         VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
-        FileVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
+        FileVersionService client = versionConfig.versionService
 
         then:
-        client.getVersionObject().isChanged()
-        client.getVersionObject().version.toString() == '1.0.0'
+        client.versionObject.changed
+        client.versionObject.version.toString() == '1.0.0'
     }
 
     def 'getVersionObject for file system - four digits'() {
@@ -60,11 +59,11 @@ class FileVersionServiceSpec extends Specification {
         when:
         VersionExtension versionConfig = ((ScmExtension)project.extensions.getByName(ScmVersionPlugin.SCM_EXTENSION)).version
         versionConfig.type = 'fourDigits'
-        FileVersionService client = ScmBuilder.getScmVersionService(project, versionConfig)
+        FileVersionService client = versionConfig.versionService
 
         then:
-        client.getVersionObject().isChanged()
-        client.getVersionObject().version.toString() == '1.0.0.0'
+        client.versionObject.changed
+        client.versionObject.version.toString() == '1.0.0.0'
     }
 
     private Project prepareProject() {
@@ -75,8 +74,7 @@ class FileVersionServiceSpec extends Specification {
         canonicalName = testName.getMethodName().replaceAll(' ', '-')
 
         Project p = ProjectBuilder.builder().withName(canonicalName).withProjectDir(projectDir).build()
-        Plugin plugin = new ScmVersionPlugin()
-        plugin.apply(p)
+        p.pluginManager.apply(ScmVersionPlugin.class)
 
         return p
     }
