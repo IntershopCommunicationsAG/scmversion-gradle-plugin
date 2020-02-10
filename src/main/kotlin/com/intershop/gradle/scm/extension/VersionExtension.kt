@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Intershop Communications AG.
+ * Copyright 2020 Intershop Communications AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.VersionType
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.slf4j.Logger
@@ -57,17 +58,32 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
         /**
          * Environment variable for increment.
          */
-        const val INCREMENT = "INCREMENT"
+        const val INCREMENT_ENV = "INCREMENT"
+
+        /**
+         * System property for increment.
+         */
+        const val INCREMENT_PROP = "increment"
 
         /**
          * Environment variable to enable continuous release.
          */
-        const val CONTINUOUSRELEASE = "CONTINUOUSRELEASE"
+        const val CONTINUOUSRELEASE_ENV = "CONTINUOUSRELEASE"
 
         /**
-         * Static version extension.
+         * System property to enable continuous release.
          */
-        const val SCMVERSIONEXT = "SCMVERSIONEXT"
+        const val CONTINUOUSRELEASE_PROP = "continuousRelease"
+
+        /**
+         * Environment variable for static version extension.
+         */
+        const val SCMVERSIONEXT_ENV = "SCMVERSIONEXT"
+
+        /**
+         * System property for static version extension.
+         */
+        const val SCMVERSIONEXT_PROP = "scmVersionExt"
 
         // Directory in the build directory for static version
         private const val SCMVERSIONDIR = "scmversion"
@@ -87,6 +103,9 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
     @get:Inject
     abstract val projectLayout: ProjectLayout
 
+    @get:Inject
+    abstract val providerFactory: ProviderFactory
+
     private val typeProperty: Property<String> = objectFactory.property(String::class.java)
     private val incrementProperty: Property<String> = objectFactory.property(String::class.java)
     private val initialVersionProperty: Property<String> = objectFactory.property(String::class.java)
@@ -105,11 +124,11 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
     init {
         typeProperty.convention("threeDigits")
         incrementProperty.convention(
-                (System.getProperty(INCREMENT) ?: System.getenv(INCREMENT) ?: "").toString().trim())
+                (System.getProperty(INCREMENT_PROP) ?: System.getenv(INCREMENT_ENV) ?: "").toString().trim())
         initialVersionProperty.convention("")
 
         continuousReleaseProperty.convention(
-                (System.getProperty(CONTINUOUSRELEASE) ?: System.getenv(CONTINUOUSRELEASE) ?: "")
+                (System.getProperty(CONTINUOUSRELEASE_PROP) ?: System.getenv(CONTINUOUSRELEASE_ENV) ?: false)
                         .toString().trim().toBoolean())
 
         versionBranchProperty.convention(BranchType.TAG.toString())
@@ -176,8 +195,23 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
      */
     val versionExt: String
         get() {
-            return (System.getProperty(SCMVERSIONEXT) ?: System.getenv(SCMVERSIONEXT) ?: "").toString().trim()
+            return if(providerFactory.systemProperty(SCMVERSIONEXT_PROP).isPresent) {
+                providerFactory.systemProperty(SCMVERSIONEXT_PROP).get()
+            }
+            else if(providerFactory.environmentVariable(SCMVERSIONEXT_ENV).isPresent) {
+                providerFactory.environmentVariable(SCMVERSIONEXT_ENV).get()
+            } else {
+                ""
+            }.toString().trim()
         }
+
+    /**
+     * Set the version branch configuration of the version
+     * calculation. This can be branch or tag.
+     *
+     * @property versionBranch
+     */
+    val versionBranch by versionBranchProperty
 
     /**
      * Calculates the VersionBranch from a string of the configuration.

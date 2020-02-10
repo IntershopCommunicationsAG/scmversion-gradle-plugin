@@ -1,26 +1,30 @@
 = SCM Version Plugin
-:latestRevision: 6.0.0
+:latestRevision: 6.1.0
 :toc:
+:icons: font
 
-NOTE: Version 6.0 (and later) of this plugin will only work with JDK 8, Gradle 5.X and later. Furthermore Subversion will be not longer supported.
+NOTE: Version 6.0 (and later) of this plugin will only work with JDK 8, Gradle 6.X and later.
+Furthermore Subversion will be not longer supported.
 
 
 == Summary
-Based on the used SCM (Source Control Management) this plugin provides project configuration handling and specific tasks regarding the version handling of the project.
-The information of the used SCM is identified by special directories in the project directory (`'.git'`).
-The plugin supports the following SCMs:
+Based on the used SCM (Source Control Management) this plugin provides project configuration handling and specific
+tasks regarding the version handling of the project. The information of the used SCM is identified by special
+directories in the project directory (`'.git'`). Only Git is full supported and all others uses a file implementation.
+But the "file" support is limited.
 
-* git
-* file (limited functionality)
-
-Branches and tags are used for the calculation of the project version. +
+Git Branches and tags are used for the calculation of the project version. +
 
 NOTE: A file-based project does not support the calculation of the version based on previous versions.
 
-It is also possible to identify the changes between the current working copy and the previous version. This functionality can also be used on a CI server during the creation of a new tag. In this case the changes between two versions are written to a file.
+It is also possible to identify the changes between the current working copy and the previous version. This
+functionality can also be used on a CI server during the creation of a new tag. In this case the changes
+between two versions are written to a file.
 
 == Version Information from the SCM
-This plugin adds the possibility to calculate version information of a project from the used SCM structure. It initializes a project property `useSCMVersionConfig`. The value of this property is `true`, if the plugin was applied and can be used by the own build logic and other plugins.
+This plugin adds the possibility to calculate version information of a project from the used SCM structure.
+It initializes a project property `useSCMVersionConfig`. The value of this property is `true`, if the plugin was
+applied and can be used by the own build logic and other plugins.
 
 == Configuration with a Static Version
 This configuration is also working without any remote access, but project specific, because the replacement for
@@ -43,17 +47,15 @@ if exists with the task `clean`.
 ----
 gradlew -PstaticVersion= publish
 ----
-This command will reset the version to the standard behaviour.
 
-CAUTION: This version will be published to the specified repository and can be used by other processes!
-
-=== Git
+=== Git Version Calculation
 The version can be calculated from the local clone without access to the remote repository.
 The plugin assumes, that the default branch is called `'master'`.
 
-=== Version Calculation
-The plugin detects tags and branches with version information on special prefixes. These prefixes are configured based on the configuration `'prefixes'`.
-For parsing, calculation and sorting a library for an extended version object is used. The library supports version numbers with three or four decimal numbers. Furthermore a special pattern is supported.
+The plugin detects tags and branches with version information on special prefixes. These prefixes are configured
+based on the configuration `'prefixes'`. For parsing, calculation and sorting a library for an extended version object
+is used. The library supports version numbers with three or four decimal numbers. Furthermore a special pattern is
+supported.
 
 [source]
 ----
@@ -114,7 +116,7 @@ RELEASE_1.1.0-rc.1              Tag of a release candidate for version 1.1.0
 RELEASE_1.0.0-JIRA-4711-dev.1   Tag of a development milestone release of a feature branch version 1.0.0-JIRA-4711
 ----
 
-==== Version Calculation on Git
+==== Version Calculation on Git - Summary
 * Default Branch (master) +
 The plugin is looking for a tag on the branch. If there is no tag the default value is used and extended with `SNAPSHOT`.
 
@@ -128,18 +130,13 @@ A checkout of a single commit (detached head) without a tag name will be special
 used for the version string. This is extended by the short hash value and 'SNAPSHOT', e.g. 2.0.0-rev.id.ad73b69-SNAPSHOT.
 If the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'` is set, the extension SNAPSHOT is not added.
 
-==== Version Calculation on Subversion
-* Trunk +
-The plugin is looking for a tag that matches the specified criteria. In the most cases, the version is calculated from branches and will be extended with `SNAPSHOT`. This behavior can be configured.
-
-* Branch / Feature,Hotfix,Bugfix Branch +
-The plugin is looking for a tag that matches the branch name. If there is no valid tag on the branch, the version is taken from the name of the branch. The version will be always extended with `SNAPSHOT` on the CI server.
-
-* Tags +
-Without local changes the plugin tries to calculate the name from the tag name.
-
 == Usage
 To use the Gradle SCM Version plugin provided by Intershop, include the following in your build script of your *root* project:
+
+++++
+<details open>
+<summary>Groovy</summary>
+++++
 
 [source,groovy]
 [subs=+attributes]
@@ -181,6 +178,58 @@ scm {
 version = scm.version.version
 ----
 
+++++
+</details>
+++++
+
+++++
+<details>
+<summary>Kotlin</summary>
+++++
+
+[source,kotlin]
+[subs=+attributes]
+.build.gradle.kts
+----
+plugins {
+    id("com.intershop.gradle.scmversion") version "{latestRevision}"
+}
+
+scm {
+    prefixes {
+        //default is "SB"
+        stabilizationPrefix = "SBP"
+
+        //default is "FB"
+        featurePrefix = "FBP"
+
+        //default is "HB"
+        hotfixPrefix = "HBP"
+
+        //default is "BB"
+        bugfixPrefix = "BBP"
+
+        //default is Release
+        tagPrefix = "RBP"
+    }
+
+    version {
+        type = "threeDigits"
+        initialVersion = "1.0.0"
+    }
+
+    changelog {
+        previousVersion = "1.0.0"
+        changelogFile = File(project.buildDir, "changelog/changelogset.asciidoc")
+    }
+}
+
+version = scm.version.version
+----
+++++
+</details>
+++++
+
 == Tasks
 The Intershop SCM Version plugin adds the following tasks to the project:
 
@@ -193,15 +242,20 @@ The Intershop SCM Version plugin adds the following tasks to the project:
 It makes changes to the SCM.
 |branch     |CreateBranch     |This task creates a branch based on the current working copy. +
 It makes changes to the SCM.  +
-For creating a feature branch it is necessary to specify a short name for the feature in a project property `*feature*`.
+For creating a feature branch it is necessary to specify a short name for the feature. This can be done over the commandline parameter `--feature`.
 |toVersion  |ToVersion        |This task moves the working copy to a target version.
-This version must be specified in a project property `*targetVersion*`. It is also possible to specify the short name of a
-feature in a property `*feature*` and the kind of branch in the property `*branchType*`, that should be used. The default value for the type is `*branch*`. Possible values are `*featureBranch*`,  `*hotfixBranch*`, `*bugfixBranch*`, `*tag*`. It changes the working copy.
+This version must be specified in a configuration or on the commandline with the paramater `--version`. It is also possible to specify the short name of a
+feature (command line parameter `--feature`) and the kind of branch (command line parameter `--branchType`), that should be used. It changes the working copy.
 |release    |PrepareRelease   |This task creates a tag, if necessary, and move the the working copy to the version. +
 It changes the working copy.
-|changelog |CreateChangeLog   | This task creates a change log with all changes between the latest commit of the current working copy and the tag of the previous version. It is possible to specify another 'previous' version. +
+|changelog |CreateChangeLog   | This task creates a change log with all changes between the latest commit of the
+current working copy and the previous version. It is possible to specify a 'previous' version with the command line variable `--prevVersion`. +
 The tag for this version is mandatory.
 |===
+
+The tasks `tag`, `branch`, `toVersion`, `release` and `changelog` can be started with the commandline parameter
+`--dryRun`. If this parameters is specified no changes on the remote or local repsotiroy will be done. Only
+the output will provide information over posible changes.
 
 All task are part of the package `'com.intershop.gradle.scm.task'`
 
@@ -213,13 +267,55 @@ This plugin adds an extension *`scm`* to the root project. This extension contai
 [cols="20%,15%,65%", width="95%", options="header"]
 |===
 |Method | Values | Description
-|*prefixes*(configure)             |<<prefixconfig,PrefixConfig>> | This is the extension object for the configuration of branch prefixes.
-|*user*(configure)                 |<<scmuser,ScmUser>>           | This extension is used for the SCM user authentication. +
+|*user*(Closure<ScmUser>)  +
+*user*(Action<in ScmUser>)                 |<<scmuser,ScmUser>>          | This extension is used for the SCM user authentication. +
 _This extension can be configured over environment variables and project properties._
-|*key*(configure)                  |<<scmkey,ScmKey>>             | This is also used for the SCM user authentication. +
+|*key*(Closure<ScmUser>) +
+*key*(Action<in ScmKey>)                   |<<scmkey,ScmKey>>             | This is also used for the SCM user authentication. +
 _This extension can be configured over environment variables and project properties._
-|*version*(configure)              |<<scmversion,ScmVersion>>     | This extension contains settings for version calculation and reads properties for the current version and previous version.
-|*changelog*(configure)            |<<scmchangelog,ScmChangelog>> | This extension contains settings for change log configuration.
+|*prefixes*(Closure<PrefixConfig>) +
+*prefixes*(Action<in PrefixConfig>)        |<<prefixconfig,PrefixConfig>> | This is the extension object for the configuration of branch prefixes.
+|*version*(Closure<VersionExtension>) +
+*version*(Action<in VersionExtension>)     |<<scmversion,VersionExtension>>     | This extension contains settings for version calculation and reads properties for the current version and previous version.
+|*changelog*(Closure<ChangeLogExtension>) +
+*changelog*(Action<in ChangeLogExtension>) |<<scmchangelog,ChangeLogExtension>> | This extension contains settings for change log configuration.
+|===
+
+=== Properties
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+|*user*         | <<scmuser,ScmUser>>                   | | This property contains the complete user configuration.
+|*key*          | <<scmkey,ScmKey>>                     | | This property contains the complete SSH key configuration.
+|*prefixes*     | <<prefixconfig,PrefixConfig>>         | | This is the container for the prefix configuration.
+|*scmType*      | ScmType                               | | This is the value for the identified SCM ( GIT, FILE )
+|*localService* | ScmLocalService                       | | This sevices contains all main necessary methods for the working copy.
+|*version*      | <<scmversion,VersionExtension>>       | | This is the configuration for the version calculation.
+|*changelog*    | <<scmchangelog,ChangeLogExtension>>   | | This is the configuration for the change log task.
+|===
+
+==== Authentication
+===== User object 'user' (`ScmUser`)[[scmuser]]
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*name*       |`String` |'' | Username or token +
+_This can be overwritten by the environment variable `SCM_USERNAME` or project or system property `scmUserName`._
+|*password*   |`String` |'' | Password +
+_This can be overwritten by the environment variable `SCM_PASSWORD` or project or system property `scmUserPasswd`._
+|===
+
+===== SSH Key object 'key' (`ScmKey`) (only for Git)[[scmkey]]
+[cols="20%,15%,15%,50%", width="95%", options="header"]
+|===
+|Property | Type | Default value | Description
+
+|*file*       |`File`   |`null` | Private key for SCM authentication +
+_This can be overwritten by the environment variable `SCM_KEYFILE` or project or system property `scmKeyFile`._
+The plugin uses per default for ssh access <user_home>/.ssh/id_rsa or <user_home>/.ssh/id_dsa without passphrase.
+|*passphrase* |`String` |''   | passphrase for private key +
+_This can be overwritten by the environment variable `SCM_KEYPASSPHRASE` or project or system property `scmKeyPassphrase`._
 |===
 
 ==== [[prefixconfig]]Prefix configuration 'prefixes' (`PrefixConfig`)
@@ -233,75 +329,59 @@ _This extension can be configured over environment variables and project propert
 |*bugfixPrefix*           |`String` |`BB`       | Prefix for bugfix branches
 |*tagPrefix*              |`String` |`RELEASE`  | Prefix for release tags
 |*prefixSeperator*        |`String` |`_`        | Separator between prefix and version
+|*branchPrefixSeperator*  |`String` |`null`     | Separator between prefix and branch version
+|*tagPrefixSeperator*     |`String` |`null`     | Separator between prefix and tag version
 |===
 
-==== Authentication
-===== User object 'user' (`ScmUser`)[[scmuser]]
-[cols="20%,15%,15%,50%", width="95%", options="header"]
-|===
-|Property | Type | Default value | Description
-
-|*name*       |`String` |'' | Username or token +
-_This can be overwritten by the system or environment variable `SCM_USERNAME` or project property `scmUserName`._
-|*password*   |`String` |'' | Password +
-_This can be overwritten by the system or environment variable `SCM_PASSWORD` or project property `scmUserPasswd`._
-|===
-
-===== SSH Key object 'key' (`ScmKey`) (only for Git)[[scmkey]]
-[cols="20%,15%,15%,50%", width="95%", options="header"]
-|===
-|Property | Type | Default value | Description
-
-|*file*       |`File`   |`null` | Private key for SCM authentication +
-_This can be overwritten by the system or environment variable `SCM_KEYFILE` or project property `scmKeyFile`._
-The plugin uses per default for ssh access <user_home>/.ssh/id_rsa or <user_home>/.ssh/id_dsa without passphrase.
-|*passphrase* |`String` |''   | passphrase for private key +
-_This can be overwritten by the system or environment variable `SCM_KEYPASSPHRASE` or project property `scmKeyPassphrase`._
-|===
-
-==== Version object 'version' (`ScmVersion`)[[scmversion]]
+==== Version object 'version' (`VersionExtension`)[[scmversion]]
 [cols="20%,15%,15%,15%,35%", width="95%", options="header"]
 |===
 |Property | Type | Default value | Values | Description
-
+|*versionService* | `ScmVersionService` | | | This service contains methods and properties
+for the calculation of version objects from the working copy.
 |*type*                 |`String`    |`threeDigits` | `fourDigits` +
  `threeDigits` | The number of used decimal numbers for a version number.
-|*dryRun*               |`boolean`   |`false`      | `false` +
-`true` | Tasks will run without changes on the working copy or SCM. +
-_This can be overwritten by the system or environment variable `DRYRUN` or project property `dryRun`._
+|*versionType* | `VersionType` | |*read only*| Get the VersionType object from the configured type.
+|*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment
+variable `SCMVERSIONEXT` or the system property `scmVersionExt` is used for the return value.
+|*versionBranch* | `String` | 'TAG' | 'TAG' + 'BRANCH' | Set the version branch configuration of the version calculation. The branch which is primarily used for the version calculation. This can be branch or tag.
+|*versionBranchType* | `BranchType` | 'BranchType.TAG' |*read only*| This get the calculated BranchType object from versionBranch configuration.
+|*version* | `String`    | *initialVersion* | *read only* | Returns the version of the working copy
+|*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
+|*branchName* | `String` | '' | *read only* | Returns the branch name only (String after last /)
 |*increment*            |`String`    |`null`  | `MAJOR` +
 `MINOR` +
 `PATCH` +
  `HOTFIX` | If this property is set, the configured position is used for incrementing the version. +
- _This can be overwritten by the system or environment variable `INCREMENT`, or project property `increment`._
+ _This can be overwritten by the environment variable `INCREMENT`, or system property `increment`._
 |*initialVersion*       |`String`     |`'1.0.0.0'` +
  `'1.0.0'` | | The inital version if a calculation from SCM is not possible.
 |*branchType*    |`String`     |`tag`  | `branch` +
 `tag` | The branch which is primarily used for the version calculation.
 |*patternDigits*        |`int`        |`2` | `1` +
 `2` +
-`3` (available only if ScmVersion `type` is `fourDigits`)| Determines the number of digit blocks of the version number that will be used for calculating the version filter from branches.
+`3` (available only if ScmVersion `type` is `fourDigits`)| Determines the number of digit blocks of the version number
+that will be used for calculating the version filter from branches.
 |*defaultMetadata* |`String`     |''  | | This is used for releases of feature branches.
 |*useBuildExtension*|`boolean`   |`false`|`false` +
 `true` |Build extension will be removed for SNAPSHOT extensions if this property is false.
 |*majorVersionOnly*|`boolean`   |`true`| | This property affects only GIT based repositories. +
-If this property is true, the version is always only the major version. If the increment property is always configure for MAJOR the version will be increased.
+If this property is true, the version is always only the major version. If the increment property is always configure
+for MAJOR the version will be increased.
 |*disableSCM*             |`boolean`   |`false`|`false` +
 `true` |If this property is `true`, the initial version is always used and the SCM usage is disabled.
-The environment variable `'SCMVERSIONEXT'` or the project variable `'scmVersionExt'` will be used on the CI server for special extensions. +
+The environment variable `'SCMVERSIONEXT'` or the project variable `'scmVersionExt'` will be used on the CI server for
+special extensions. +
 If set to: +
 `'SNAPSHOT'` - `'SNAPSHOT'` will be added to the version. +
 `'RELEASE'` - intial version is used without any extension. +
 If no value is specified a time stamp will be added.
-
-|*version* | `String`    | *initialVersion* | *read only* | Returns the version of the working copy
-|*branchName* | `String` | '' | *read only* | Returns the branch name only (String after last /)
-|*versionExt* | `String`    | '' | *read only* | see description for `disableSCM`. The environment variable `SCMVERSIONEXT` or the project variable `scmVersionExt` is used for the return value.
-|*previousVersion* | `String`    | '' | *read only* | Returns the previous version of the working copy.
-|*previousVersionTag* | `VersionTag` | `null` | *read only* | Returns an object with the previous version and the associated release tag.
+|*disableRevExt* | |`boolean`   |`false`|`false` +
+`true` | With this configuration the extension of the rev id in special cases can be disabled. It is possible to set
+this configuration with the environment variable 'SCM_DISABLE_REVIDEXT' or the system or project property 'scmDisableRevIdExt'.
 |*continuousRelease* | `boolean` | `false` | `false` +
 `true` | For continuous releases it is helpful to use an version extension with an relation to the source control.
-It is possible to enable this configuration also over the environment variable `'CONTINUOUSRELEASE'` or the project variable `'continuousRelease'`.
+It is possible to enable this configuration also over the environment variable `'CONTINUOUSRELEASE'` or the system property `'continuousRelease'`.
 |*continuousReleaseBranches* | `List<String>` | `[]` | Branchnames | In combination with continuousRelease it should be possible to specify the branches for this
 kind of version extension. Continuous releases will be also used for the master or trunk.
 If you want extend the list of branches, it is possible to extend the list.
@@ -318,8 +398,15 @@ It is possible to override the value with the enviroment variable `PREV_VERSION`
 changelog.asciidoc`| The change log will be written to this file. The log file is empty, if the previous version does not exists.
 |===
 
+[cols="20%,15%,65%", width="95%", options="header"]
+|===
+|Method | Values | Description
+|*previousVersionTag*(String) | `String`  Returns an object with the previous version from the configured parameter and the associated release tag.
+|===
+
 == Example Configurations
 === Simple Configuration
+
 [source,groovy,subs="attributes"]
 ----
 plugins {
@@ -338,20 +425,24 @@ version = scm.version.version
 ----
 
 === gradle.properties with Authentication Configuration
-This configuration works for Subversion and Git (http(s)://...). It is necessary to specify username and password for this kind of repositories.
+
+This configuration works for Git [http(s)]. It is necessary to specify username and password for this kind of repositories.
+
 [source,properties]
 ----
 scmUserName = username
 scmUserPasswd = password
 ----
 
-This configuration works for GitLab / GitHub (ssh://...) with a private key and if necessary with a passphrase.
+This configuration works for Git [ssh] with a private key and if necessary with a passphrase.
 There is no default value for the key.
+
 [source,properties]
 ----
 # without passphrase
 scmKeyFile = /user/home/.ssh/id_rsa
 ----
+
 [source,properties]
 ----
 # with passphrase
@@ -418,7 +509,7 @@ The integration tests use test repositories. Therefore, it is necessary to speci
 
 == License
 
-Copyright 2014-2016 Intershop Communications.
+Copyright 2014-2020 Intershop Communications.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

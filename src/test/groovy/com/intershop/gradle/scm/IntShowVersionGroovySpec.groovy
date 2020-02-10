@@ -118,7 +118,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=RELEASE")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DscmVersionExt=RELEASE")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -153,7 +153,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DscmVersionExt=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 
@@ -187,7 +187,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def result = getPreparedGradleRunner()
-                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DSCMVERSIONEXT=SNAPSHOT")
+                .withArguments('showVersion', '--stacktrace', LOGLEVEL, "-DscmVersionExt=SNAPSHOT")
                 .withGradleVersion(gradleVersion)
                 .build()
 

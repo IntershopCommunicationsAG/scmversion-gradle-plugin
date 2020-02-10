@@ -185,7 +185,7 @@ class IntCreateTagGroovySpec extends AbstractTaskGroovySpec {
 
         when:
         def createResult = getPreparedGradleRunner()
-                .withArguments('tag', '-Pincrement=MINOR', '--stacktrace', LOGLEVEL, "-DINCREMENT=MINOR", "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
+                .withArguments('tag', '--stacktrace', LOGLEVEL, '-Dincrement=MINOR', "-DscmUserName=${System.properties['gituser']}", "-DscmUserPasswd=${System.properties['gitpasswd']}")
                 .withGradleVersion(gradleVersion)
                 .build()
 

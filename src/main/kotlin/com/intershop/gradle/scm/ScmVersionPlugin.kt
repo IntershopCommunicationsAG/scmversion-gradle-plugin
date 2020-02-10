@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Intershop Communications AG.
+ * Copyright 2020 Intershop Communications AG.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,17 +101,6 @@ class ScmVersionPlugin  : Plugin<Project> {
          */
         val SCM_DISABLE_REVIDEXT = mapOf("env" to "SCM_DISABLE_REVIDEXT", "prop" to "scmDisableRevIdExt")
 
-        /**
-         * Target version property name for
-         * change log.
-         */
-        val  CHANGELOG_PREV_VERSION = mapOf("env" to "PREV_VERSION", "prop" to "prevVersion")
-
-        /**
-         * Changelog file property name for
-         * change log.
-         */
-        val  CHANGELOG_FILE = mapOf("env" to "CHANGELOG_FILE", "prop" to "changelogFile")
 
         private const val ENVVAR = "env"
         private const val PROPVAR = "prop"
@@ -128,7 +117,6 @@ class ScmVersionPlugin  : Plugin<Project> {
             configureKey(project, extension.key)
             configureUser(project, extension.user)
             extension.version.disableRevExt = getDisableRevIdExt(project)
-            configureChangeLog(project, extension.changelog)
 
             tasks.maybeCreate(SHOW_VERSION_TASK, ShowVersion::class.java)
             tasks.maybeCreate(TO_VERSION_TASK, ToVersion::class.java)
@@ -146,18 +134,6 @@ class ScmVersionPlugin  : Plugin<Project> {
     private fun getDisableRevIdExt(project: Project): Boolean {
         val disable = getValueFrom(project, SCM_DISABLE_REVIDEXT, "false")
         return disable.toBoolean()
-    }
-
-    private fun configureChangeLog(project: Project, changelog: ChangeLogExtension ) {
-        val preVersion = getValueFrom(project, CHANGELOG_PREV_VERSION, "")
-        if(preVersion.isNotEmpty()) {
-            changelog.previousVersion = preVersion
-        }
-
-        val changeLogFile = getValueFrom(project, CHANGELOG_FILE, "")
-        if(changeLogFile.isNotEmpty()) {
-            changelog.changelogFile = project.file(changeLogFile)
-        }
     }
 
     private fun configureUser(project: Project, userconf: ScmUser) {
