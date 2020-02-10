@@ -103,6 +103,9 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
     @get:Inject
     abstract val projectLayout: ProjectLayout
 
+    /**
+     * Inject service provider factory (See "Service injection" in Gradle documentation.
+     */
     @get:Inject
     abstract val providerFactory: ProviderFactory
 
