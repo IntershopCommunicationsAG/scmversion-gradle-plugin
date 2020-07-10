@@ -232,7 +232,7 @@ class ScmExtension extends AbstractExtension{
         ScmKey keyConfig = null
 
         String keyPath = getVariable(KEYFILE_ENV, KEYFILE_PRJ, null)
-        File key = keyPath && (new File(keyPath)).exists() ? new File(keyPath) : new File(System.getProperty("user.home"), '.ssh/id_dsa')
+        File key = keyPath && (new File(keyPath)).exists() ? new File(keyPath) : new File(System.getProperty("user.home"), '.ssh/id_rsa')
 
         if (key != null && key.exists() && key.isFile() && key.canRead()) {
             keyConfig = new ScmKey()
