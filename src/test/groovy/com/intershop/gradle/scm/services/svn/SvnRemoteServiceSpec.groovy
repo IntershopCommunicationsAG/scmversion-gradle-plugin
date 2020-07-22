@@ -15,18 +15,20 @@
  */
 package com.intershop.gradle.scm.services.svn
 
-import com.intershop.gradle.scm.ScmVersionPlugin
-import com.intershop.gradle.scm.extension.ScmExtension
-import com.intershop.gradle.scm.test.utils.AbstractScmSpec
-import com.intershop.gradle.scm.utils.BranchObject
-import com.intershop.gradle.scm.utils.ScmUser
-import com.intershop.gradle.scm.version.AbstractBranchFilter
-import com.intershop.gradle.test.util.TestDir
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TestName
+
+import com.intershop.gradle.scm.ScmVersionPlugin
+import com.intershop.gradle.scm.extension.ScmExtension
+import com.intershop.gradle.scm.test.utils.AbstractScmSpec
+import com.intershop.gradle.scm.utils.BranchObject
+import com.intershop.gradle.scm.utils.ScmUser
+import com.intershop.gradle.scm.version.ScmBranchFilter
+import com.intershop.gradle.test.util.TestDir
+
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -53,7 +55,7 @@ class SvnRemoteServiceSpec extends AbstractScmSpec {
                 new ScmUser(System.properties['svnuser'].toString(), System.properties['svnpasswd'].toString()))
 
         Map<String, BranchObject> map = srs.getTagMap(
-                new AbstractBranchFilter() {
+                new ScmBranchFilter() {
                     @Override
                     String getVersionStr(String branch) {
                         def versionGroup = (branch =~ /(\d+\.?\d+\.?\d+\.?\d*-?([A-za-z]+\.?\d+$)?)/)
