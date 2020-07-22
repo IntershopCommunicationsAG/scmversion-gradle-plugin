@@ -407,13 +407,13 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
 
         refList.each { Ref ref ->
             RevCommit rc = walk.parseCommit(ref.objectId)
-            String name = ref.getName().toString()
-            String branchName = name.substring(name.lastIndexOf('/') + 1)
+            String name = ref.getName()
+            String branchName = branchFilter.getBranchNameStr(name)
 
             if(branchName != 'master') {
                 String version = branchFilter.getVersionStr(branchName)
                 if(version) {
-                    rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, name.substring(name.lastIndexOf('/') + 1)))
+                    rv.put(ObjectId.toString(rc), new BranchObject(ObjectId.toString(rc), version, branchName))
                 }
             }
         }
