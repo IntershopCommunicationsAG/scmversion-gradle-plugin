@@ -20,6 +20,7 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.gradle.scm.utils.ScmType
+
 import groovy.transform.CompileStatic
 
 /**
@@ -128,7 +129,7 @@ abstract class ScmLocalService {
     void setFeatureBranchName(String branch) {
         def branchCheck = branch =~ /^\d+(\.\d+)?(\.\d+)?(\.\d+)?(-.*)?/
         if (branchCheck.matches() && branchCheck.groupCount() > 3) {
-            featureBranchName = ((branchCheck[0] as List)[(branchCheck[0] as List).size() - 1].toString().substring(1))
+            featureBranchName = ((branchCheck[0] as List)[(branchCheck[0] as List).size() - 1].toString())
         } else {
             featureBranchName = branch
         }
