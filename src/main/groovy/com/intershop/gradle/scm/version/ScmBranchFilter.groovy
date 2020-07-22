@@ -116,7 +116,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         switch (versionBranchtype) {
             case BranchType.branch:
-                patternString += '$)'
+                patternString += ')$'
                 break
             case BranchType.featureBranch:
                 patternString += ")"
