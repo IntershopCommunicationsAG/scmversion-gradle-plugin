@@ -15,13 +15,6 @@
  */
 package com.intershop.gradle.scm.services.git
 
-import com.intershop.gradle.scm.services.ScmLocalService
-import com.intershop.gradle.scm.services.ScmVersionService
-import com.intershop.gradle.scm.utils.*
-import com.intershop.gradle.scm.version.*
-import com.intershop.release.version.Version
-import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.*
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.jgit.api.errors.InvalidRemoteException
@@ -31,6 +24,15 @@ import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevSort
 import org.eclipse.jgit.revwalk.RevWalk
+
+import com.intershop.gradle.scm.services.ScmLocalService
+import com.intershop.gradle.scm.services.ScmVersionService
+import com.intershop.gradle.scm.utils.*
+import com.intershop.gradle.scm.version.*
+import com.intershop.release.version.Version
+
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 
 /**
  * This is the container for the remote access to the used SCM of a project.
@@ -105,12 +107,17 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
                             log.info('Version from tag {}', tagObject.name)
                             // commit is a tag with version information
                             rv = new ScmVersionObject(tagObject.name, Version.forString(version, versionExt.getVersionType()), false)
+                            if (localService.changed) {
+                                rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
+                            }
                             break
                         }
-                        if(pos != 0 && versionExt.getVersionBranchType() == BranchType.tag) {
+                        else {
+//                        if(pos != 0 && versionExt.getVersionBranchType() == BranchType.tag) {
                             log.info('Version from tag {}, but there are {} changes.', tagObject.name, pos)
-                            rv = new ScmVersionObject(localService.branchName, Version.forString(version, versionExt.getVersionType()), false)
-                            if(localService.branchType != BranchType.trunk && localService.branchType != BranchType.branch && localService.branchType != BranchType.tag) {
+                            rv = new ScmVersionObject(localService.branchName, Version.forString(version, versionExt.getVersionType()), true)
+                            
+                            if(localService.changed || (localService.branchType != BranchType.trunk && localService.branchType != BranchType.branch && localService.branchType != BranchType.tag)) {
                                 rv.updateVersion(rv.version.setBranchMetadata(localService.featureBranchName))
                             }
                             break
