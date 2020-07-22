@@ -15,6 +15,11 @@
  */
 package com.intershop.gradle.scm.services
 
+import static com.intershop.release.version.VersionExtension.LOCAL
+import static com.intershop.release.version.VersionExtension.SNAPSHOT
+
+import org.gradle.api.GradleException
+
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.services.git.GitLocalService
 import com.intershop.gradle.scm.utils.BranchType
@@ -24,11 +29,8 @@ import com.intershop.gradle.scm.version.VersionTag
 import com.intershop.release.version.DigitPos
 import com.intershop.release.version.ParserException
 import com.intershop.release.version.Version
-import groovy.util.logging.Slf4j
-import org.gradle.api.GradleException
 
-import static com.intershop.release.version.VersionExtension.SNAPSHOT
-import static com.intershop.release.version.VersionExtension.LOCAL
+import groovy.util.logging.Slf4j
 
 /**
  * This is the container for the remote access to the used SCM of a project.
@@ -225,6 +227,11 @@ trait ScmVersionService {
                 versionObject.scmPath, versionObject.version, versionObject.changed, versionObject.version.buildMetadata,
                 versionObject.isFromBranchName(), versionObject.defaultVersion)
 
+        // In case the branch or tag contains a version and nothing has changed, then we don't increase the versions.
+        if (localService.withVersion && !versionObject.changed) {
+            return versionObject.version
+        }
+        
         if((! versionObject.changed && versionObject.isFromBranchName()) || versionObject.defaultVersion) {
             return versionObject.version
         }
