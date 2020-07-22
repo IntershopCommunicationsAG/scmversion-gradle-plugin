@@ -86,6 +86,7 @@ class GitLocalService extends ScmLocalService{
                 setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
             } else if(msb.matches() && msb.count == 1) {
                 branchType = BranchType.branch
+                withVersion = true
             } else {
                 branchType = BranchType.featureBranch
                 setFeatureBranchName(branchName)
