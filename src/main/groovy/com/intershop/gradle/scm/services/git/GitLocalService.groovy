@@ -15,18 +15,19 @@
  */
 package com.intershop.gradle.scm.services.git
 
-import com.intershop.gradle.scm.extension.ScmExtension
-import com.intershop.gradle.scm.services.ScmLocalService
-import com.intershop.gradle.scm.utils.BranchType
-import groovy.transform.CompileDynamic
-import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.LogCommand
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.lib.*
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
+
+import com.intershop.gradle.scm.extension.ScmExtension
+import com.intershop.gradle.scm.services.ScmLocalService
+import com.intershop.gradle.scm.utils.BranchType
+
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 
 @Slf4j
 @CompileStatic
@@ -97,14 +98,12 @@ class GitLocalService extends ScmLocalService{
         log.info('Initial branch type is {}', branchType)
         
         String tn = checkHeadForTag()
-        if(tn) {
+        if(branchType == branchType.detachedHead && tn) {
             branchType = BranchType.tag
             branchName = tn
             log.info('Updated branch name is {}', branchName)
             log.info('Updated branch type is {}', branchType)
         }
-
-        log.info('Branch name is {}', branchName)
 
         Config config = gitRepo.getConfig()
         remoteUrl = config.getString('remote', 'origin', 'url')
