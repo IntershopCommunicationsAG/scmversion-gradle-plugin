@@ -159,8 +159,10 @@ class GitLocalService extends ScmLocalService{
         String rvTagName = ''
         RevWalk rw = new RevWalk(repository)
 
-        gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).each {Ref ref ->
-            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == getRevID()) {
+        String headRevID = getRevID()
+        List<Ref> tagRefs = gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS) 
+        tagRefs.each {Ref ref ->
+            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == headRevID) {
                 rvTagName = ref.name.substring(Constants.R_TAGS.length())
             }
         }
