@@ -112,7 +112,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         switch (versionBranchtype) {
             case BranchType.branch:
-                patternString += '$)'
+                patternString += ')$'
                 break
             case BranchType.featureBranch:
                 patternString += ")"
@@ -150,11 +150,11 @@ class ScmBranchFilter extends AbstractBranchFilter {
      * @param test input string
      * @return a valid version string or an empty string
      */
-    public String getVersionStr(String test) {
+    String getVersionStr(String test) {
         def m = test =~ regexPattern
 
         if(m.matches() && m.count == 1 && m[0].size() > 0) {
-            return test.substring(test.indexOf((m[0][1])))
+            return test.substring(test.toString().indexOf((m[0][1])))
         }
 
         return ''
