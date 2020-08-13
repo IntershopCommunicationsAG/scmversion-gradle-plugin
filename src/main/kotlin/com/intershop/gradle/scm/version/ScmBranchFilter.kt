@@ -121,7 +121,7 @@ class ScmBranchFilter(val prefixes: IPrefixConfig,
             patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
 
             patternString += when (versionBranchtype) {
-                BranchType.BRANCH -> "$)"
+                BranchType.BRANCH -> ")$"
                 else              -> ")"
             }
 

@@ -266,7 +266,11 @@ abstract class ScmVersionService(val versionExt: VersionExtension) {
         if(versionExt.continuousReleaseBranches.contains(localService.branchName)
                 || extBranches.contains(localService.branchType)
                 && ! versionExt.disableRevExt) {
-            return "rev.id." + localService.revID.substring(0, HASHLENGTH)
+            return if(localService.revID.isNotEmpty()) {
+                "rev.id." + localService.revID.substring(0, HASHLENGTH)
+            } else {
+                ""
+            }
         }
 
         return ""
