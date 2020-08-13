@@ -79,7 +79,7 @@ class GitLocalService(projectDir: File,
      */
     override val remoteUrl: String
         get() {
-            return repository.config.getString("remote", "origin", "url")
+            return repository.config.getString("remote", "origin", "url") ?: ""
         }
     
     /**
@@ -148,9 +148,9 @@ class GitLocalService(projectDir: File,
 
         if(branchName != "master") {
             val mfb = Regex(prefixes.featureBranchPattern).matchEntire(branchName)
-            val mhb =  Regex(prefixes.hotfixBranchPattern).matchEntire(branchName)
-            val mbb =  Regex(prefixes.bugfixBranchPattern).matchEntire(branchName)
-            val msb =  Regex(prefixes.stabilizationBranchPattern).matchEntire(branchName)
+            val mhb = Regex(prefixes.hotfixBranchPattern).matchEntire(branchName)
+            val mbb = Regex(prefixes.bugfixBranchPattern).matchEntire(branchName)
+            val msb = Regex(prefixes.stabilizationBranchPattern).matchEntire(branchName)
 
             if(branchName == revID) {
                 branchType = BranchType.DETACHEDHEAD
@@ -166,6 +166,8 @@ class GitLocalService(projectDir: File,
                 featureBranchName = mbb.groupValues.last()
             } else if(msb != null && msb.groups.size > 1) {
                 branchType = BranchType.BRANCH
+                val result = Regex(BRANCH_PATTERN).matchEntire(msb.groupValues.last())
+                branchWithVersion = (result?.groupValues != null)
             } else {
                 branchType = BranchType.FEATUREBRANCH
                 featureBranchName = branchName
