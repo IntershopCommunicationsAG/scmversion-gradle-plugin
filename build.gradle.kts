@@ -1,9 +1,3 @@
-import com.jfrog.bintray.gradle.BintrayExtension
-import org.asciidoctor.gradle.jvm.AsciidoctorTask
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.util.*
-
 /*
  * Copyright 2015 Intershop Communications AG.
  *
@@ -19,11 +13,17 @@ import java.util.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.jfrog.bintray.gradle.BintrayExtension
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.*
+
 plugins {
     // project plugins
     `java-gradle-plugin`
     groovy
-    id("nebula.kotlin") version "1.3.61"
+    kotlin("jvm") version "1.3.72"
 
     // test coverage
     jacoco
@@ -53,7 +53,7 @@ plugins {
 // release configuration
 group = "com.intershop.gradle.scm"
 description = "Gradle SCM version plugin - SCM based version handling for Gradle"
-version = "6.1.2"
+version = "6.2.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -89,8 +89,13 @@ detekt {
     config = files("detekt.yml")
 }
 
-// test configuration
 tasks {
+    withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
     withType<Test>().configureEach {
         testLogging.showStandardStreams = false
 
@@ -117,7 +122,7 @@ tasks {
         //Change directory for gradle tests
         systemProperty("org.gradle.native.dir", ".gradle")
         //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "6.2")
+        systemProperty("intershop.gradle.versions", "6.5,6.6")
         //working dir for tests
         systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
     }
@@ -183,7 +188,7 @@ tasks {
     getByName("publishToMavenLocal")?.dependsOn("asciidoctor")
 
     val compileKotlin by getting(KotlinCompile::class) {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     val dokka by existing(DokkaTask::class) {
@@ -281,6 +286,7 @@ bintray {
 dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.0.3")
     implementation(gradleKotlinDsl())
+    implementation(kotlin("stdlib-jdk8"))
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {

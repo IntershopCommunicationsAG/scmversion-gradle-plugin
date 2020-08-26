@@ -198,14 +198,14 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
      */
     val versionExt: String
         get() {
-            return if(providerFactory.systemProperty(SCMVERSIONEXT_PROP).isPresent) {
-                providerFactory.systemProperty(SCMVERSIONEXT_PROP).get()
+            var versionExtProp = providerFactory.systemProperty(SCMVERSIONEXT_PROP).forUseAtConfigurationTime().orNull
+            if(versionExtProp == null) {
+                providerFactory.environmentVariable(SCMVERSIONEXT_ENV).forUseAtConfigurationTime().orNull
             }
-            else if(providerFactory.environmentVariable(SCMVERSIONEXT_ENV).isPresent) {
-                providerFactory.environmentVariable(SCMVERSIONEXT_ENV).get()
-            } else {
-                ""
-            }.toString().trim()
+            if(versionExtProp == null) {
+                versionExtProp = ""
+            }
+            return versionExtProp.trim()
         }
 
     /**

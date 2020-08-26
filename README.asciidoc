@@ -1,9 +1,9 @@
 = SCM Version Plugin
-:latestRevision: 6.1.0
+:latestRevision: 6.2.0
 :toc:
 :icons: font
 
-NOTE: Version 6.0 (and later) of this plugin will only work with JDK 8, Gradle 6.X and later.
+NOTE: Version 6.2 (and later) of this plugin will only work with JDK 8, Gradle 6.5 and later.
 Furthermore Subversion will be not longer supported.
 
 
