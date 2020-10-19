@@ -323,10 +323,8 @@ _This can be overwritten by the system or environment variable `RUNONCI` or proj
 |*defaultMetadata* |`String`     |''  | | This is used for releases of feature branches.
 |*useBuildExtension*|`boolean`   |`false`|`false` +
 `true` |Build extension will be removed for SNAPSHOT extensions if this property is false.
-|*branchWithVersion*|`boolean`   |`true`| | This property affects only GIT based repositories. +
-If this property is false the version of feature branches is calculated from any tag on the branch. Therefore it is not necessary to specify a version in the branch name.
 |*majorVersionOnly*| `boolean`   |`true`| | This property affects only GIT based repositories. +
-If this property is true and branchWithVersion is false, the version is always only the major version. If the increment property is always configure for MAJOR the version will be increased.
+If this property is true and the Feature, Hotfix or Bugfix branch name contains a version, the version level considered is always only the MAJOR version. If the increment property is configure for MAJOR, this version will be increased.
 |*disableSCM*             |`boolean`   |`false`|`false` +
 `true` |If this property is `true`, the initial version is always used and the SCM usage is disabled.
 The environment variable `'SCMVERSIONEXT'` or the project variable `'scmVersionExt'` will be used on the CI server for special extensions. +
