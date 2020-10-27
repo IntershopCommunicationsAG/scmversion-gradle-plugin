@@ -55,7 +55,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
         String patternString = "^${this.prefixes.getPrefix(BranchType.tag)}"
         patternString += "${prefixes.getPrefixSeperator()}("
         patternString += "${dp[0]}${dp[1]}${dp[2]}${dp[3]}"
-        patternString += ")(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
+        patternString += ")(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d*))?"
 
         log.debug('Branch filter is {}', patternString)
 
@@ -135,7 +135,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
             patternString += "(${Version.METADATA_SEPARATOR}.*)?"
         }
         if(versionBranchtype == BranchType.tag) {
-            patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
+            patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d*))?"
         }
 
         log.debug('Branch filter is {}', patternString)
