@@ -285,6 +285,7 @@ trait ScmVersionService {
     Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
         Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
+
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
         return previousVersion
     }

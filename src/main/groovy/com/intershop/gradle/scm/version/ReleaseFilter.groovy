@@ -30,7 +30,7 @@ class ReleaseFilter extends AbstractBranchFilter {
     // regex pattern will be created with some predefined variables
     private def regexPattern
 
-    ReleaseFilter(PrefixConfig prefixConfig, Version sourceVersion) {
+    ReleaseFilter(PrefixConfig prefixConfig, Version sourceVersion, List<String> addVersionMetadata) {
         String patternString = "^${prefixConfig.getPrefix(BranchType.tag)}${prefixConfig.getTagPrefixSeperator() ? prefixConfig.getTagPrefixSeperator().replace("/", "\\/") : prefixConfig.getPrefixSeperator().replace("/", "\\/")}"
         if(sourceVersion.getNormalVersion().getVersionType() == VersionType.threeDigits) {
             patternString += threeDigitsFilter
@@ -38,10 +38,10 @@ class ReleaseFilter extends AbstractBranchFilter {
             patternString += fourDigitsFilter
         }
 
-        if(sourceVersion.branchMetadata) {
+        if(sourceVersion.branchMetadata && ! addVersionMetadata.contains(sourceVersion.branchMetadata.toString())) {
             patternString += "-${sourceVersion.branchMetadata}"
         }
-        patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d+))?"
+        patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d*))?"
 
         log.debug('Release filter is {}', patternString)
         regexPattern = /${patternString}/

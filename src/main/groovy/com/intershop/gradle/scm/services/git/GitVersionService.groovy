@@ -206,7 +206,7 @@ class GitVersionService extends GitRemoteService implements ScmVersionService{
     }
 
     Map<Version, VersionTag> getVersionTagMap() {
-        Map<String, BranchObject> branchMap = this.getTagMap(new ReleaseFilter(localService.prefixes, getPreVersion()))
+        Map<String, BranchObject> branchMap = this.getTagMap(new ReleaseFilter(localService.prefixes, getPreVersion(), versionExt.addVersionMetadata))
 
         Map<Version, VersionTag> versionTags = [:]
         branchMap.each {key, bo ->
