@@ -207,6 +207,8 @@ class VersionExtension extends AbstractExtension {
      */
     List<String> continuousReleaseBranches = []
 
+    List<String> addVersionMetadata = []
+
     /**
      * Initialize this extension and set default values
      * If environment values are set for some keys this

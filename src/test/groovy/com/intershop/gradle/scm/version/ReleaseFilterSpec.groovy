@@ -25,7 +25,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v)
+        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v, [])
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -43,7 +43,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions for branch'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb'))
+        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb'), [])
 
         then:
         versionStr == filter.getVersionStr(tagName)
@@ -61,7 +61,7 @@ class ReleaseFilterSpec extends Specification {
     def 'test list of tags for simple versions for branch with JIRA issue'() {
         when:
         Version v = (new Version.Builder(VersionType.threeDigits)).build()
-        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb-1'))
+        ReleaseFilter filter =  new ReleaseFilter(new PrefixConfig(), v.setBranchMetadata('fb-1'), [])
 
         then:
         versionStr == filter.getVersionStr(tagName)

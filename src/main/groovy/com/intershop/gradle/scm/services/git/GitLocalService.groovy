@@ -15,19 +15,18 @@
  */
 package com.intershop.gradle.scm.services.git
 
+import com.intershop.gradle.scm.extension.ScmExtension
+import com.intershop.gradle.scm.services.ScmLocalService
+import com.intershop.gradle.scm.utils.BranchType
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.LogCommand
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.lib.*
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
-
-import com.intershop.gradle.scm.extension.ScmExtension
-import com.intershop.gradle.scm.services.ScmLocalService
-import com.intershop.gradle.scm.utils.BranchType
-
-import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 
 @Slf4j
 @CompileStatic
@@ -88,7 +87,8 @@ class GitLocalService extends ScmLocalService{
                 setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
             } else if(msb.matches() && msb.count == 1) {
                 branchType = BranchType.branch
-                withVersion = true
+                def branchCheck = branchName =~ /^\d+(\.\d+)?(\.\d+)?(\.\d+)?(-.*)?/
+                withVersion = branchCheck.matches()
             } else {
                 branchType = BranchType.featureBranch
                 setFeatureBranchName(branchName)
@@ -97,12 +97,14 @@ class GitLocalService extends ScmLocalService{
         log.info('Initial branch type is {}', branchType)
         
         String tn = checkHeadForTag()
-        if(branchType == branchType.detachedHead && tn) {
+        if(tn) {
             branchType = BranchType.tag
             branchName = tn
             log.info('Updated branch name is {}', branchName)
             log.info('Updated branch type is {}', branchType)
         }
+
+        log.info('Branch name is {}', branchName)
 
         Config config = gitRepo.getConfig()
         remoteUrl = config.getString('remote', 'origin', 'url')
@@ -157,10 +159,8 @@ class GitLocalService extends ScmLocalService{
         String rvTagName = ''
         RevWalk rw = new RevWalk(repository)
 
-        String headRevID = getRevID()
-        List<Ref> tagRefs = gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS) 
-        tagRefs.each {Ref ref ->
-            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == headRevID) {
+        gitRepo.getRefDatabase().getRefsByPrefix(Constants.R_TAGS).each {Ref ref ->
+            if(ObjectId.toString(rw.parseCommit(ref.objectId).id) == getRevID()) {
                 rvTagName = ref.name.substring(Constants.R_TAGS.length())
             }
         }
