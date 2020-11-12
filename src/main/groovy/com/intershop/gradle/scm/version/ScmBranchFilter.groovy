@@ -18,6 +18,7 @@ package com.intershop.gradle.scm.version
 import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.release.version.Version
+
 import groovy.util.logging.Slf4j
 
 /**
@@ -31,6 +32,8 @@ class ScmBranchFilter extends AbstractBranchFilter {
      */
     private static final String versionregex = '(\\d+(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?)'
 
+    private String branchName = ''
+    
     // regex pattern will be created with some predefined variables
     private def regexPattern
     // feature branch key
@@ -74,6 +77,7 @@ class ScmBranchFilter extends AbstractBranchFilter {
     ScmBranchFilter(BranchType versionBranchtype, PrefixConfig prefixes, String branchFilterName = '', BranchType branchFilterType , String featureBranch = '', int patternDigits = 2) {
         String[] vdata = new String[4]
         this.prefixes = prefixes
+        this.branchName = branchFilterName
 
         log.debug("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
 
@@ -159,4 +163,16 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         return ''
     }
+
+
+    @Override
+    public String getBranchNameStr(String test)
+    {
+        if (test.endsWith(this.branchName)) {
+            return this.branchName
+        }
+        
+        return ''
+    }
+    
 }

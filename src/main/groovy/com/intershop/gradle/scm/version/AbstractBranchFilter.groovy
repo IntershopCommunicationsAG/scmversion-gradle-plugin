@@ -18,6 +18,22 @@ package com.intershop.gradle.scm.version
 
 abstract class AbstractBranchFilter {
 
-    abstract String getVersionStr(String branch)
+    /**
+     * Analyses the input parameter with the created filter and returns a valid
+     * version string or an empty string, if the input is not valid or does not match.
+     *
+     * @param test input string
+     * @return a valid version string or an empty string
+     */
+    abstract String getVersionStr(String test)
+
+    /**
+     * Analyses the input parameter with the created filter and returns the branch 
+     * name as string or an empty string, if the input is not valid or does not match.
+     *
+     * @param test input string
+     * @return the branch name as string or an empty string
+     */
+    abstract String getBranchNameStr(String test)
 
 }

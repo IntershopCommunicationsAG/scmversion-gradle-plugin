@@ -20,6 +20,7 @@ import com.intershop.gradle.scm.utils.BranchType
 import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
+
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -56,5 +57,14 @@ class ReleaseFilter extends AbstractBranchFilter {
 
         return ''
     }
+
+    
+    @Override
+	// Never used for this subclass
+    public String getBranchNameStr(String test)
+    {
+        return ''
+    }
+
 }
 
