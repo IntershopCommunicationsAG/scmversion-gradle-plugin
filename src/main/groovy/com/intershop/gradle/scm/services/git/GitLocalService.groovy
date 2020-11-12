@@ -88,7 +88,7 @@ class GitLocalService extends ScmLocalService{
                 setFeatureBranchName((mbb[0] as List)[(mbb[0] as List).size() - 1].toString())
             } else if(msb.matches() && msb.count == 1) {
                 branchType = BranchType.branch
-                def branchCheck = branchName =~ /^\d+(\.\d+)?(\.\d+)?(\.\d+)?(-.*)?/
+                def branchCheck = branchName =~ /^${prefixes.getStabilizationPrefix()}${prefixes.getBranchPrefixSeperator()}\d+(\.\d+)?(\.\d+)?(\.\d+)?(-.*)?/
                 withVersion = branchCheck.matches()
             } else {
                 branchType = BranchType.featureBranch
