@@ -38,7 +38,7 @@ class ReleaseFilter extends AbstractBranchFilter {
             patternString += fourDigitsFilter
         }
 
-        if(sourceVersion.branchMetadata && ! addVersionMetadata.contains(sourceVersion.branchMetadata.toString())) {
+        if(sourceVersion.branchMetadata != null && ! sourceVersion.branchMetadata.isEmpty() && ! addVersionMetadata.contains(sourceVersion.branchMetadata.toString())) {
             patternString += "-${sourceVersion.branchMetadata}"
         }
         patternString += "(${Version.METADATA_SEPARATOR}(\\w+\\.?\\d*))?"
@@ -53,7 +53,6 @@ class ReleaseFilter extends AbstractBranchFilter {
         if(m.matches() && m.count == 1 && m[0].size() > 0) {
             return test.substring(test.indexOf((m[0][1])))
         }
-
         return ''
     }
 }

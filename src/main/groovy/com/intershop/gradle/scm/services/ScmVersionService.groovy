@@ -250,7 +250,7 @@ trait ScmVersionService {
                 if(versionExt.increment == 'MAJOR') {
                     ++mv
                 }
-                return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata())
+                return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata().toString())
             } else if (versionObject.changed) {
                 if (versionObject.version.buildMetadata) {
                     return versionObject.version.incrementBuildMetadata()
@@ -284,7 +284,11 @@ trait ScmVersionService {
      */
     Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
-        Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().sort() : tagMap.keySet().findAll {  ! it.buildMetadata }.sort()
+
+        println(" ... " + versionExt.useBuildExtension)
+
+        Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().findAll {  ! it.buildMetadata.isEmpty() }.sort() : tagMap.keySet().sort()
+        println(" ... set + " + versions)
 
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
         return previousVersion

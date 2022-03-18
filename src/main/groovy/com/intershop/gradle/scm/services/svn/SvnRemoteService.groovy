@@ -97,13 +97,13 @@ class SvnRemoteService {
         // receive all 'branches' (a tag is only a special branch)
         list.setReceiver(new ISvnObjectReceiver<SVNDirEntry>() {
             public void receive(SvnTarget target, SVNDirEntry object) throws SVNException {
-                final String name = object.getRelativePath()
-                String version = branchFilter.getVersionStr(name)
+                final String bname = object.getRelativePath()
+                String version = branchFilter.getVersionStr(bname)
 
-                log.debug('Check branch name for version {}', name)
-                if(version) {
-                    log.debug('Branch named added to list {}', name)
-                    branches.put(Long.toString(object.getRevision()), new BranchObject(Long.toString(object.getRevision()), version, name))
+                log.debug('Check branch name for version {}', bname)
+                if(version != null && ! version.isEmpty()) {
+                    log.debug('Branch named added to list {}', bname)
+                    branches.put(Long.toString(object.getRevision()), new BranchObject(Long.toString(object.getRevision()), version, bname))
                 }
             }
         })

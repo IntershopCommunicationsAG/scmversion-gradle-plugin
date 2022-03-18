@@ -77,6 +77,8 @@ class ScmBranchFilter extends AbstractBranchFilter {
 
         log.debug("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
 
+        println("Create filter for type:${versionBranchtype}, name:${branchFilterName}, featurebranch:${featureBranch}, pattern:${patternDigits}")
+
         if(branchFilterName) {
             String branchFilterNamePattern = ''
 
