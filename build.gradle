@@ -49,6 +49,8 @@ test {
         systemProperty 'giturl', System.getenv('GITURL')
         systemProperty 'gituser', System.getenv('GITUSER')
         systemProperty 'gitpasswd', System.getenv('GITPASSWD')
+
+        println(".... GitUrl: " + System.getenv('GITURL'))
     }
 
     if(System.getProperty('SVNUSER') && System.getProperty('SVNPASSWD') && System.getProperty('SVNURL')) {
