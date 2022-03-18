@@ -45,6 +45,12 @@ jobs:
           SIGNINGPASSWORD: ${{ secrets.SIGNINGPASSWORD }}
           SONATYPEPASSWORD: ${{ secrets.SONATYPEPASSWORD }}
           SONATYPEUSER: ${{ secrets.SONATYPEUSER }}
+          GITURL: ${{ secrets.GITURL }}
+          GITUSER: ${{ secrets.GITUSER }}
+          GITPASSWD: ${{ secrets.GITPASSWD }}
+          SVNURL: ${{ secrets.SVNURL }}
+          SVNUSER: ${{ secrets.SVNUSER }}
+          SVNPASSWD: ${{ secrets.SVNPASSWD }}
         run: echo -e "gradle.publish.key=$APIKEY\ngradle.publish.secret=$APISECRET\nsigning.keyId=$SIGNINGKEYID\nsigning.password=$SIGNINGPASSWORD\nsigning.secretKeyRingFile=$HOME/.gradle/secrets.gpg\nsonatypeUsername=$SONATYPEUSER\nsonatypePassword=$SONATYPEPASSWORD" > $HOME/.gradle/gradle.properties
       - name: Build and test with Gradle
         env:

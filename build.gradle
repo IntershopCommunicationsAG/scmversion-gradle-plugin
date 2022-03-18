@@ -38,8 +38,6 @@ if (project.version.endsWith('-SNAPSHOT')) {
     status = 'snapshot'
 }
 
-println(".. 1 .. GitUrl: " + System.getenv('GITURL'))
-
 // test configuration
 test {
     if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD') && System.getenv('SVNURL')) {
@@ -51,8 +49,6 @@ test {
         systemProperty 'giturl', System.getenv('GITURL')
         systemProperty 'gituser', System.getenv('GITUSER')
         systemProperty 'gitpasswd', System.getenv('GITPASSWD')
-
-        println(".... GitUrl: " + System.getenv('GITURL'))
     }
 
     if(System.getProperty('SVNUSER') && System.getProperty('SVNPASSWD') && System.getProperty('SVNURL')) {
