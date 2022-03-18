@@ -38,6 +38,8 @@ if (project.version.endsWith('-SNAPSHOT')) {
     status = 'snapshot'
 }
 
+println(".. 1 .. GitUrl: " + System.getenv('GITURL'))
+
 // test configuration
 test {
     if(System.getenv('SVNUSER') && System.getenv('SVNPASSWD') && System.getenv('SVNURL')) {
