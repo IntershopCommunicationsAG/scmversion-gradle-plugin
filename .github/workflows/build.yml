@@ -45,16 +45,16 @@ jobs:
           SIGNINGPASSWORD: ${{ secrets.SIGNINGPASSWORD }}
           SONATYPEPASSWORD: ${{ secrets.SONATYPEPASSWORD }}
           SONATYPEUSER: ${{ secrets.SONATYPEUSER }}
+        run: echo -e "gradle.publish.key=$APIKEY\ngradle.publish.secret=$APISECRET\nsigning.keyId=$SIGNINGKEYID\nsigning.password=$SIGNINGPASSWORD\nsigning.secretKeyRingFile=$HOME/.gradle/secrets.gpg\nsonatypeUsername=$SONATYPEUSER\nsonatypePassword=$SONATYPEPASSWORD" > $HOME/.gradle/gradle.properties
+      - name: Build and test with Gradle
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.daemon=true"
           GITURL: ${{ secrets.GITURL }}
           GITUSER: ${{ secrets.GITUSER }}
           GITPASSWD: ${{ secrets.GITPASSWD }}
           SVNURL: ${{ secrets.SVNURL }}
           SVNUSER: ${{ secrets.SVNUSER }}
           SVNPASSWD: ${{ secrets.SVNPASSWD }}
-        run: echo -e "gradle.publish.key=$APIKEY\ngradle.publish.secret=$APISECRET\nsigning.keyId=$SIGNINGKEYID\nsigning.password=$SIGNINGPASSWORD\nsigning.secretKeyRingFile=$HOME/.gradle/secrets.gpg\nsonatypeUsername=$SONATYPEUSER\nsonatypePassword=$SONATYPEPASSWORD" > $HOME/.gradle/gradle.properties
-      - name: Build and test with Gradle
-        env:
-          GRADLE_OPTS: "-Dorg.gradle.daemon=true"
         run: ./gradlew test build :publishIntershopMvnPublicationToMavenRepository -s
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
