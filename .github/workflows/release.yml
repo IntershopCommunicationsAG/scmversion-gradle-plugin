@@ -53,6 +53,6 @@ jobs:
       - name: Run gradle release
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=true"
-        run: ./gradlew -PrunOnCI=true test build :publishIntershopMvnPublicationToMavenRepository :publishPlugins -s --scan
+        run: ./gradlew -PrunOnCI=true test build :publishIntershopMvnPublicationToMavenRepository :publishPlugins -s
       - name: Post Build
         run: rm -f $HOME/.gradle/gradle.properties && rm -f $HOME/.docker/config.json
