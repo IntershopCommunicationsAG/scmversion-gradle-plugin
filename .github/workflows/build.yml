@@ -23,10 +23,6 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch --all --tags
-      - name: Run docker login
-        run: echo ${{ secrets.DOCKERPASSWD }} | docker login -u ${{ secrets.DOCKERUSER }} --password-stdin
-      - name: Create Test container
-        run: cd testdocker && ./createimage.sh && cd ..
       - name: Create .gradle dir
         run: mkdir -p $HOME/.gradle
       - name: Install gpg secret key
