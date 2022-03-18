@@ -49,7 +49,7 @@ jobs:
       - name: Build and test with Gradle
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=true"
-        run: ./gradlew test build :publishIntershopMvnPublicationToMavenRepository -s --scan
+        run: ./gradlew test build :publishIntershopMvnPublicationToMavenRepository -s
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         if: always()
