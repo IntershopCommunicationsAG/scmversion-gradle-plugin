@@ -7,7 +7,7 @@ on:
     branches:
       - '*'
   pull_request:
-    branches: [ master ]
+    branches: [ release/2.X ]
 
 jobs:
   build:
