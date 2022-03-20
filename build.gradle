@@ -27,7 +27,7 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.7.4-dev1'
+version = '2.7.4-dev2'
 
 
 sourceCompatibility = 1.8
@@ -252,7 +252,7 @@ pluginBundle {
     website = "https://github.com/IntershopCommunicationsAG/${project.name}"
     vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
     description = project.description
-    tags = ['intershop', 'gradle', 'plugin', 'test']
+    tags = ['intershop', 'release', 'version']
 
     plugins {
         gradleTestPlugin {
