@@ -27,16 +27,10 @@ plugins {
 // release configuration
 group 'com.intershop.gradle.scm'
 description 'Gradle SCM version plugin - SCM based version handling for Gradle'
-version = '2.7.4-dev2'
-
+version = '2.7.4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
-// set correct project status
-if (project.version.endsWith('-SNAPSHOT')) {
-    status = 'snapshot'
-}
 
 // test configuration
 test {
