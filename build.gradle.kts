@@ -78,7 +78,7 @@ gradlePlugin {
 pluginBundle {
     website = "https://github.com/IntershopCommunicationsAG/${project.name}"
     vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
-    tags = listOf("intershop", "gradle", "plugin", "version", "release")
+    tags = listOf("intershop", "version", "release")
 }
 
 // set correct project status
