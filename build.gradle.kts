@@ -296,7 +296,7 @@ dependencies {
     testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.6")
     testRuntimeOnly("org.slf4j:slf4j-api:1.7.25")
 
-    testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.0.0")
+    testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.1.0")
     testImplementation(gradleTestKit())
 
     testImplementation("commons-io:commons-io:2.2")
