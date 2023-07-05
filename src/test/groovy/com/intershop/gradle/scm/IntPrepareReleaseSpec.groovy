@@ -139,7 +139,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
         gradleVersion << supportedGradleVersions
     }
 
-    @Ignore
+    /**
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
@@ -188,6 +188,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
         where:
         gradleVersion << supportedGradleVersions
     }
+ **/
 
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
