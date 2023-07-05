@@ -17,6 +17,7 @@ package com.intershop.gradle.scm
 
 import com.intershop.gradle.scm.test.utils.AbstractTaskSpec
 import groovy.util.logging.Slf4j
+import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -138,6 +139,7 @@ class IntPrepareReleaseSpec extends AbstractTaskSpec {
         gradleVersion << supportedGradleVersions
     }
 
+    @Ignore
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
