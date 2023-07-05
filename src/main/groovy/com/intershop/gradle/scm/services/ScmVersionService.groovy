@@ -252,7 +252,7 @@ trait ScmVersionService {
                 }
                 return Version.forIntegers(mv, tv.normalVersion.versionType).setBranchMetadata(tv.getBranchMetadata().toString())
             } else if (versionObject.changed) {
-                if (versionObject.version.buildMetadata) {
+                if (! versionObject.version.buildMetadata.empty) {
                     return versionObject.version.incrementBuildMetadata()
                 } else {
                     return versionObject.version.setBuildMetadata(versionExt.getDefaultBuildMetadata())
@@ -284,12 +284,7 @@ trait ScmVersionService {
      */
     Version getPreviousVersion() {
         Map<Version, VersionTag> tagMap = getVersionTagMap()
-
-        println(" ... " + versionExt.useBuildExtension)
-
         Set<Version> versions = versionExt.useBuildExtension ? tagMap.keySet().findAll {  ! it.buildMetadata.isEmpty() }.sort() : tagMap.keySet().sort()
-        println(" ... set + " + versions)
-
         Version previousVersion = versions.findAll { ((Version)it) < getPreVersion() }.max()
         return previousVersion
     }
@@ -335,7 +330,7 @@ trait ScmVersionService {
      */
     Version getVersionFromString(String versionStr, String versionKind) {
         try {
-            if(versionStr) {
+            if(versionStr != null && ! versionStr.empty) {
                 return Version.valueOf(versionStr)
             }
         }catch(ParserException pe) {
