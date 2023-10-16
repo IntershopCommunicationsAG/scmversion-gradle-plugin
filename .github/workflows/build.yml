@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 8
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: 8
-      - uses: actions/checkout@v2
+          distribution: temurin
+          java-version: 17
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: git fetch --all --tags
       - name: Create .gradle dir
         run: mkdir -p $HOME/.gradle
       - name: Install gpg secret key
@@ -37,7 +37,7 @@ jobs:
           SIGNINGPASSWORD: ${{ secrets.SIGNINGPASSWORD }}
         run: |
           gpg --batch --passphrase="$SIGNINGPASSWORD" --pinentry-mode loopback --export-secret-keys $SIGNINGKEYID > $HOME/.gradle/secrets.gpg
-      - name: Create gradle sproperties
+      - name: Create gradle properties
         env:
           APIKEY: ${{ secrets.APIKEY }}
           APISECRET: ${{ secrets.APISECRET }}
@@ -57,7 +57,7 @@ jobs:
           SVNPASSWD: ${{ secrets.SVNPASSWD }}
         run: ./gradlew test build :publishIntershopMvnPublicationToMavenRepository -s
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
         if: always()
         with:
           files: build/test-results/**/*.xml
