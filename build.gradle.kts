@@ -270,6 +270,7 @@ dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.1.0")
     implementation(gradleKotlinDsl())
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r") {
