@@ -272,10 +272,12 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
 
     //jgit
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r") {
         exclude(group = "org.apache.httpcomponents", module = "httpclient")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
+    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.7.0.202309050840-r")
+
 
     testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
     testRuntimeOnly("org.slf4j:slf4j-api:2.0.5")
