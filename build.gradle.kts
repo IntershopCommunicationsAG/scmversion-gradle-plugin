@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 import org.asciidoctor.gradle.jvm.AsciidoctorTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 
     // project plugins
-    `java-gradle-plugin`
     groovy
 
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.9.10"
 
     // test coverage
     jacoco
 
     // ide plugin
     idea
-
-    // publish plugin
-    `maven-publish`
 
     // artifact signing - necessary on Maven Central
     signing
@@ -40,13 +35,13 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "3.3.2"
 
     // documentation
-    id("org.jetbrains.dokka") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.9.0"
 
     // code analysis for kotlin
-    id("io.gitlab.arturbosch.detekt") version "1.18.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.1"
 
     // plugin for publishing to Gradle Portal
-    id("com.gradle.plugin-publish") version "1.0.0"
+    id("com.gradle.plugin-publish") version "1.1.0"
 }
 
 // release configuration
@@ -58,28 +53,27 @@ val sonatypeUsername: String? by project
 val sonatypePassword: String? by project
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 val pluginId = "com.intershop.gradle.scmversion"
 
 gradlePlugin {
     plugins {
+        website = "https://github.com/IntershopCommunicationsAG/${project.name}"
+        vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
         create("scmversionPlugin") {
             id = pluginId
             implementationClass = "com.intershop.gradle.scm.ScmVersionPlugin"
             displayName = project.name
             description = project.description
+            tags = listOf("intershop", "version", "release")
         }
     }
 }
 
-pluginBundle {
-    website = "https://github.com/IntershopCommunicationsAG/${project.name}"
-    vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
-    tags = listOf("intershop", "version", "release")
-}
 
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
@@ -87,17 +81,11 @@ if (project.version.toString().endsWith("-SNAPSHOT")) {
 }
 
 detekt {
-    input = files("src/main/kotlin")
-    config = files("detekt.yml")
+    source.from(files("src/main/kotlin"))
+    config.from(files("detekt.yml"))
 }
 
 tasks {
-    withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
     withType<Test>().configureEach {
         testLogging.showStandardStreams = false
 
@@ -126,13 +114,13 @@ tasks {
         //Set supported Gradle version
         systemProperty("intershop.gradle.versions", "6.6")
         //working dir for tests
-        systemProperty("intershop.test.base.dir", (File(project.buildDir, "test-working")).absolutePath)
+        systemProperty("intershop.test.base.dir", (File(project.layout.buildDirectory.get().asFile, "test-working")).absolutePath)
     }
 
-    val copyAsciiDoc = register<Copy>("copyAsciiDoc") {
+    register<Copy>("copyAsciiDoc") {
         includeEmptyDirs = false
 
-        val outputDir = file("$buildDir/tmp/asciidoctorSrc")
+        val outputDir = file("${project.layout.buildDirectory.get().asFile}/tmp/asciidoctorSrc")
         val inputFiles = fileTree(mapOf("dir" to rootDir,
                 "include" to listOf("**/*.asciidoc"),
                 "exclude" to listOf("build/**")))
@@ -151,7 +139,7 @@ tasks {
     withType<AsciidoctorTask> {
         dependsOn("copyAsciiDoc")
 
-        setSourceDir(file("$buildDir/tmp/asciidoctorSrc"))
+        setSourceDir(file("${project.layout.buildDirectory.get().asFile}/tmp/asciidoctorSrc"))
         sources(delegateClosureOf<PatternSet> {
             include("README.asciidoc")
         })
@@ -176,10 +164,10 @@ tasks {
 
     withType<JacocoReport> {
         reports {
-            xml.isEnabled = true
-            html.isEnabled = true
+            xml.required.set(true)
+            html.required.set(true)
 
-            html.destination = File(project.buildDir, "jacocoHtml")
+            html.outputLocation.set(File(project.project.layout.buildDirectory.get().asFile, "jacocoHtml"))
         }
 
         val jacocoTestReport by tasks
@@ -188,15 +176,11 @@ tasks {
 
     getByName("jar").dependsOn("asciidoctor")
 
-    val compileKotlin by getting(KotlinCompile::class) {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
-
     dokkaJavadoc.configure {
-        outputDirectory.set(buildDir.resolve("dokka"))
+        outputDirectory.set(project.layout.buildDirectory.get().asFile.resolve("dokka"))
     }
 
-    val sourcesJar = task<Jar>("sourceJar") {
+    task<Jar>("sourceJar") {
         description = "Creates a JAR that contains the source code."
 
         from(sourceSets.getByName("main").allSource)
@@ -227,11 +211,11 @@ publishing {
 
             from(components["java"])
 
-            artifact(File(buildDir, "docs/asciidoc/html5/README.html")) {
+            artifact(File(project.layout.buildDirectory.get().asFile, "docs/asciidoc/html5/README.html")) {
                 classifier = "reference"
             }
 
-            artifact(File(buildDir, "docs/asciidoc/docbook/README.xml")) {
+            artifact(File(project.layout.buildDirectory.get().asFile, "docs/asciidoc/docbook/README.xml")) {
                 classifier = "docbook"
             }
 
@@ -285,7 +269,7 @@ signing {
 dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.1.0")
     implementation(gradleKotlinDsl())
-    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.5.1.201910021850-r") {
@@ -293,13 +277,13 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
 
-    testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.6")
-    testRuntimeOnly("org.slf4j:slf4j-api:1.7.25")
+    testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
+    testRuntimeOnly("org.slf4j:slf4j-api:2.0.5")
 
-    testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.1.0")
+    testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.1.2")
     testImplementation(gradleTestKit())
 
-    testImplementation("commons-io:commons-io:2.2")
+    testImplementation("commons-io:commons-io:2.11.0")
 }
 
 repositories {
