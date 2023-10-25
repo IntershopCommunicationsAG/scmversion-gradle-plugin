@@ -35,13 +35,13 @@ plugins {
     id("org.asciidoctor.jvm.convert") version "3.3.2"
 
     // documentation
-    id("org.jetbrains.dokka") version "1.9.0"
+    id("org.jetbrains.dokka") version "1.9.10"
 
     // code analysis for kotlin
     id("io.gitlab.arturbosch.detekt") version "1.23.1"
 
     // plugin for publishing to Gradle Portal
-    id("com.gradle.plugin-publish") version "1.1.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 // release configuration
@@ -112,7 +112,7 @@ tasks {
         //Change directory for gradle tests
         systemProperty("org.gradle.native.dir", ".gradle")
         //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "6.6")
+        systemProperty("intershop.gradle.versions", "6.6,8.4")
         //working dir for tests
         systemProperty("intershop.test.base.dir", (File(project.layout.buildDirectory.get().asFile, "test-working")).absolutePath)
     }
@@ -269,7 +269,7 @@ signing {
 dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.1.0")
     implementation(gradleKotlinDsl())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
 
     //jgit
@@ -281,12 +281,13 @@ dependencies {
 
 
     testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
-    testRuntimeOnly("org.slf4j:slf4j-api:2.0.5")
+    testRuntimeOnly("org.slf4j:slf4j-api:2.0.9")
 
+    //todo wait for release
     testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.1.2")
     testImplementation(gradleTestKit())
 
-    testImplementation("commons-io:commons-io:2.11.0")
+    testImplementation("commons-io:commons-io:2.14.0")
 }
 
 repositories {
