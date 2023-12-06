@@ -37,9 +37,6 @@ plugins {
     // documentation
     id("org.jetbrains.dokka") version "1.9.10"
 
-    // code analysis for kotlin
-    id("io.gitlab.arturbosch.detekt") version "1.23.1"
-
     // plugin for publishing to Gradle Portal
     id("com.gradle.plugin-publish") version "1.2.1"
 }
@@ -78,11 +75,6 @@ gradlePlugin {
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
     status = "snapshot'"
-}
-
-detekt {
-    source.from(files("src/main/kotlin"))
-    config.from(files("detekt.yml"))
 }
 
 tasks {
@@ -270,7 +262,6 @@ dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.1.0")
     implementation(gradleKotlinDsl())
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r") {
