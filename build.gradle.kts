@@ -20,7 +20,7 @@ plugins {
     // project plugins
     groovy
 
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.10" // A dependency on the standard library (stdlib) is added automatically to each source set.
 
     // test coverage
     jacoco
@@ -261,7 +261,6 @@ signing {
 dependencies {
     implementation("com.intershop.gradle.version:extended-version:3.1.0")
     implementation(gradleKotlinDsl())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
 
     //jgit
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r") {
