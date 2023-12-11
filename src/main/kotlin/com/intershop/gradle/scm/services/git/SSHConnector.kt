@@ -19,8 +19,8 @@ import com.intershop.gradle.scm.utils.ScmKey
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import com.jcraft.jsch.Session
-import org.eclipse.jgit.transport.JschConfigSessionFactory
-import org.eclipse.jgit.transport.OpenSshConfig
+import org.eclipse.jgit.transport.ssh.jsch.JschConfigSessionFactory
+import org.eclipse.jgit.transport.ssh.jsch.OpenSshConfig
 import org.eclipse.jgit.util.FS
 import java.io.File
 

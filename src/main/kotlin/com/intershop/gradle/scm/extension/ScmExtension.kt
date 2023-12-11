@@ -140,6 +140,9 @@ abstract class ScmExtension {
      *
      * @param closure scm user (see ScmUser)
      */
+    @Deprecated("will be removed in gradle 9.0",
+        ReplaceWith("this.user(action)")
+    )
     fun user(closure: Closure<ScmUser>) {
         ConfigureUtil.configure(closure, user)
     }
@@ -158,6 +161,9 @@ abstract class ScmExtension {
      *
      * @param closure scm user (see ScmKey)
      */
+    @Deprecated("will be removed in gradle 9.0",
+        ReplaceWith("this.key(action)")
+    )
     fun key(closure: Closure<ScmKey>) {
         ConfigureUtil.configure(closure, key)
     }
@@ -176,6 +182,9 @@ abstract class ScmExtension {
      *
      * @param closure prefix configuration (see PrefixConfig)
      */
+    @Deprecated("will be removed in gradle 9.0",
+        ReplaceWith("this.prefixes(action)")
+    )
     fun prefixes(closure: Closure<PrefixConfig>) {
         ConfigureUtil.configure(closure, prefixes)
     }
@@ -194,6 +203,9 @@ abstract class ScmExtension {
      *
      * @param closure version extension (VersionExtension)
      */
+    @Deprecated("will be removed in gradle 9.0",
+        ReplaceWith("this.version(action)")
+    )
     fun version(closure: Closure<VersionExtension>) {
         ConfigureUtil.configure(closure, version)
     }
@@ -212,6 +224,9 @@ abstract class ScmExtension {
      *
      * @param closure changelog extension (ChangelogExtension)
      */
+    @Deprecated("will be removed in gradle 9.0",
+        ReplaceWith("this.changelog(action)")
+    )
     fun changelog(closure: Closure<ChangeLogExtension>) {
         ConfigureUtil.configure(closure, changelog)
     }

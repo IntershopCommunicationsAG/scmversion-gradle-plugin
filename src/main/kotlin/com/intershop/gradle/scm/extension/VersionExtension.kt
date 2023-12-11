@@ -198,9 +198,9 @@ abstract class VersionExtension @Inject constructor(private val scmExtension: Sc
      */
     val versionExt: String
         get() {
-            var versionExtProp = providerFactory.systemProperty(SCMVERSIONEXT_PROP).forUseAtConfigurationTime().orNull
+            var versionExtProp = providerFactory.systemProperty(SCMVERSIONEXT_PROP).orNull
             if(versionExtProp == null) {
-                providerFactory.environmentVariable(SCMVERSIONEXT_ENV).forUseAtConfigurationTime().orNull
+                providerFactory.environmentVariable(SCMVERSIONEXT_ENV).orNull
             }
             if(versionExtProp == null) {
                 versionExtProp = ""

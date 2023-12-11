@@ -1,11 +1,9 @@
 = SCM Version Plugin
-:latestRevision: 6.2.0
+:latestRevision: 7.0.0
 :toc:
 :icons: font
 
-NOTE: Version 6.2 (and later) of this plugin will only work with JDK 8, Gradle 6.5 and later.
-Furthermore Subversion will be not longer supported.
-
+NOTE: Version 7.0 (and later) of this plugin will only work with JDK 17, Gradle 8.5 and later.
 
 == Summary
 Based on the used SCM (Source Control Management) this plugin provides project configuration handling and specific
