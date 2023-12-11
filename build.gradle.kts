@@ -20,7 +20,7 @@ plugins {
     // project plugins
     groovy
 
-    kotlin("jvm") version "1.9.10" // A dependency on the standard library (stdlib) is added automatically to each source set.
+    kotlin("jvm") version "1.9.21" // A dependency on the standard library (stdlib) is added automatically to each source set.
 
     // test coverage
     jacoco
