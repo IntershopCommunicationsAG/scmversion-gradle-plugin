@@ -44,25 +44,27 @@ plugins {
 // release configuration
 group = "com.intershop.gradle.scm"
 description = "Gradle SCM version plugin - SCM based version handling for Gradle"
-version = "6.2.1"
+// apply gradle property 'projectVersion' to project.version, default to 'LOCAL'
+val projectVersion : String? by project
+version = projectVersion ?: "LOCAL"
 
 val sonatypeUsername: String? by project
 val sonatypePassword: String? by project
 
 java {
+    withJavadocJar()
+    withSourcesJar()
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
-
-val pluginId = "com.intershop.gradle.scmversion"
 
 gradlePlugin {
     plugins {
         website = "https://github.com/IntershopCommunicationsAG/${project.name}"
         vcsUrl = "https://github.com/IntershopCommunicationsAG/${project.name}"
         create("scmversionPlugin") {
-            id = pluginId
+            id = "com.intershop.gradle.scmversion"
             implementationClass = "com.intershop.gradle.scm.ScmVersionPlugin"
             displayName = project.name
             description = project.description
@@ -74,7 +76,7 @@ gradlePlugin {
 
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
-    status = "snapshot'"
+    status = "snapshot"
 }
 
 tasks {
@@ -82,8 +84,6 @@ tasks {
         testLogging.showStandardStreams = false
 
         maxParallelForks = 1
-
-        systemProperty("IDE_TEST_DEBUG_SUPPORT", "true")
 
         if (!System.getenv("GITUSER").isNullOrBlank() &&
                 !System.getenv("GITPASSWD").isNullOrBlank() &&
@@ -104,15 +104,15 @@ tasks {
         //Change directory for gradle tests
         systemProperty("org.gradle.native.dir", ".gradle")
         //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "6.6,8.4")
+        systemProperty("intershop.gradle.versions", "8.4,8.5")
         //working dir for tests
-        systemProperty("intershop.test.base.dir", (File(project.layout.buildDirectory.get().asFile, "test-working")).absolutePath)
+        systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
     }
 
     register<Copy>("copyAsciiDoc") {
         includeEmptyDirs = false
 
-        val outputDir = file("${project.layout.buildDirectory.get().asFile}/tmp/asciidoctorSrc")
+        val outputDir = project.layout.buildDirectory.dir("tmp/asciidoctorSrc")
         val inputFiles = fileTree(mapOf("dir" to rootDir,
                 "include" to listOf("**/*.asciidoc"),
                 "exclude" to listOf("build/**")))
@@ -121,7 +121,7 @@ tasks {
         outputs.dir(outputDir)
 
         doFirst {
-            outputDir.mkdir()
+            outputDir.get().asFile.mkdir()
         }
 
         from(inputFiles)
@@ -131,7 +131,7 @@ tasks {
     withType<AsciidoctorTask> {
         dependsOn("copyAsciiDoc")
 
-        setSourceDir(file("${project.layout.buildDirectory.get().asFile}/tmp/asciidoctorSrc"))
+        setSourceDir(project.layout.buildDirectory.dir("tmp/asciidoctorSrc"))
         sources(delegateClosureOf<PatternSet> {
             include("README.asciidoc")
         })
@@ -159,17 +159,19 @@ tasks {
             xml.required.set(true)
             html.required.set(true)
 
-            html.outputLocation.set(File(project.project.layout.buildDirectory.get().asFile, "jacocoHtml"))
+            html.outputLocation.set(project.project.layout.buildDirectory.dir("jacocoHtml"))
         }
 
         val jacocoTestReport by tasks
         jacocoTestReport.dependsOn("test")
     }
 
-    getByName("jar").dependsOn("asciidoctor")
+    jar.configure {
+        dependsOn("asciidoctor")
+    }
 
     dokkaJavadoc.configure {
-        outputDirectory.set(project.layout.buildDirectory.get().asFile.resolve("dokka"))
+        outputDirectory.set(project.layout.buildDirectory.dir("dokka"))
     }
 
     task<Jar>("sourceJar") {
@@ -203,11 +205,11 @@ publishing {
 
             from(components["java"])
 
-            artifact(File(project.layout.buildDirectory.get().asFile, "docs/asciidoc/html5/README.html")) {
+            artifact(project.layout.buildDirectory.file("docs/asciidoc/html5/README.html")) {
                 classifier = "reference"
             }
 
-            artifact(File(project.layout.buildDirectory.get().asFile, "docs/asciidoc/docbook/README.xml")) {
+            artifact(project.layout.buildDirectory.file("docs/asciidoc/docbook/README.xml")) {
                 classifier = "docbook"
             }
 
@@ -263,25 +265,24 @@ dependencies {
     implementation(gradleKotlinDsl())
 
     //jgit
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.8.0.202311291450-r") {
         exclude(group = "org.apache.httpcomponents", module = "httpclient")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.7.0.202309050840-r")
-
+    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r")
 
     testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
     testRuntimeOnly("org.slf4j:slf4j-api:2.0.9")
 
-    //todo wait for release
-    testImplementation("com.intershop.gradle.test:test-gradle-plugin:4.1.2")
+    testImplementation("com.intershop.gradle.test:test-gradle-plugin:5.0.1")
     testImplementation(gradleTestKit())
 
-    testImplementation("commons-io:commons-io:2.14.0")
+    testImplementation("commons-io:commons-io:2.15.1")
 }
 
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    mavenLocal()
 }
 
