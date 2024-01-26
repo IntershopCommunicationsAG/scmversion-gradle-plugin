@@ -505,6 +505,10 @@ The integration tests use test repositories. Therefore, it is necessary to speci
 |*gitpasswd* | Password for Git test user   | Must be specified with environment variable `GITPASSWD`
 |===
 
+== Contribute
+
+See link:https://github.com/IntershopCommunicationsAG/.github/blob/main/CONTRIBUTE.asciidoc[here] for details.
+
 == License
 
 Copyright 2014-2020 Intershop Communications.
