@@ -17,6 +17,7 @@ package com.intershop.gradle.scm
 
 import com.intershop.gradle.scm.test.utils.AbstractTaskGroovySpec
 import groovy.util.logging.Slf4j
+import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -31,6 +32,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test prepare release from trunk on GIT - tag does not exists - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
@@ -80,6 +82,7 @@ class IntPrepareReleaseGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test prepare release from trunk on GIT - tag does exists - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )

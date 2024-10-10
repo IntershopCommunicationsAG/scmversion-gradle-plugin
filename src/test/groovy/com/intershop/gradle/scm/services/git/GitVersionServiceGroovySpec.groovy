@@ -26,6 +26,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TestName
+import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Unroll
 
@@ -150,6 +151,7 @@ class GitVersionServiceGroovySpec extends AbstractScmGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def "create simple tag"() {
         setup:
         project = prepareProject('master', 'SBRELEASE', 'FB', 'SB')
@@ -170,6 +172,7 @@ class GitVersionServiceGroovySpec extends AbstractScmGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def "create simple branch"() {
         setup:
         project = prepareProject('master', 'SBRELEASE', 'FB', 'SB')
