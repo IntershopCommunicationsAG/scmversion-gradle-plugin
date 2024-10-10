@@ -21,7 +21,7 @@ plugins {
     `jvm-test-suite`
     groovy
 
-    kotlin("jvm") version "1.9.21" // A dependency on the standard library (stdlib) is added automatically to each source set.
+    kotlin("jvm") version "1.9.25" // A dependency on the standard library (stdlib) is added automatically to each source set.
 
     // test coverage
     jacoco
@@ -33,13 +33,13 @@ plugins {
     signing
 
     // plugin for documentation
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("org.asciidoctor.jvm.convert") version "4.0.3"
 
     // documentation
-    id("org.jetbrains.dokka") version "1.9.10"
+    id("org.jetbrains.dokka") version "1.9.20"
 
     // plugin for publishing to Gradle Portal
-    id("com.gradle.plugin-publish") version "1.2.1"
+    id("com.gradle.plugin-publish") version "1.3.0"
 }
 
 // release configuration
@@ -160,18 +160,21 @@ tasks {
             setBackends(listOf("html5", "docbook"))
         }
 
-        options = mapOf("doctype" to "article",
-                "ruby" to "erubis")
-        attributes = mapOf(
-                "latestRevision" to project.version,
-                "toc" to "left",
-                "toclevels" to "2",
-                "source-highlighter" to "coderay",
-                "icons" to "font",
-                "setanchors" to "true",
-                "idprefix" to "asciidoc",
-                "idseparator" to "-",
-                "docinfo1" to "true")
+        setOptions(mapOf(
+            "doctype"               to "article",
+            "ruby"                  to "erubis"
+        ))
+        setAttributes(mapOf(
+            "latestRevision"        to project.version,
+            "toc"                   to "left",
+            "toclevels"             to "2",
+            "source-highlighter"    to "coderay",
+            "icons"                 to "font",
+            "setanchors"            to "true",
+            "idprefix"              to "asciidoc",
+            "idseparator"           to "-",
+            "docinfo1"              to "true"
+        ))
     }
 
     withType<JacocoReport> {
