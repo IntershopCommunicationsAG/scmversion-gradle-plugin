@@ -94,7 +94,6 @@ testing {
         targets {
             all {
                 testTask.configure {
-                    systemProperty("intershop.gradle.versions", "8.5")
                     if (!System.getenv("GITUSER").isNullOrBlank() &&
                         !System.getenv("GITPASSWD").isNullOrBlank() &&
                         !System.getenv("GITURL").isNullOrBlank()) {
@@ -114,7 +113,7 @@ testing {
                     // Change directory for gradle tests
                     systemProperty("org.gradle.native.dir", ".gradle")
                     // Set supported Gradle version
-                    systemProperty("intershop.gradle.versions", "8.4,8.5")
+                    systemProperty("intershop.gradle.versions", "8.4,8.5,8.10.2")
                     // Working dir for tests
                     systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
 
