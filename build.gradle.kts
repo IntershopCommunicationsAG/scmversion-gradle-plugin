@@ -18,6 +18,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorTask
 plugins {
 
     // project plugins
+    `jvm-test-suite`
     groovy
 
     kotlin("jvm") version "1.9.21" // A dependency on the standard library (stdlib) is added automatically to each source set.
@@ -73,42 +74,61 @@ gradlePlugin {
     }
 }
 
-
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
     status = "snapshot"
 }
 
-tasks {
-    withType<Test>().configureEach {
-        testLogging.showStandardStreams = false
+testing {
+    suites.withType<JvmTestSuite> {
+        useSpock()
+        dependencies {
+            implementation("com.intershop.gradle.test:test-gradle-plugin:5.1.0")
+            implementation("commons-io:commons-io:2.17.0")
+            implementation(gradleTestKit())
 
-        maxParallelForks = 1
-
-        if (!System.getenv("GITUSER").isNullOrBlank() &&
-                !System.getenv("GITPASSWD").isNullOrBlank() &&
-                !System.getenv("GITURL").isNullOrBlank()) {
-            systemProperty("giturl", System.getenv("GITURL"))
-            systemProperty("gituser", System.getenv("GITUSER"))
-            systemProperty("gitpasswd", System.getenv("GITPASSWD"))
+            runtimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
+            runtimeOnly("org.slf4j:slf4j-api:2.0.16")
         }
 
-        if (!System.getProperty("GITUSER").isNullOrBlank() &&
-                !System.getProperty("GITPASSWD").isNullOrBlank() &&
-                !System.getProperty("GITURL").isNullOrBlank()) {
-            systemProperty("giturl", System.getProperty("GITURL"))
-            systemProperty("gituser", System.getProperty("GITUSER"))
-            systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
-        }
+        targets {
+            all {
+                testTask.configure {
+                    systemProperty("intershop.gradle.versions", "8.5")
+                    if (!System.getenv("GITUSER").isNullOrBlank() &&
+                        !System.getenv("GITPASSWD").isNullOrBlank() &&
+                        !System.getenv("GITURL").isNullOrBlank()) {
+                        systemProperty("giturl", System.getenv("GITURL"))
+                        systemProperty("gituser", System.getenv("GITUSER"))
+                        systemProperty("gitpasswd", System.getenv("GITPASSWD"))
+                    }
 
-        //Change directory for gradle tests
-        systemProperty("org.gradle.native.dir", ".gradle")
-        //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "8.4,8.5")
-        //working dir for tests
-        systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
+                    if (!System.getProperty("GITUSER").isNullOrBlank() &&
+                        !System.getProperty("GITPASSWD").isNullOrBlank() &&
+                        !System.getProperty("GITURL").isNullOrBlank()) {
+                        systemProperty("giturl", System.getProperty("GITURL"))
+                        systemProperty("gituser", System.getProperty("GITUSER"))
+                        systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
+                    }
+
+                    // Change directory for gradle tests
+                    systemProperty("org.gradle.native.dir", ".gradle")
+                    // Set supported Gradle version
+                    systemProperty("intershop.gradle.versions", "8.4,8.5")
+                    // Working dir for tests
+                    systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
+
+                    testLogging {
+                        showStandardStreams = false
+                        maxParallelForks = 1
+                    }
+                }
+            }
+        }
     }
+}
 
+tasks {
     register<Copy>("copyAsciiDoc") {
         includeEmptyDirs = false
 
@@ -270,14 +290,6 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
     implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r")
-
-    testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
-    testRuntimeOnly("org.slf4j:slf4j-api:2.0.9")
-
-    testImplementation("com.intershop.gradle.test:test-gradle-plugin:5.0.1")
-    testImplementation(gradleTestKit())
-
-    testImplementation("commons-io:commons-io:2.15.1")
 }
 
 repositories {
