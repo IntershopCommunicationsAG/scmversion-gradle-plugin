@@ -20,7 +20,6 @@ import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.scm.test.utils.AbstractScmGroovySpec
 import com.intershop.gradle.scm.utils.BranchObject
-import com.intershop.gradle.scm.utils.ScmUser
 import com.intershop.gradle.scm.version.AbstractBranchFilter
 import com.intershop.gradle.test.util.TestDir
 import org.gradle.api.Project

@@ -1073,6 +1073,7 @@ class IntShowVersionGroovySpec extends AbstractTaskGroovySpec {
         gradleVersion << supportedGradleVersions
     }
 
+    @Requires({ System.properties['giturl'] })
     def 'test showVersion task with git - checkout commit - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCommitCheckout(testProjectDir, System.properties['giturl'], 'ad73b690ccfbc5d59eec6597073bd6c24aee6519')
