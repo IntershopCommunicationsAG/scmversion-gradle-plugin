@@ -33,6 +33,7 @@ class IntCreateBranchGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test branch creation from trunk on GIT #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )

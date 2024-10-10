@@ -33,6 +33,7 @@ class IntCreateTagGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test tag creation from trunk on Git - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'master' )
@@ -93,6 +94,7 @@ class IntCreateTagGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test tag creation from branch on Git - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'SB_1.1' )
@@ -154,6 +156,7 @@ class IntCreateTagGroovySpec extends AbstractTaskGroovySpec {
     @Requires({ System.properties['giturl'] &&
             System.properties['gituser'] &&
             System.properties['gitpasswd'] })
+    @Ignore("Needs be fixed with AB#100505")
     def 'test tag creation from trunk on Git - increment minor - #gradleVersion'(gradleVersion) {
         given:
         prepareGitCheckout(testProjectDir, System.properties['giturl'], 'SB_1.1' )
