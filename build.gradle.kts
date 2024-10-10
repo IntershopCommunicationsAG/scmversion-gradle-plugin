@@ -288,11 +288,11 @@ dependencies {
     implementation(gradleKotlinDsl())
 
     //jgit
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.8.0.202311291450-r") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r") {
         exclude(group = "org.apache.httpcomponents", module = "httpclient")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.10.0.202406032230-r")
 }
 
 repositories {
