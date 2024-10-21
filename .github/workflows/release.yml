@@ -19,7 +19,7 @@ jobs:
       - name: Setup
         uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v2
       - name: set-env
-        uses: allenevans/set-env@v2.0.0
+        uses: allenevans/set-env@v4
         with:
           GITURL: ${{ secrets.GITURL }}
           GITUSER: ${{ secrets.GITUSER }}
