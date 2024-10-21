@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup
-        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v1.0
+        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v2
       - name: set-env
-        uses: allenevans/set-env@v2.0.0
+        uses: allenevans/set-env@v4.0.0
         with:
           GITURL: ${{ secrets.GITURL }}
           GITUSER: ${{ secrets.GITUSER }}
@@ -30,4 +30,4 @@ jobs:
           SVNUSER: ${{ secrets.SVNUSER }}
           SVNPASSWD: ${{ secrets.SVNPASSWD }}
       - name: Build
-        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-build@v1.0
+        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-build@v2
