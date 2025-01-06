@@ -5,8 +5,7 @@ name: Run build and tests
 on:
   push:
     branches:
-      - '*'
-      - 'support/4.1'
+      - '**'
 
 jobs:
   build:
