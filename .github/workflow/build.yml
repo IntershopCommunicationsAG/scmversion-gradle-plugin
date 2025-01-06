@@ -5,7 +5,7 @@ name: Run build and tests
 on:
   push:
     branches:
-      - '**'
+      - '*'
 
 jobs:
   build:
