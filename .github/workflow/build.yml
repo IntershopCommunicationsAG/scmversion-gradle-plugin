@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - '*'
+      - 'support/**'
 
 jobs:
   build:
