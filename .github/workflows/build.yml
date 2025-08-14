@@ -1,5 +1,6 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
 name: Run build and tests
 
 on:
@@ -7,7 +8,7 @@ on:
     branches:
       - '**'
   pull_request:
-    branches: [ release/2.X ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -19,15 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup
-        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v1.0
-      - name: set-env
-        uses: allenevans/set-env@v2.0.0
-        with:
-          GITURL: ${{ secrets.GITURL }}
-          GITUSER: ${{ secrets.GITUSER }}
-          GITPASSWD: ${{ secrets.GITPASSWD }}
-          SVNURL: ${{ secrets.SVNURL }}
-          SVNUSER: ${{ secrets.SVNUSER }}
-          SVNPASSWD: ${{ secrets.SVNPASSWD }}
+        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v2
       - name: Build
-        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-build@v1.0
+        uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-build@v2
