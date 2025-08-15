@@ -19,7 +19,6 @@ import com.intershop.gradle.scm.ScmVersionPlugin
 import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.extension.VersionExtension
 import com.intershop.gradle.test.util.TestDir
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule

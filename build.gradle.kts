@@ -19,9 +19,10 @@ import io.gitee.pkmer.enums.PublishingType
 plugins {
 
     // project plugins
+    `jvm-test-suite`
     groovy
 
-    kotlin("jvm") version "1.9.21" // A dependency on the standard library (stdlib) is added automatically to each source set.
+    kotlin("jvm") version "1.9.25" // A dependency on the standard library (stdlib) is added automatically to each source set.
 
     // test coverage
     jacoco
@@ -33,13 +34,13 @@ plugins {
     signing
 
     // plugin for documentation
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("org.asciidoctor.jvm.convert") version "4.0.3"
 
     // documentation
-    id("org.jetbrains.dokka") version "1.9.10"
+    id("org.jetbrains.dokka") version "1.9.20"
 
     // plugin for publishing to Gradle Portal
-    id("com.gradle.plugin-publish") version "1.2.1"
+    id("com.gradle.plugin-publish") version "1.3.0"
 
     id("io.gitee.pkmer.pkmerboot-central-publisher") version "1.1.1"
 }
@@ -76,42 +77,60 @@ gradlePlugin {
     }
 }
 
-
 // set correct project status
 if (project.version.toString().endsWith("-SNAPSHOT")) {
     status = "snapshot"
 }
 
-tasks {
-    withType<Test>().configureEach {
-        testLogging.showStandardStreams = false
+testing {
+    suites.withType<JvmTestSuite> {
+        useSpock()
+        dependencies {
+            implementation("com.intershop.gradle.test:test-gradle-plugin:5.1.0")
+            implementation("commons-io:commons-io:2.17.0")
+            implementation(gradleTestKit())
 
-        maxParallelForks = 1
-
-        if (!System.getenv("GITUSER").isNullOrBlank() &&
-                !System.getenv("GITPASSWD").isNullOrBlank() &&
-                !System.getenv("GITURL").isNullOrBlank()) {
-            systemProperty("giturl", System.getenv("GITURL"))
-            systemProperty("gituser", System.getenv("GITUSER"))
-            systemProperty("gitpasswd", System.getenv("GITPASSWD"))
+            runtimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
+            runtimeOnly("org.slf4j:slf4j-api:2.0.16")
         }
 
-        if (!System.getProperty("GITUSER").isNullOrBlank() &&
-                !System.getProperty("GITPASSWD").isNullOrBlank() &&
-                !System.getProperty("GITURL").isNullOrBlank()) {
-            systemProperty("giturl", System.getProperty("GITURL"))
-            systemProperty("gituser", System.getProperty("GITUSER"))
-            systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
-        }
+        targets {
+            all {
+                testTask.configure {
+                    if (!System.getenv("GITUSER").isNullOrBlank() &&
+                        !System.getenv("GITPASSWD").isNullOrBlank() &&
+                        !System.getenv("GITURL").isNullOrBlank()) {
+                        systemProperty("giturl", System.getenv("GITURL"))
+                        systemProperty("gituser", System.getenv("GITUSER"))
+                        systemProperty("gitpasswd", System.getenv("GITPASSWD"))
+                    }
 
-        //Change directory for gradle tests
-        systemProperty("org.gradle.native.dir", ".gradle")
-        //Set supported Gradle version
-        systemProperty("intershop.gradle.versions", "8.4,8.5")
-        //working dir for tests
-        systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
+                    if (!System.getProperty("GITUSER").isNullOrBlank() &&
+                        !System.getProperty("GITPASSWD").isNullOrBlank() &&
+                        !System.getProperty("GITURL").isNullOrBlank()) {
+                        systemProperty("giturl", System.getProperty("GITURL"))
+                        systemProperty("gituser", System.getProperty("GITUSER"))
+                        systemProperty("gitpasswd", System.getProperty("GITPASSWD"))
+                    }
+
+                    // Change directory for gradle tests
+                    systemProperty("org.gradle.native.dir", ".gradle")
+                    // Set supported Gradle version
+                    systemProperty("intershop.gradle.versions", "8.4,8.5,8.10.2")
+                    // Working dir for tests
+                    systemProperty("intershop.test.base.dir", project.layout.buildDirectory.get().dir("test-working").asFile.absolutePath)
+
+                    testLogging {
+                        showStandardStreams = false
+                        maxParallelForks = 1
+                    }
+                }
+            }
+        }
     }
+}
 
+tasks {
     register<Copy>("copyAsciiDoc") {
         includeEmptyDirs = false
 
@@ -143,18 +162,21 @@ tasks {
             setBackends(listOf("html5", "docbook"))
         }
 
-        options = mapOf("doctype" to "article",
-                "ruby" to "erubis")
-        attributes = mapOf(
-                "latestRevision" to project.version,
-                "toc" to "left",
-                "toclevels" to "2",
-                "source-highlighter" to "coderay",
-                "icons" to "font",
-                "setanchors" to "true",
-                "idprefix" to "asciidoc",
-                "idseparator" to "-",
-                "docinfo1" to "true")
+        setOptions(mapOf(
+            "doctype"               to "article",
+            "ruby"                  to "erubis"
+        ))
+        setAttributes(mapOf(
+            "latestRevision"        to project.version,
+            "toc"                   to "left",
+            "toclevels"             to "2",
+            "source-highlighter"    to "coderay",
+            "icons"                 to "font",
+            "setanchors"            to "true",
+            "idprefix"              to "asciidoc",
+            "idseparator"           to "-",
+            "docinfo1"              to "true"
+        ))
     }
 
     withType<JacocoReport> {
@@ -283,19 +305,11 @@ dependencies {
     implementation(gradleKotlinDsl())
 
     //jgit
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.8.0.202311291450-r") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r") {
         exclude(group = "org.apache.httpcomponents", module = "httpclient")
         exclude(group = "org.slf4j", module = "slf4j-api")
     }
-    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r")
-
-    testRuntimeOnly("org.apache.httpcomponents:httpclient:4.5.14")
-    testRuntimeOnly("org.slf4j:slf4j-api:2.0.9")
-
-    testImplementation("com.intershop.gradle.test:test-gradle-plugin:5.0.1")
-    testImplementation(gradleTestKit())
-
-    testImplementation("commons-io:commons-io:2.15.1")
+    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.10.0.202406032230-r")
 }
 
 repositories {

@@ -16,12 +16,8 @@
 
 package com.intershop.gradle.scm
 
-import com.intershop.gradle.scm.extension.ScmExtension
 import com.intershop.gradle.scm.test.utils.AbstractTaskGroovySpec
 import groovy.util.logging.Slf4j
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Requires
 import spock.lang.Unroll
 

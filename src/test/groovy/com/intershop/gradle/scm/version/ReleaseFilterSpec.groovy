@@ -15,11 +15,9 @@
  */
 package com.intershop.gradle.scm.version
 
-import com.intershop.gradle.scm.utils.PrefixConfig
 import com.intershop.gradle.scm.utils.SimplePrefixConfig
 import com.intershop.release.version.Version
 import com.intershop.release.version.VersionType
-import org.gradle.api.model.ObjectFactory
 import spock.lang.Specification
 
 class ReleaseFilterSpec extends Specification {

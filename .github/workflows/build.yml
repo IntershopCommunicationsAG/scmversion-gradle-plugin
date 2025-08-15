@@ -21,5 +21,14 @@ jobs:
     steps:
       - name: Setup
         uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-setup@v2
+      - name: set-env
+        uses: allenevans/set-env@v4.0.0
+        with:
+          GITURL: ${{ secrets.GITURL }}
+          GITUSER: ${{ secrets.GITUSER }}
+          GITPASSWD: ${{ secrets.GITPASSWD }}
+          SVNURL: ${{ secrets.SVNURL }}
+          SVNUSER: ${{ secrets.SVNUSER }}
+          SVNPASSWD: ${{ secrets.SVNPASSWD }}
       - name: Build
         uses: IntershopCommunicationsAG/.github/actions/gradle-plugin-build@v2
